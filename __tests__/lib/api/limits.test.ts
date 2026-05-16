@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getLimits, setLimit, deleteLimit } from './limits';
+import { getLimits, setLimit, deleteLimit } from '@/lib/api/limits';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;

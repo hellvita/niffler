@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getInitialBudget, setInitialBudget } from './budget';
+import { getInitialBudget, setInitialBudget } from '@/lib/api/budget';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;

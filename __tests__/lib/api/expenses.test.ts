@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { upsertIncome, deleteIncome } from './incomes';
+import { upsertExpense, deleteExpense } from '@/lib/api/expenses';
 
 function mockFetch(status: number) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
@@ -7,44 +7,44 @@ function mockFetch(status: number) {
   );
 }
 
-describe('upsertIncome', () => {
+describe('upsertExpense', () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it('PUTs to /api/proxy/incomes/{date} with amount', async () => {
+  it('PUTs to /api/proxy/expenses/{date}/{categoryId} with amount', async () => {
     const spy = mockFetch(204);
-    await upsertIncome('2026-05-14', 500);
+    await upsertExpense('2026-05-14', 'cat-1', 42.5);
     const [url, init] = spy.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe('/api/proxy/incomes/2026-05-14');
+    expect(url).toBe('/api/proxy/expenses/2026-05-14/cat-1');
     expect(init.method).toBe('PUT');
-    expect(JSON.parse(init.body as string)).toEqual({ amount: 500 });
+    expect(JSON.parse(init.body as string)).toEqual({ amount: 42.5 });
   });
 
   it('returns null on success (204)', async () => {
     mockFetch(204);
-    const result = await upsertIncome('2026-05-14', 500);
+    const result = await upsertExpense('2026-05-14', 'cat-1', 10);
     expect(result).toBeNull();
   });
 
   it('throws on non-ok response', async () => {
-    mockFetch(400);
-    await expect(upsertIncome('bad-date', 500)).rejects.toThrow('400');
+    mockFetch(404);
+    await expect(upsertExpense('2026-05-14', 'missing', 10)).rejects.toThrow('404');
   });
 });
 
-describe('deleteIncome', () => {
+describe('deleteExpense', () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it('DELETEs /api/proxy/incomes/{date}', async () => {
+  it('DELETEs /api/proxy/expenses/{date}/{categoryId}', async () => {
     const spy = mockFetch(204);
-    await deleteIncome('2026-05-14');
+    await deleteExpense('2026-05-14', 'cat-1');
     const [url, init] = spy.mock.calls[0] as [string, RequestInit];
-    expect(url).toBe('/api/proxy/incomes/2026-05-14');
+    expect(url).toBe('/api/proxy/expenses/2026-05-14/cat-1');
     expect(init.method).toBe('DELETE');
   });
 
   it('returns null on success (204)', async () => {
     mockFetch(204);
-    const result = await deleteIncome('2026-05-14');
+    const result = await deleteExpense('2026-05-14', 'cat-1');
     expect(result).toBeNull();
   });
 });

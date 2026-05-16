@@ -2,7 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   getCategories, createCategory, renameCategory,
   mergeCategory, archiveCategory, unarchiveCategory,
-} from './categories';
+} from '@/lib/api/categories';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;

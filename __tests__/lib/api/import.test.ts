@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { parseFile, previewImport, executeImport } from './import';
+import { parseFile, previewImport, executeImport } from '@/lib/api/import';
 
 function mockFetch(status: number, body: unknown) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
@@ -32,7 +32,7 @@ describe('parseFile', () => {
     expect(result).toEqual({ fileId: 'f1', columns: [] });
   });
 
-  it('does NOT set Content-Type header — browser must set it with the multipart boundary', async () => {
+  it('does NOT set Content-Type — browser must set it with the multipart boundary', async () => {
     const spy = mockFetch(200, { fileId: 'f2', columns: [] });
     const file = new File(['data'], 'data.xlsx');
     await parseFile(file);

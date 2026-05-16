@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { downloadMonthExport } from './export';
+import { downloadMonthExport } from '@/lib/api/export';
 
 describe('downloadMonthExport', () => {
   afterEach(() => vi.restoreAllMocks());

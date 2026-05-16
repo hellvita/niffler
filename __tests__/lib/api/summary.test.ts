@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getDaySummary, getMonthSummary, getAllTimeSummary } from './summary';
+import { getDaySummary, getMonthSummary, getAllTimeSummary } from '@/lib/api/summary';
 
 function mockFetch(status: number, body: unknown) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
@@ -8,9 +8,8 @@ function mockFetch(status: number, body: unknown) {
 }
 
 const daySummary = {
-  date: '2026-05-14', income: 100, expensesByCategory: [
-    { categoryId: 'c1', categoryName: 'Groceries', amount: 42.5 },
-  ],
+  date: '2026-05-14', income: 100,
+  expensesByCategory: [{ categoryId: 'c1', categoryName: 'Groceries', amount: 42.5 }],
   totalExpenses: 42.5, effectiveLimit: 50, limitDiff: 7.5, net: 57.5,
 };
 
