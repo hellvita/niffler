@@ -17,7 +17,15 @@ async function handler(
   const hasBody = req.method !== 'GET' && req.method !== 'DELETE';
 
   const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
-  if (hasBody && !isMultipart) headers['Content-Type'] = 'application/json';
+  if (hasBody) {
+    if (isMultipart) {
+      // Forward the full Content-Type including the multipart boundary the browser generated
+      const ct = req.headers.get('content-type');
+      if (ct) headers['Content-Type'] = ct;
+    } else {
+      headers['Content-Type'] = 'application/json';
+    }
+  }
 
   const res = await fetch(url, {
     method: req.method,
@@ -26,6 +34,8 @@ async function handler(
     body: hasBody ? (isMultipart ? req.body : await req.text()) : undefined,
     ...(isMultipart && { duplex: 'half' }),
   });
+
+  if (res.status === 204) return new NextResponse(null, { status: 204 });
 
   const contentType = res.headers.get('Content-Type') ?? 'application/json';
   const isBinary =

@@ -3,6 +3,8 @@ import { MonthNavigator } from '@/components/month/MonthNavigator';
 import { MonthSummaryBar } from '@/components/month/MonthSummaryBar';
 import { MonthBarChart } from '@/components/month/MonthBarChart';
 import { DayBreakdownTable } from '@/components/month/DayBreakdownTable';
+import { downloadMonthExport } from '@/lib/api/export';
+import { useState } from 'react';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
 
 function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
@@ -52,6 +54,16 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
 
 export function MonthView({ yearMonth }: { yearMonth: string }) {
   const { error, refetch } = useMonthSummary(yearMonth);
+  const [exporting, setExporting] = useState(false);
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      await downloadMonthExport(yearMonth);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   if (error) {
     return (
@@ -72,7 +84,16 @@ export function MonthView({ yearMonth }: { yearMonth: string }) {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
-      <MonthNavigator yearMonth={yearMonth} />
+      <div className="flex items-center gap-2">
+        <div className="flex-1 min-w-0"><MonthNavigator yearMonth={yearMonth} /></div>
+        <button
+          onClick={handleExport}
+          disabled={exporting}
+          className="shrink-0 px-3 py-1.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors"
+        >
+          {exporting ? 'Exporting…' : 'Export xlsx'}
+        </button>
+      </div>
       <MonthSummaryBar yearMonth={yearMonth} />
 
       <section className="flex flex-col gap-3">

@@ -18,5 +18,9 @@ export async function apiMutate<T>(
   });
   if (!res.ok) throw Object.assign(new Error(`${res.status}`), { status: res.status });
   if (res.status === 204) return null;
-  return res.json();
+  const ct = res.headers.get('Content-Type') ?? '';
+  if (!ct.includes('application/json')) return null;
+  const text = await res.text();
+  if (!text.trim()) return null;
+  return JSON.parse(text) as T;
 }
