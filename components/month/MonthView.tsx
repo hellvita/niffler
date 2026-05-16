@@ -1,6 +1,7 @@
 'use client';
 import { MonthNavigator } from '@/components/month/MonthNavigator';
 import { MonthSummaryBar } from '@/components/month/MonthSummaryBar';
+import { MonthBarChart } from '@/components/month/MonthBarChart';
 import { DayBreakdownTable } from '@/components/month/DayBreakdownTable';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
 
@@ -79,6 +80,13 @@ export function MonthView({ yearMonth }: { yearMonth: string }) {
           By category
         </h2>
         <CategoryBreakdown yearMonth={yearMonth} />
+      </section>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+          Expenses by day
+        </h2>
+        <MonthBarChart yearMonth={yearMonth} />
       </section>
 
       <section className="flex flex-col gap-3">
