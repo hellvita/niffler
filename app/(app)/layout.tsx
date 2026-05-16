@@ -1,9 +1,11 @@
+import { NavBar } from '@/components/nav/NavBar';
 import { SessionExpiredModal } from '@/components/providers/SessionExpiredModal';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      {children}
+      <NavBar />
+      <main>{children}</main>
       <SessionExpiredModal />
     </>
   );
