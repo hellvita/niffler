@@ -1,8 +1,10 @@
 'use client';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
+import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 
 export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
   const { data, isLoading } = useMonthSummary(yearMonth);
+  const { preferences: prefs } = useColumnPreferences();
 
   if (isLoading) {
     return <div className="h-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />;
@@ -14,12 +16,14 @@ export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
   const hasAnyLimit = data.days.some(d => d.effectiveLimit !== null);
 
   const items = [
-    { label: 'Expenses',   value: data.monthTotals.totalExpenses },
-    { label: 'Income',     value: data.monthTotals.totalIncome },
-    { label: 'Budget',     value: hasAnyLimit ? data.monthTotals.allowedMonthlyBudget : null },
-    { label: 'Limit Diff', value: hasAnyLimit ? data.monthTotals.totalLimitDiff : null },
-    { label: 'Net',        value: data.monthTotals.net },
-  ];
+    { key: 'totalExpenses' as const,  value: data.monthTotals.totalExpenses },
+    { key: 'income' as const,         value: data.monthTotals.totalIncome },
+    { key: 'effectiveLimit' as const, value: hasAnyLimit ? data.monthTotals.allowedMonthlyBudget : null },
+    { key: 'limitDiff' as const,      value: hasAnyLimit ? data.monthTotals.totalLimitDiff : null },
+    { key: 'net' as const,            value: data.monthTotals.net },
+  ]
+    .filter(item => prefs[item.key].visible)
+    .map(item => ({ ...item, label: prefs[item.key].label }));
 
   return (
     <div className="flex gap-6 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-6 py-4">

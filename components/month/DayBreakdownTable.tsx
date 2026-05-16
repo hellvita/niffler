@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { format, parseISO } from 'date-fns';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
+import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 
 function fmt(value: number | null): string {
   return value === null ? '—' : value.toFixed(2);
@@ -10,6 +11,7 @@ function fmt(value: number | null): string {
 export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
   const router = useRouter();
   const { data, isLoading } = useMonthSummary(yearMonth);
+  const { preferences: prefs } = useColumnPreferences();
 
   if (isLoading) {
     return (
@@ -28,11 +30,11 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
         <thead>
           <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
             <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Date</th>
-            <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">Expenses</th>
-            <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">Income</th>
-            <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">Limit</th>
-            <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">Limit Diff</th>
-            <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">Net</th>
+            {prefs.totalExpenses.visible  && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.totalExpenses.label}</th>}
+            {prefs.income.visible         && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.income.label}</th>}
+            {prefs.effectiveLimit.visible && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.effectiveLimit.label}</th>}
+            {prefs.limitDiff.visible      && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.limitDiff.label}</th>}
+            {prefs.net.visible            && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.net.label}</th>}
           </tr>
         </thead>
         <tbody>
@@ -54,25 +56,35 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
                 <td className="px-4 py-2.5 text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
                   {format(parseISO(day.date), 'EEE d')}
                 </td>
-                <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
-                  {day.totalExpenses > 0 ? day.totalExpenses.toFixed(2) : '—'}
-                </td>
-                <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
-                  {day.totalIncome > 0 ? day.totalIncome.toFixed(2) : '—'}
-                </td>
-                <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-500 dark:text-zinc-400">
-                  {fmt(day.effectiveLimit)}
-                </td>
-                <td className={`px-4 py-2.5 text-right font-mono tabular-nums ${
-                  isOverBudget ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-zinc-500 dark:text-zinc-400'
-                }`}>
-                  {fmt(day.limitDiff)}
-                </td>
-                <td className={`px-4 py-2.5 text-right font-mono tabular-nums ${
-                  day.net < 0 ? 'text-red-500' : 'text-zinc-800 dark:text-zinc-200'
-                }`}>
-                  {day.net.toFixed(2)}
-                </td>
+                {prefs.totalExpenses.visible && (
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
+                    {day.totalExpenses > 0 ? day.totalExpenses.toFixed(2) : '—'}
+                  </td>
+                )}
+                {prefs.income.visible && (
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
+                    {day.totalIncome > 0 ? day.totalIncome.toFixed(2) : '—'}
+                  </td>
+                )}
+                {prefs.effectiveLimit.visible && (
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-500 dark:text-zinc-400">
+                    {fmt(day.effectiveLimit)}
+                  </td>
+                )}
+                {prefs.limitDiff.visible && (
+                  <td className={`px-4 py-2.5 text-right font-mono tabular-nums ${
+                    isOverBudget ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-zinc-500 dark:text-zinc-400'
+                  }`}>
+                    {fmt(day.limitDiff)}
+                  </td>
+                )}
+                {prefs.net.visible && (
+                  <td className={`px-4 py-2.5 text-right font-mono tabular-nums ${
+                    day.net < 0 ? 'text-red-500' : 'text-zinc-800 dark:text-zinc-200'
+                  }`}>
+                    {day.net.toFixed(2)}
+                  </td>
+                )}
               </tr>
             );
           })}

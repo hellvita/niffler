@@ -7,6 +7,7 @@ import { getMonthSummary } from '@/lib/api/summary';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLimits } from '@/lib/hooks/useLimits';
 import type { MonthSummary } from '@/lib/types/api';
+import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { DateRangePicker } from './DateRangePicker';
 import { ChartTypeSelector } from './ChartTypeSelector';
 import { ExpensePieChart } from './charts/ExpensePieChart';
@@ -48,6 +49,7 @@ export function AnalyticsView() {
 
   const { data: allTimeData, isLoading: allTimeLoading } = useAllTimeSummary();
   const { data: limits } = useLimits();
+  const { preferences: prefs } = useColumnPreferences();
 
   const isLoading = monthResults.some(r => r.isLoading);
   const summaries = monthResults
@@ -62,18 +64,24 @@ export function AnalyticsView() {
 
   const summaryItems: { label: string; value: number | null }[] = isAllTime && allTimeData
     ? [
-        { label: 'Expenses', value: allTimeData.totalExpenses },
-        { label: 'Income', value: allTimeData.totalIncome },
-        { label: 'Net', value: allTimeData.net },
-        { label: 'Balance', value: allTimeData.currentBalance },
+        { key: 'totalExpenses' as const,  value: allTimeData.totalExpenses },
+        { key: 'income' as const,         value: allTimeData.totalIncome },
+        { key: 'net' as const,            value: allTimeData.net },
+        { key: 'currentBalance' as const, value: allTimeData.currentBalance },
       ]
+        .filter(item => prefs[item.key].visible)
+        .map(item => ({ label: prefs[item.key].label, value: item.value }))
     : totals
     ? [
-        { label: 'Expenses', value: totals.totalExpenses },
-        { label: 'Income', value: totals.totalIncome },
-        ...(totals.allowedBudget !== null ? [{ label: 'Budget', value: totals.allowedBudget }] : []),
-        { label: 'Net', value: totals.net },
+        { key: 'totalExpenses' as const,  value: totals.totalExpenses },
+        { key: 'income' as const,         value: totals.totalIncome },
+        ...(totals.allowedBudget !== null
+          ? [{ key: 'effectiveLimit' as const, value: totals.allowedBudget }]
+          : []),
+        { key: 'net' as const, value: totals.net },
       ]
+        .filter(item => prefs[item.key].visible)
+        .map(item => ({ label: prefs[item.key].label, value: item.value }))
     : [];
 
   const summaryLoading = isAllTime ? allTimeLoading : isLoading;
