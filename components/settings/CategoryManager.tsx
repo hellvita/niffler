@@ -8,6 +8,7 @@ import {
   useArchiveCategory,
   useUnarchiveCategory,
 } from '@/lib/hooks/useCategories';
+import { categoryNameSchema } from '@/lib/validation/schemas';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import type { Category } from '@/lib/types/api';
 
@@ -72,7 +73,11 @@ export function CategoryManager() {
 
   const handleAdd = () => {
     const trimmed = addValue.trim();
-    if (!trimmed) return;
+    const validation = categoryNameSchema.safeParse(trimmed);
+    if (!validation.success) {
+      setAddError(validation.error.issues[0]?.message ?? 'Invalid name');
+      return;
+    }
     setAddError(null);
     createCategory.mutate(trimmed, {
       onSuccess: () => setAddValue(''),
