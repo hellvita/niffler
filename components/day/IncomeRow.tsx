@@ -1,10 +1,12 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import { useUpsertIncome, useDeleteIncome } from '@/lib/hooks/useIncomes';
+import { amountSchema } from '@/lib/validation/schemas';
 
 export function IncomeRow({ date, income }: { date: string; income: number }) {
   const [editing, setEditing] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [inputError, setInputError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const escPressed = useRef(false);
 
@@ -24,10 +26,17 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
   const submit = () => {
     const val = parseFloat(inputValue);
     if (isNaN(val) || val === 0) {
+      setInputError(null);
       deleteIncome({ date }, { onSettled: () => setEditing(false) });
-    } else {
-      upsertIncome({ date, amount: val }, { onSettled: () => setEditing(false) });
+      return;
     }
+    const result = amountSchema.safeParse(val);
+    if (!result.success) {
+      setInputError(result.error.issues[0]?.message ?? 'Invalid amount');
+      return;
+    }
+    setInputError(null);
+    upsertIncome({ date, amount: val }, { onSettled: () => setEditing(false) });
   };
 
   return (
@@ -39,24 +48,29 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
       <span className="flex-1 text-sm font-medium text-zinc-500 dark:text-zinc-400 italic">Income</span>
 
       {editing ? (
-        <input
-          ref={inputRef}
-          type="number"
-          min="0"
-          step="0.01"
-          value={inputValue}
-          onChange={e => setInputValue(e.target.value)}
-          disabled={isMutating}
-          onKeyDown={e => {
-            if (e.key === 'Enter') e.currentTarget.blur();
-            if (e.key === 'Escape') { escPressed.current = true; setEditing(false); }
-          }}
-          onBlur={() => {
-            if (escPressed.current) { escPressed.current = false; return; }
-            submit();
-          }}
-          className="w-28 rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 text-sm text-right text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 disabled:opacity-50"
-        />
+        <div className="flex flex-col items-end gap-0.5">
+          <input
+            ref={inputRef}
+            type="number"
+            min="0"
+            step="0.01"
+            value={inputValue}
+            onChange={e => { setInputValue(e.target.value); setInputError(null); }}
+            disabled={isMutating}
+            onKeyDown={e => {
+              if (e.key === 'Enter') e.currentTarget.blur();
+              if (e.key === 'Escape') { escPressed.current = true; setInputError(null); setEditing(false); }
+            }}
+            onBlur={() => {
+              if (escPressed.current) { escPressed.current = false; return; }
+              submit();
+            }}
+            className={`w-28 rounded border px-2 py-1 text-sm text-right text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 disabled:opacity-50 ${
+              inputError ? 'border-red-400' : 'border-zinc-300 dark:border-zinc-600'
+            }`}
+          />
+          {inputError && <span className="text-xs text-red-500">{inputError}</span>}
+        </div>
       ) : (
         <button
           onClick={startEdit}

@@ -3,9 +3,10 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { amountSchema } from '@/lib/validation/schemas';
 import { useInitialBudget, useSetInitialBudget } from '@/lib/hooks/useBudget';
 
-const schema = z.object({ amount: z.number().min(0, 'Must be ≥ 0') });
+const schema = z.object({ amount: amountSchema });
 type FormData = z.infer<typeof schema>;
 
 export function InitialBudgetForm() {

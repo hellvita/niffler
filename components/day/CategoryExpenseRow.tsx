@@ -8,6 +8,7 @@ import {
   useArchiveCategory,
 } from '@/lib/hooks/useCategories';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { amountSchema } from '@/lib/validation/schemas';
 import type { Category } from '@/lib/types/api';
 
 interface Props {
@@ -23,6 +24,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
   const [mode, setMode] = useState<Mode>('view');
   const [menuOpen, setMenuOpen] = useState(false);
   const [amountInput, setAmountInput] = useState('');
+  const [amountError, setAmountError] = useState<string | null>(null);
   const [nameInput, setNameInput] = useState('');
   const [mergeTarget, setMergeTarget] = useState<Category | null>(null);
 
@@ -54,10 +56,17 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
   const submitAmount = () => {
     const val = parseFloat(amountInput);
     if (isNaN(val) || val === 0) {
+      setAmountError(null);
       deleteExpense({ date, categoryId }, { onSettled: () => setMode('view') });
-    } else {
-      upsertExpense({ date, categoryId, amount: val }, { onSettled: () => setMode('view') });
+      return;
     }
+    const result = amountSchema.safeParse(val);
+    if (!result.success) {
+      setAmountError(result.error.issues[0]?.message ?? 'Invalid amount');
+      return;
+    }
+    setAmountError(null);
+    upsertExpense({ date, categoryId, amount: val }, { onSettled: () => setMode('view') });
   };
 
   // ── Name editing ──────────────────────────────────────────────────────────
@@ -125,24 +134,29 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
 
         {/* Amount display / input */}
         {mode === 'edit-amount' ? (
-          <input
-            ref={amountRef}
-            type="number"
-            min="0"
-            step="0.01"
-            value={amountInput}
-            onChange={e => setAmountInput(e.target.value)}
-            disabled={isMutating}
-            onKeyDown={e => {
-              if (e.key === 'Enter') e.currentTarget.blur();
-              if (e.key === 'Escape') { escPressed.current = true; setMode('view'); }
-            }}
-            onBlur={() => {
-              if (escPressed.current) { escPressed.current = false; return; }
-              submitAmount();
-            }}
-            className="w-28 rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 text-sm text-right text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 disabled:opacity-50"
-          />
+          <div className="flex flex-col items-end gap-0.5">
+            <input
+              ref={amountRef}
+              type="number"
+              min="0"
+              step="0.01"
+              value={amountInput}
+              onChange={e => { setAmountInput(e.target.value); setAmountError(null); }}
+              disabled={isMutating}
+              onKeyDown={e => {
+                if (e.key === 'Enter') e.currentTarget.blur();
+                if (e.key === 'Escape') { escPressed.current = true; setAmountError(null); setMode('view'); }
+              }}
+              onBlur={() => {
+                if (escPressed.current) { escPressed.current = false; return; }
+                submitAmount();
+              }}
+              className={`w-28 rounded border px-2 py-1 text-sm text-right text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 disabled:opacity-50 ${
+                amountError ? 'border-red-400' : 'border-zinc-300 dark:border-zinc-600'
+              }`}
+            />
+            {amountError && <span className="text-xs text-red-500">{amountError}</span>}
+          </div>
         ) : (
           <button
             onClick={() => { if (!isMutating && mode === 'view') startEditAmount(); }}

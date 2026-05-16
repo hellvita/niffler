@@ -1,6 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import { useCreateCategory } from '@/lib/hooks/useCategories';
+import { categoryNameSchema } from '@/lib/validation/schemas';
 
 export function AddCategoryInline() {
   const [active, setActive] = useState(false);
@@ -24,7 +25,11 @@ export function AddCategoryInline() {
 
   const submit = () => {
     const trimmed = value.trim();
-    if (!trimmed) return;
+    const validation = categoryNameSchema.safeParse(trimmed);
+    if (!validation.success) {
+      setError(validation.error.issues[0]?.message ?? 'Invalid name');
+      return;
+    }
     createCategory(trimmed, {
       onSuccess: close,
       onError: (err: unknown) => {
