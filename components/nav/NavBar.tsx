@@ -67,11 +67,11 @@ export function NavBar() {
         <NavLink href="/analytics" active={pathname.startsWith('/analytics')}>
           Analytics
         </NavLink>
-        <NavLink href="/settings" active={pathname.startsWith('/settings')}>
-          Settings
-        </NavLink>
         <NavLink href="/import" active={pathname.startsWith('/import')}>
           Import
+        </NavLink>
+        <NavLink href="/settings" active={pathname.startsWith('/settings')}>
+          Settings
         </NavLink>
 
         {/* Spacer */}
