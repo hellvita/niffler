@@ -4,6 +4,7 @@ import { InitialBudgetForm } from '@/components/settings/InitialBudgetForm';
 import { CategoryManager } from '@/components/settings/CategoryManager';
 import { LimitManager } from '@/components/settings/LimitManager';
 import { ColumnPreferencesForm } from '@/components/settings/ColumnPreferencesForm';
+import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
 
 function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
@@ -48,6 +49,10 @@ export default function SettingsPage() {
 
       <Section heading="Column display">
         <ColumnPreferencesForm />
+      </Section>
+
+      <Section heading="Advanced">
+        <DeleteAccountSection />
       </Section>
     </div>
   );
