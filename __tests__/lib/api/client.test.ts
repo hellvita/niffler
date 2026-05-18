@@ -3,8 +3,9 @@ import { apiGet, apiMutate } from '@/lib/api/client';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;
+  const headers = bodyStr ? { 'Content-Type': 'application/json' } : {};
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(bodyStr, { status })
+    new Response(bodyStr, { status, headers })
   );
 }
 

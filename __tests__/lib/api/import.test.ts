@@ -3,7 +3,7 @@ import { parseFile, previewImport, executeImport } from '@/lib/api/import';
 
 function mockFetch(status: number, body: unknown) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(JSON.stringify(body), { status })
+    new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
   );
 }
 
