@@ -32,10 +32,10 @@ describe('loginSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects empty email', () => {
+  it('rejects empty email with "Email is required"', () => {
     const result = loginSchema.safeParse({ email: '', password: 'password1' });
     expect(result.success).toBe(false);
-    if (!result.success) expect(fieldMessages(result).email).toContain('Invalid email');
+    if (!result.success) expect(fieldMessages(result).email).toContain('Email is required');
   });
 
   it('rejects non-email string', () => {
@@ -44,11 +44,18 @@ describe('loginSchema', () => {
     if (!result.success) expect(fieldMessages(result).email).toContain('Invalid email');
   });
 
-  it('rejects password shorter than 8 characters', () => {
+  it('rejects empty password with "Password is required"', () => {
+    const result = loginSchema.safeParse({ email: 'a@b.com', password: '' });
+    expect(result.success).toBe(false);
+    if (!result.success)
+      expect(fieldMessages(result).password).toContain('Password is required');
+  });
+
+  it('rejects password shorter than 8 characters with generic message', () => {
     const result = loginSchema.safeParse({ email: 'a@b.com', password: 'short' });
     expect(result.success).toBe(false);
     if (!result.success)
-      expect(fieldMessages(result).password).toContain('Password must be at least 8 characters');
+      expect(fieldMessages(result).password).toContain('Invalid credentials');
   });
 });
 
@@ -76,25 +83,36 @@ describe('registerSchema', () => {
     }
   });
 
-  it('rejects invalid email (inherits loginSchema rules)', () => {
-    const result = registerSchema.safeParse({
-      email: 'bad',
-      password: 'password1',
-      confirmPassword: 'password1',
-    });
+  it('rejects empty email with "Email is required"', () => {
+    const result = registerSchema.safeParse({ email: '', password: 'password1', confirmPassword: 'password1' });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(fieldMessages(result).email).toContain('Email is required');
+  });
+
+  it('rejects non-empty invalid email with "Invalid email"', () => {
+    const result = registerSchema.safeParse({ email: 'bad', password: 'password1', confirmPassword: 'password1' });
     expect(result.success).toBe(false);
     if (!result.success) expect(fieldMessages(result).email).toContain('Invalid email');
   });
 
-  it('rejects short password (inherits loginSchema rules)', () => {
-    const result = registerSchema.safeParse({
-      email: 'a@b.com',
-      password: 'short',
-      confirmPassword: 'short',
-    });
+  it('rejects empty password with "Password is required"', () => {
+    const result = registerSchema.safeParse({ email: 'a@b.com', password: '', confirmPassword: '' });
+    expect(result.success).toBe(false);
+    if (!result.success) expect(fieldMessages(result).password).toContain('Password is required');
+  });
+
+  it('rejects short password with length hint', () => {
+    const result = registerSchema.safeParse({ email: 'a@b.com', password: 'short', confirmPassword: 'short' });
     expect(result.success).toBe(false);
     if (!result.success)
       expect(fieldMessages(result).password).toContain('Password must be at least 8 characters');
+  });
+
+  it('rejects empty confirmPassword with "Confirm password is required"', () => {
+    const result = registerSchema.safeParse({ email: 'a@b.com', password: 'password1', confirmPassword: '' });
+    expect(result.success).toBe(false);
+    if (!result.success)
+      expect(fieldMessages(result).confirmPassword).toContain('Confirm password is required');
   });
 });
 

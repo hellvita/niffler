@@ -15,8 +15,9 @@ const confirmMessage = (
     </p>
     <p className="text-amber-700">
       We recommend{' '}
-      <strong>exporting your data</strong> before proceeding. Use the export option on the month
-      view to save a copy of your records.
+      <strong>exporting your data</strong> before proceeding. Use the{' '}
+      <strong>Export data</strong> section above to download a complete copy of
+      your records.
     </p>
   </div>
 );

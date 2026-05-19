@@ -1,15 +1,35 @@
 import { z } from 'zod';
 
+const emailField = z.string().superRefine((val, ctx) => {
+  if (val.length === 0) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Email is required' });
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val)) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Invalid email' });
+  }
+});
+
 export const loginSchema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: emailField,
+  password: z.string().superRefine((val, ctx) => {
+    if (val.length === 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Password is required' });
+    } else if (val.length < 8) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Invalid credentials' });
+    }
+  }),
 });
 
 export const registerSchema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine(data => data.password === data.confirmPassword, {
+  email: emailField,
+  password: z.string().superRefine((val, ctx) => {
+    if (val.length === 0) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Password is required' });
+    } else if (val.length < 8) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Password must be at least 8 characters' });
+    }
+  }),
+  confirmPassword: z.string().min(1, 'Confirm password is required'),
+}).refine(data => !data.confirmPassword || data.password === data.confirmPassword, {
   message: 'Passwords do not match',
   path: ['confirmPassword'],
 });

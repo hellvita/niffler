@@ -11,7 +11,7 @@ Built with Next.js 16 (App Router), TypeScript, Tailwind CSS, and TanStack Query
 - **Analytics** — custom date range with pie, bar, and line charts; auto-bucketing by day / week / month
 - **Settings** — manage initial budget, categories (add, rename, archive, merge), and daily limit history
 - **Import** — guided 4-stage wizard for importing historical data from xlsx files
-- **Export** — download a month's data as xlsx
+- **Export** — download a month's data as xlsx, or export all months at once as a ZIP archive (one file per month) or a single combined xlsx
 
 ## Prerequisites
 

@@ -157,4 +157,22 @@ export const handlers = [
       },
     })
   ),
+  http.get(`${BASE}/export/zip`, () =>
+    new HttpResponse(new ArrayBuffer(0), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/zip',
+        'Content-Disposition': 'attachment; filename="budget-all.zip"',
+      },
+    })
+  ),
+  http.get(`${BASE}/export/combined`, () =>
+    new HttpResponse(new ArrayBuffer(0), {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': 'attachment; filename="budget-all-time.xlsx"',
+      },
+    })
+  ),
 ];
