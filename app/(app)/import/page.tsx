@@ -76,6 +76,7 @@ export default function ImportPage() {
           parseResult={parseResult}
           initialMapping={mapping ?? undefined}
           onPreview={handlePreview}
+          onBack={() => { setStage('upload'); setParseResult(null); }}
         />
       )}
 

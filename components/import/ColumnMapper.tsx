@@ -14,9 +14,10 @@ interface Props {
   parseResult: ParseResult;
   initialMapping?: Partial<ColumnMapping>;
   onPreview: (mapping: ColumnMapping, result: PreviewResult) => void;
+  onBack: () => void;
 }
 
-export function ColumnMapper({ parseResult, initialMapping, onPreview }: Props) {
+export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }: Props) {
   const cols = parseResult.columns;
   const firstIndex = cols[0]?.index ?? 0;
 
@@ -169,13 +170,21 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview }: Props) 
       {validationError && <p className="text-sm text-red-500">{validationError}</p>}
       {apiError && <p className="text-sm text-red-500">{apiError}</p>}
 
-      <button
-        onClick={handlePreview}
-        disabled={preview.isPending}
-        className="self-end px-6 py-2 text-sm rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium disabled:opacity-40 transition-colors hover:bg-zinc-700 dark:hover:bg-zinc-300"
-      >
-        {preview.isPending ? 'Loading preview…' : 'Preview →'}
-      </button>
+      <div className="flex justify-between">
+        <button
+          onClick={onBack}
+          className="px-4 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+        >
+          ← Back
+        </button>
+        <button
+          onClick={handlePreview}
+          disabled={preview.isPending}
+          className="px-6 py-2 text-sm rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium disabled:opacity-40 transition-colors hover:bg-zinc-700 dark:hover:bg-zinc-300"
+        >
+          {preview.isPending ? 'Loading preview…' : 'Preview →'}
+        </button>
+      </div>
     </div>
   );
 }
