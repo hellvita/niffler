@@ -55,6 +55,22 @@ export default function ImportPage() {
 
       {stage === 'upload' && <FileDropzone onSuccess={handleParsed} />}
 
+      {stage === 'upload' && (
+        <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-4 flex flex-col gap-2">
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Template</p>
+          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+            Not sure what format to use? Download the template — it has sample data for two months and instructions inside the file explaining all column rules.
+          </p>
+          <a
+            href="/import-template.xlsx"
+            download
+            className="self-start text-sm px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          >
+            Download template
+          </a>
+        </div>
+      )}
+
       {stage === 'map' && parseResult && (
         <ColumnMapper
           parseResult={parseResult}
