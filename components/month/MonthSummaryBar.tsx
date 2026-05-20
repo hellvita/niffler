@@ -1,6 +1,7 @@
 'use client';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
+import { computeMedian } from '@/lib/utils/aggregation';
 
 export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
   const { data, isLoading } = useMonthSummary(yearMonth);
@@ -15,12 +16,17 @@ export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
   // Do NOT use allowedMonthlyBudget === 0 as the signal — $0 is a valid configured limit.
   const hasAnyLimit = data.days.some(d => d.effectiveLimit !== null);
 
+  const medianDailyExpenses = computeMedian(
+    data.days.map(d => d.totalExpenses).filter(v => v > 0)
+  );
+
   const items = [
-    { key: 'totalExpenses' as const,  value: data.monthTotals.totalExpenses },
-    { key: 'income' as const,         value: data.monthTotals.totalIncome },
-    { key: 'effectiveLimit' as const, value: hasAnyLimit ? data.monthTotals.allowedMonthlyBudget : null },
-    { key: 'limitDiff' as const,      value: hasAnyLimit ? data.monthTotals.totalLimitDiff : null },
-    { key: 'net' as const,            value: data.monthTotals.net },
+    { key: 'totalExpenses' as const,       value: data.monthTotals.totalExpenses },
+    { key: 'medianDailyExpenses' as const, value: medianDailyExpenses },
+    { key: 'income' as const,              value: data.monthTotals.totalIncome },
+    { key: 'effectiveLimit' as const,      value: hasAnyLimit ? data.monthTotals.allowedMonthlyBudget : null },
+    { key: 'limitDiff' as const,           value: hasAnyLimit ? data.monthTotals.totalLimitDiff : null },
+    { key: 'net' as const,                 value: data.monthTotals.net },
   ]
     .filter(item => prefs[item.key].visible)
     .map(item => ({ ...item, label: prefs[item.key].label }));

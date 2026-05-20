@@ -1,6 +1,6 @@
 'use client';
 import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import type { ChartDataPoint } from '@/lib/utils/aggregation';
+import { computeMedian, type ChartDataPoint } from '@/lib/utils/aggregation';
 
 export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
   if (data.length === 0) {
@@ -12,10 +12,12 @@ export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
   }
 
   const hasLimit = data.some(d => d.limit !== null);
+  const median = computeMedian(data.map(d => d.expenses).filter(v => v > 0));
+  const chartData = median !== null ? data.map(d => ({ ...d, median })) : data;
 
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 4 }}>
+      <LineChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 4 }}>
         <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#52525b' }} />
         <YAxis tick={{ fontSize: 11, fill: '#52525b' }} />
         <Tooltip
@@ -31,6 +33,17 @@ export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
             dataKey="limit"
             name="Limit"
             stroke="#f59e0b"
+            dot={false}
+            strokeDasharray="4 4"
+            strokeWidth={1.5}
+          />
+        )}
+        {median !== null && (
+          <Line
+            type="monotone"
+            dataKey="median"
+            name="Median"
+            stroke="#8b5cf6"
             dot={false}
             strokeDasharray="4 4"
             strokeWidth={1.5}

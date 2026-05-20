@@ -4,12 +4,13 @@ import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { COLUMN_ORDER, DEFAULT_COLUMN_PREFERENCES, type ColumnKey } from '@/lib/types/ui';
 
 const FIELD_DESCRIPTIONS: Record<ColumnKey, string> = {
-  totalExpenses:  'Total Expenses',
-  income:         'Income',
-  effectiveLimit: 'Daily Limit / Budget',
-  limitDiff:      'Limit Diff',
-  net:            'Net',
-  currentBalance: 'Balance',
+  totalExpenses:       'Total Expenses',
+  medianDailyExpenses: 'Median Daily Expenses',
+  income:              'Income',
+  effectiveLimit:      'Daily Limit / Budget',
+  limitDiff:           'Limit Diff',
+  net:                 'Net',
+  currentBalance:      'Balance',
 };
 
 export function ColumnPreferencesForm() {
