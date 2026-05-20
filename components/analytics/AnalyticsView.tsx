@@ -2,7 +2,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useQueries } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, parseISO } from 'date-fns';
-import { getMonthsInRange, aggregateTotals, buildChartSeries } from '@/lib/utils/aggregation';
+import { getMonthsInRange, aggregateTotals, buildChartSeries, chooseBucket } from '@/lib/utils/aggregation';
 import { getMonthSummary } from '@/lib/api/summary';
 import { useAllTimeSummary, useAllTimeMonthlySummary } from '@/lib/hooks/useSummary';
 import { useLimits } from '@/lib/hooks/useLimits';
@@ -142,7 +142,12 @@ export function AnalyticsView() {
           <span className="text-sm text-zinc-500 dark:text-zinc-400">
             {chartLoading
               ? 'Loading…'
-              : `${displaySummaries.length} month${displaySummaries.length !== 1 ? 's' : ''} of data`}
+              : (() => {
+                  const bucket = chooseBucket(chartFrom, chartTo);
+                  const n = chartData.length;
+                  const unit = bucket === 'day' ? 'day' : bucket === 'week' ? 'week' : 'month';
+                  return `${n} ${unit}${n !== 1 ? 's' : ''} of data`;
+                })()}
           </span>
           <ChartTypeSelector value={chartType} />
         </div>
