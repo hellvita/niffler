@@ -110,10 +110,10 @@ export function buildChartSeries(
     }));
   }
 
-  function avgLimit(slice: DaySlice[]): number | null {
+  function sumLimit(slice: DaySlice[]): number | null {
     const limited = slice.filter(d => d.effectiveLimit !== null);
     if (limited.length === 0) return null;
-    return limited.reduce((s, d) => s + (d.effectiveLimit ?? 0), 0) / limited.length;
+    return limited.reduce((s, d) => s + (d.effectiveLimit ?? 0), 0);
   }
 
   if (bucket === 'week') {
@@ -133,7 +133,7 @@ export function buildChartSeries(
         label: `${format(start, 'MMM d')}–${crossesMonth ? format(end, 'MMM d') : format(end, 'd')}`,
         expenses: bd.reduce((s, d) => s + d.totalExpenses, 0),
         income: bd.reduce((s, d) => s + d.totalIncome, 0),
-        limit: avgLimit(bd),
+        limit: sumLimit(bd),
       };
     });
   }
@@ -152,6 +152,6 @@ export function buildChartSeries(
     label: format(start, 'MMM yyyy'),
     expenses: bd.reduce((s, d) => s + d.totalExpenses, 0),
     income: bd.reduce((s, d) => s + d.totalIncome, 0),
-    limit: avgLimit(bd),
+    limit: sumLimit(bd),
   }));
 }

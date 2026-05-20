@@ -9,3 +9,6 @@ export const getMonthSummary = (yearMonth: string) =>
 
 export const getAllTimeSummary = () =>
   apiGet<AllTimeSummary>('summary/all-time');
+
+export const getAllTimeMonthly = () =>
+  apiGet<MonthSummary[]>('summary/all-time/monthly');

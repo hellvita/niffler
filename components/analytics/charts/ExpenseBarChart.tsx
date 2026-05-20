@@ -29,7 +29,7 @@ export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
           <Line
             type="stepAfter"
             dataKey="limit"
-            name="Avg Limit"
+            name="Limit"
             stroke="#f59e0b"
             dot={false}
             strokeDasharray="4 4"

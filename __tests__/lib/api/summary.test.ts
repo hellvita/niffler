@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getDaySummary, getMonthSummary, getAllTimeSummary } from '@/lib/api/summary';
+import { getDaySummary, getMonthSummary, getAllTimeSummary, getAllTimeMonthly } from '@/lib/api/summary';
 
 function mockFetch(status: number, body: unknown) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
@@ -23,6 +23,8 @@ const allTimeSummary = {
   initialBudget: 5000, totalIncome: 3000, totalExpenses: 2000,
   totalLimitDiff: 0, currentBalance: 6000, net: 1000,
 };
+
+const allTimeMonthly = [monthSummary];
 
 describe('getDaySummary', () => {
   afterEach(() => vi.restoreAllMocks());
@@ -69,5 +71,21 @@ describe('getAllTimeSummary', () => {
   it('throws on non-ok response', async () => {
     mockFetch(401, { message: 'Unauthorized' });
     await expect(getAllTimeSummary()).rejects.toThrow('401');
+  });
+});
+
+describe('getAllTimeMonthly', () => {
+  afterEach(() => vi.restoreAllMocks());
+
+  it('GETs /api/proxy/summary/all-time/monthly and returns MonthSummary[]', async () => {
+    const spy = mockFetch(200, allTimeMonthly);
+    const result = await getAllTimeMonthly();
+    expect(spy).toHaveBeenCalledWith('/api/proxy/summary/all-time/monthly');
+    expect(result).toEqual(allTimeMonthly);
+  });
+
+  it('throws on non-ok response', async () => {
+    mockFetch(401, { message: 'Unauthorized' });
+    await expect(getAllTimeMonthly()).rejects.toThrow('401');
   });
 });

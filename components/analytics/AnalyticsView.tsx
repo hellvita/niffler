@@ -2,9 +2,9 @@
 import { useSearchParams } from 'next/navigation';
 import { useQueries } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, parseISO } from 'date-fns';
-import { getMonthsInRange, aggregateTotals, buildChartSeries } from '@/lib/utils/aggregation';
+import { getMonthsInRange, aggregateTotals, buildChartSeries, chooseBucket } from '@/lib/utils/aggregation';
 import { getMonthSummary } from '@/lib/api/summary';
-import { useAllTimeSummary } from '@/lib/hooks/useSummary';
+import { useAllTimeSummary, useAllTimeMonthlySummary } from '@/lib/hooks/useSummary';
 import { useLimits } from '@/lib/hooks/useLimits';
 import type { MonthSummary } from '@/lib/types/api';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
@@ -48,6 +48,8 @@ export function AnalyticsView() {
   });
 
   const { data: allTimeData, isLoading: allTimeLoading } = useAllTimeSummary();
+  const { data: allTimeMonthlySummaries = [], isLoading: allTimeMonthlyLoading } =
+    useAllTimeMonthlySummary(isAllTime);
   const { data: limits } = useLimits();
   const { preferences: prefs } = useColumnPreferences();
 
@@ -57,8 +59,26 @@ export function AnalyticsView() {
     .filter((d): d is MonthSummary => d !== undefined);
 
   const allLoaded = summaries.length === months.length;
-  const totals = !isAllTime && allLoaded ? aggregateTotals(summaries, from, to) : null;
-  const chartData = totals ? buildChartSeries(summaries, from, to) : [];
+
+  const displaySummaries = isAllTime ? allTimeMonthlySummaries : summaries;
+  const chartLoading = isAllTime ? allTimeMonthlyLoading : isLoading;
+
+  const chartFrom = isAllTime && allTimeMonthlySummaries.length > 0
+    ? new Date(allTimeMonthlySummaries[0].year, allTimeMonthlySummaries[0].month - 1, 1)
+    : from;
+  const chartTo = isAllTime && allTimeMonthlySummaries.length > 0
+    ? endOfMonth(new Date(
+        allTimeMonthlySummaries.at(-1)!.year,
+        allTimeMonthlySummaries.at(-1)!.month - 1,
+        1,
+      ))
+    : to;
+
+  const totalsReady = isAllTime ? !allTimeMonthlyLoading : allLoaded;
+  const totals = totalsReady && displaySummaries.length > 0
+    ? aggregateTotals(displaySummaries, chartFrom, chartTo)
+    : null;
+  const chartData = totals ? buildChartSeries(displaySummaries, chartFrom, chartTo) : [];
 
   const hasAnyLimit = (limits?.length ?? 0) > 0;
 
@@ -117,34 +137,33 @@ export function AnalyticsView() {
         </div>
       ) : null}
 
-      {isAllTime ? (
-        <div className="flex items-center justify-center h-48 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-400 dark:text-zinc-500 text-center px-6">
-          Charts require a bounded date range — select a custom range to visualize spending.
+      <>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+            {chartLoading
+              ? 'Loading…'
+              : (() => {
+                  const bucket = chooseBucket(chartFrom, chartTo);
+                  const n = chartData.length;
+                  const unit = bucket === 'day' ? 'day' : bucket === 'week' ? 'week' : 'month';
+                  return `${n} ${unit}${n !== 1 ? 's' : ''} of data`;
+                })()}
+          </span>
+          <ChartTypeSelector value={chartType} />
         </div>
-      ) : (
-        <>
-          <div className="flex items-center justify-between flex-wrap gap-3">
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">
-              {isLoading
-                ? 'Loading…'
-                : `${summaries.length} month${summaries.length !== 1 ? 's' : ''} of data`}
-            </span>
-            <ChartTypeSelector value={chartType} />
-          </div>
 
-          {isLoading ? (
-            <div className="h-72 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
-          ) : (
-            <div>
-              {chartType === 'pie' && totals && (
-                <ExpensePieChart categories={totals.expensesByCategory} />
-              )}
-              {chartType === 'bar' && <ExpenseBarChart data={chartData} />}
-              {chartType === 'line' && <ExpenseLineChart data={chartData} />}
-            </div>
-          )}
-        </>
-      )}
+        {chartLoading ? (
+          <div className="h-72 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+        ) : (
+          <div>
+            {chartType === 'pie' && totals && (
+              <ExpensePieChart categories={totals.expensesByCategory} />
+            )}
+            {chartType === 'bar' && <ExpenseBarChart data={chartData} />}
+            {chartType === 'line' && <ExpenseLineChart data={chartData} />}
+          </div>
+        )}
+      </>
     </div>
   );
 }
