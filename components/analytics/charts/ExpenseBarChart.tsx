@@ -1,8 +1,11 @@
 'use client';
 import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { computeMedian, type ChartDataPoint } from '@/lib/utils/aggregation';
+import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 
 export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
+  const { preferences: prefs } = useColumnPreferences();
+
   if (data.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-sm text-zinc-400 dark:text-zinc-500">
@@ -11,8 +14,11 @@ export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
     );
   }
 
-  const hasLimit = data.some(d => d.limit !== null);
-  const median = computeMedian(data.map(d => d.expenses).filter(v => v > 0));
+  const showIncome = prefs.income.visible;
+  const showLimit = prefs.effectiveLimit.visible && data.some(d => d.limit !== null);
+  const median = prefs.medianDailyExpenses.visible
+    ? computeMedian(data.map(d => d.expenses).filter(v => v > 0))
+    : null;
   const chartData = median !== null ? data.map(d => ({ ...d, median })) : data;
 
   return (
@@ -26,8 +32,8 @@ export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
         />
         <Legend />
         <Bar dataKey="expenses" name="Expenses" fill="#ef4444" radius={[2, 2, 0, 0]} />
-        <Bar dataKey="income" name="Income" fill="#10b981" radius={[2, 2, 0, 0]} />
-        {hasLimit && (
+        {showIncome && <Bar dataKey="income" name="Income" fill="#10b981" radius={[2, 2, 0, 0]} />}
+        {showLimit && (
           <Line
             type="stepAfter"
             dataKey="limit"
