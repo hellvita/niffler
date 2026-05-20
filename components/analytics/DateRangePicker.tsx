@@ -67,7 +67,7 @@ export function DateRangePicker({
       updateParams({ preset: 'all-time', from: null, to: null });
     } else {
       const dates = presetDates(key)!;
-      updateParams({ from: dates.from, to: dates.to, preset: null });
+      updateParams({ from: dates.from, to: dates.to, preset: key });
     }
   };
 
@@ -81,7 +81,7 @@ export function DateRangePicker({
             key={p.key}
             onClick={() => applyPreset(p.key)}
             className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-              p.key === 'all-time' && isAllTime
+              p.key === preset
                 ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
                 : 'border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
             }`}
