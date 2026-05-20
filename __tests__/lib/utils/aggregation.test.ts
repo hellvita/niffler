@@ -4,6 +4,7 @@ import {
   chooseBucket,
   aggregateTotals,
   buildChartSeries,
+  computeMedian,
 } from '@/lib/utils/aggregation';
 import type { MonthSummary } from '@/lib/types/api';
 
@@ -142,6 +143,36 @@ describe('chooseBucket', () => {
   });
 });
 
+// ── computeMedian ─────────────────────────────────────────────────────────────
+
+describe('computeMedian', () => {
+  it('returns null for an empty array', () => {
+    expect(computeMedian([])).toBeNull();
+  });
+
+  it('returns the sole value for a single-element array', () => {
+    expect(computeMedian([42])).toBe(42);
+  });
+
+  it('returns the middle value for an odd-length array', () => {
+    expect(computeMedian([10, 20, 30])).toBe(20);
+  });
+
+  it('returns the average of the two middle values for an even-length array', () => {
+    expect(computeMedian([10, 20, 30, 40])).toBe(25);
+  });
+
+  it('sorts the array before computing (handles unsorted input)', () => {
+    expect(computeMedian([30, 10, 40, 20])).toBe(25);
+  });
+
+  it('does not mutate the input array', () => {
+    const input = [30, 10, 20];
+    computeMedian(input);
+    expect(input).toEqual([30, 10, 20]);
+  });
+});
+
 // ── aggregateTotals ───────────────────────────────────────────────────────────
 
 describe('aggregateTotals', () => {
@@ -153,6 +184,8 @@ describe('aggregateTotals', () => {
     expect(result.net).toBe(50);
     // 5 days × $50 limit = $250 allowed budget
     expect(result.allowedBudget).toBe(250);
+    // Non-zero day expenses: [10, 20, 15, 5] → sorted [5, 10, 15, 20] → median = (10+15)/2 = 12.5
+    expect(result.medianDailyExpenses).toBe(12.5);
   });
 
   it('trims days outside a partial-month range', () => {
@@ -161,6 +194,8 @@ describe('aggregateTotals', () => {
     expect(result.totalExpenses).toBe(30); // 10 + 20
     expect(result.totalIncome).toBe(100);
     expect(result.allowedBudget).toBe(100); // 2 days × 50
+    // Non-zero days: [10, 20] → median = (10+20)/2 = 15
+    expect(result.medianDailyExpenses).toBe(15);
   });
 
   it('sums totals across multiple months', () => {
@@ -195,6 +230,15 @@ describe('aggregateTotals', () => {
     };
     const result = aggregateTotals([noLimitSummary], d('2026-05-01'), d('2026-05-31'));
     expect(result.allowedBudget).toBeNull();
+  });
+
+  it('returns medianDailyExpenses as null when all days have zero expenses', () => {
+    const zeroDaySummary: MonthSummary = {
+      ...MAY_SUMMARY,
+      days: MAY_SUMMARY.days.map(d => ({ ...d, totalExpenses: 0 })),
+    };
+    const result = aggregateTotals([zeroDaySummary], d('2026-05-01'), d('2026-05-31'));
+    expect(result.medianDailyExpenses).toBeNull();
   });
 });
 

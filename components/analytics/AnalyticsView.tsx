@@ -2,7 +2,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useQueries } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, parseISO } from 'date-fns';
-import { getMonthsInRange, aggregateTotals, buildChartSeries, chooseBucket } from '@/lib/utils/aggregation';
+import { getMonthsInRange, aggregateTotals, buildChartSeries, chooseBucket, computeMedian } from '@/lib/utils/aggregation';
 import { getMonthSummary } from '@/lib/api/summary';
 import { useAllTimeSummary, useAllTimeMonthlySummary } from '@/lib/hooks/useSummary';
 import { useLimits } from '@/lib/hooks/useLimits';
@@ -24,7 +24,9 @@ function defaultRange() {
 
 export function AnalyticsView() {
   const searchParams = useSearchParams();
-  const preset = searchParams.get('preset');
+  const rawPreset = searchParams.get('preset');
+  const hasCustomRange = searchParams.get('from') !== null || searchParams.get('to') !== null;
+  const preset = rawPreset ?? (hasCustomRange ? null : 'this-month');
   const isAllTime = preset === 'all-time';
 
   const defaults = defaultRange();
@@ -82,23 +84,34 @@ export function AnalyticsView() {
 
   const hasAnyLimit = (limits?.length ?? 0) > 0;
 
+  const allTimeMedian = isAllTime
+    ? computeMedian(
+        allTimeMonthlySummaries
+          .flatMap(s => s.days)
+          .map(d => d.totalExpenses)
+          .filter(v => v > 0)
+      )
+    : null;
+
   const summaryItems: { label: string; value: number | null }[] = isAllTime && allTimeData
     ? [
-        { key: 'totalExpenses' as const,  value: allTimeData.totalExpenses },
-        { key: 'income' as const,         value: allTimeData.totalIncome },
-        { key: 'net' as const,            value: allTimeData.net },
-        { key: 'currentBalance' as const, value: allTimeData.currentBalance },
+        { key: 'totalExpenses' as const,       value: allTimeData.totalExpenses },
+        { key: 'medianDailyExpenses' as const,  value: allTimeMedian },
+        { key: 'income' as const,              value: allTimeData.totalIncome },
+        { key: 'net' as const,                 value: allTimeData.net },
+        { key: 'currentBalance' as const,      value: allTimeData.currentBalance },
       ]
         .filter(item => prefs[item.key].visible)
         .map(item => ({ label: prefs[item.key].label, value: item.value }))
     : totals
     ? [
-        { key: 'totalExpenses' as const,  value: totals.totalExpenses },
-        { key: 'income' as const,         value: totals.totalIncome },
+        { key: 'totalExpenses' as const,       value: totals.totalExpenses },
+        { key: 'medianDailyExpenses' as const,  value: totals.medianDailyExpenses },
+        { key: 'income' as const,              value: totals.totalIncome },
         ...(totals.allowedBudget !== null
           ? [{ key: 'effectiveLimit' as const, value: totals.allowedBudget }]
           : []),
-        { key: 'net' as const, value: totals.net },
+        { key: 'net' as const,                 value: totals.net },
       ]
         .filter(item => prefs[item.key].visible)
         .map(item => ({ label: prefs[item.key].label, value: item.value }))

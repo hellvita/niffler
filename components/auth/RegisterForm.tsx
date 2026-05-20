@@ -14,7 +14,7 @@ export function RegisterForm() {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema) });
+  } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema), reValidateMode: 'onBlur' });
 
   const onSubmit = ({ email, password }: RegisterInput) => {
     register({ email, password }, {

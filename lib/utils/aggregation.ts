@@ -13,7 +13,17 @@ export interface AggregatedTotals {
   totalIncome: number;
   allowedBudget: number | null; // null when no limits set for the range
   net: number;
+  medianDailyExpenses: number | null; // null when no days had expenses
   expensesByCategory: { categoryId: string; categoryName: string; amount: number }[];
+}
+
+export function computeMedian(values: number[]): number | null {
+  if (values.length === 0) return null;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 0
+    ? (sorted[mid - 1] + sorted[mid]) / 2
+    : sorted[mid];
 }
 
 // Returns [year, month] tuples for every calendar month overlapping the range.
@@ -48,6 +58,7 @@ export function aggregateTotals(
   let totalIncome = 0;
   let allowedBudget = 0;
   let hasAnyLimit = false;
+  const dailyExpenses: number[] = [];
   const catMap = new Map<string, { categoryName: string; amount: number }>();
 
   for (const summary of summaries) {
@@ -60,6 +71,7 @@ export function aggregateTotals(
         hasAnyLimit = true;
         allowedBudget += day.effectiveLimit;
       }
+      if (day.totalExpenses > 0) dailyExpenses.push(day.totalExpenses);
     }
 
     // Category-level: monthTotals is whole-month only; used as-is (may include days outside
@@ -79,6 +91,7 @@ export function aggregateTotals(
     totalIncome,
     allowedBudget: hasAnyLimit ? allowedBudget : null,
     net: totalIncome - totalExpenses,
+    medianDailyExpenses: computeMedian(dailyExpenses),
     expensesByCategory: Array.from(catMap.entries())
       .map(([categoryId, { categoryName, amount }]) => ({ categoryId, categoryName, amount }))
       .filter(c => c.amount > 0),

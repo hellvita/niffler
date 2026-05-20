@@ -14,7 +14,7 @@ export function LoginForm() {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema) });
+  } = useForm<LoginInput>({ resolver: zodResolver(loginSchema), reValidateMode: 'onBlur' });
 
   const onSubmit = (data: LoginInput) => {
     login(data, {
