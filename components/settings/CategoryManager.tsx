@@ -8,13 +8,42 @@ import {
   useArchiveCategory,
   useUnarchiveCategory,
 } from '@/lib/hooks/useCategories';
+import { useCategoryColors } from '@/lib/hooks/useCategoryColors';
 import { categoryNameSchema } from '@/lib/validation/schemas';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import type { Category } from '@/lib/types/api';
 
+function CategoryColorSwatch({ id, color, onColorChange }: {
+  id: string;
+  color: string;
+  onColorChange: (id: string, color: string) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <button
+        onClick={() => inputRef.current?.click()}
+        style={{ backgroundColor: color }}
+        className="w-5 h-5 rounded flex-shrink-0 ring-1 ring-zinc-300 dark:ring-zinc-600"
+        aria-label="Pick color"
+        type="button"
+      />
+      <input
+        ref={inputRef}
+        type="color"
+        value={color}
+        onChange={e => onColorChange(id, e.target.value)}
+        className="sr-only"
+      />
+    </>
+  );
+}
+
 export function CategoryManager() {
   const [showArchived, setShowArchived] = useState(false);
   const { data: categories, isLoading } = useCategories(showArchived);
+
+  const { getColor, setColor } = useCategoryColors();
 
   const createCategory = useCreateCategory();
   const renameCategory = useRenameCategory();
@@ -114,13 +143,14 @@ export function CategoryManager() {
       {list.length === 0 && (
         <p className="text-sm text-zinc-400 dark:text-zinc-500">No categories yet.</p>
       )}
-      {list.map(cat => (
+      {list.map((cat, index) => (
         <div
           key={cat.id}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 ${
             cat.isArchived ? 'opacity-60 bg-zinc-50 dark:bg-zinc-900/50' : 'bg-white dark:bg-zinc-900'
           }`}
         >
+          <CategoryColorSwatch id={cat.id} color={getColor(cat.id, index)} onColorChange={setColor} />
           {editingId === cat.id ? (
             <input
               autoFocus

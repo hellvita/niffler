@@ -1,5 +1,6 @@
 'use client';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { useCategoryColors } from '@/lib/hooks/useCategoryColors';
 
 interface CategoryTotal {
   categoryId: string;
@@ -7,9 +8,8 @@ interface CategoryTotal {
   amount: number;
 }
 
-const COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#84cc16'];
-
 export function ExpensePieChart({ categories }: { categories: CategoryTotal[] }) {
+  const { getColor } = useCategoryColors();
   if (categories.length === 0) {
     return (
       <div className="flex items-center justify-center h-64 text-sm text-zinc-400 dark:text-zinc-500">
@@ -44,8 +44,11 @@ export function ExpensePieChart({ categories }: { categories: CategoryTotal[] })
           }
           labelLine={false}
         >
-          {data.map((_, i) => (
-            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+          {data.map((entry, i) => (
+            <Cell
+              key={i}
+              fill={entry.categoryId === '_other' ? '#71717a' : getColor(entry.categoryId, i)}
+            />
           ))}
         </Pie>
         <Tooltip

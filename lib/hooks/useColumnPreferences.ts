@@ -42,10 +42,18 @@ export function useColumnPreferences() {
     });
   }, []);
 
+  const updateColor = useCallback((key: ColumnKey, color: string) => {
+    setPreferences(prev => {
+      const next = { ...prev, [key]: { ...prev[key], color } };
+      persist(next);
+      return next;
+    });
+  }, []);
+
   const resetAll = useCallback(() => {
     localStorage.removeItem(STORAGE_KEY);
     setPreferences(DEFAULT_COLUMN_PREFERENCES);
   }, []);
 
-  return { preferences, updateLabel, toggleVisible, resetAll };
+  return { preferences, updateLabel, updateColor, toggleVisible, resetAll };
 }

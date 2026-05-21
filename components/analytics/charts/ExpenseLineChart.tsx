@@ -31,14 +31,14 @@ export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
           labelStyle={{ color: '#18181b', fontWeight: 500 }}
         />
         <Legend />
-        <Line type="monotone" dataKey="expenses" name="Expenses" stroke="#ef4444" dot={false} strokeWidth={2} />
-        {showIncome && <Line type="monotone" dataKey="income" name="Income" stroke="#10b981" dot={false} strokeWidth={2} />}
+        <Line type="monotone" dataKey="expenses" name="Expenses" stroke={prefs.totalExpenses.color!} dot={false} strokeWidth={2} />
+        {showIncome && <Line type="monotone" dataKey="income" name="Income" stroke={prefs.income.color!} dot={false} strokeWidth={2} />}
         {showLimit && (
           <Line
             type="stepAfter"
             dataKey="limit"
             name="Limit"
-            stroke="#f59e0b"
+            stroke={prefs.effectiveLimit.color!}
             dot={false}
             strokeDasharray="4 4"
             strokeWidth={1.5}
@@ -49,7 +49,7 @@ export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
             type="monotone"
             dataKey="median"
             name="Median"
-            stroke="#8b5cf6"
+            stroke={prefs.medianDailyExpenses.color!}
             dot={false}
             strokeDasharray="4 4"
             strokeWidth={1.5}

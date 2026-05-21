@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { COLUMN_ORDER, DEFAULT_COLUMN_PREFERENCES, type ColumnKey } from '@/lib/types/ui';
 
@@ -14,9 +14,20 @@ const FIELD_DESCRIPTIONS: Record<ColumnKey, string> = {
 };
 
 export function ColumnPreferencesForm() {
-  const { preferences, updateLabel, toggleVisible, resetAll } = useColumnPreferences();
+  const { preferences, updateLabel, updateColor, toggleVisible, resetAll } = useColumnPreferences();
   const [editingKey, setEditingKey] = useState<ColumnKey | null>(null);
   const [editValue, setEditValue] = useState('');
+
+  const colorRefTotalExpenses = useRef<HTMLInputElement>(null);
+  const colorRefMedianDailyExpenses = useRef<HTMLInputElement>(null);
+  const colorRefIncome = useRef<HTMLInputElement>(null);
+  const colorRefEffectiveLimit = useRef<HTMLInputElement>(null);
+  const colorRefs: Partial<Record<ColumnKey, React.RefObject<HTMLInputElement | null>>> = {
+    totalExpenses:       colorRefTotalExpenses,
+    medianDailyExpenses: colorRefMedianDailyExpenses,
+    income:              colorRefIncome,
+    effectiveLimit:      colorRefEffectiveLimit,
+  };
 
   const startEdit = (key: ColumnKey) => {
     setEditingKey(key);
@@ -36,6 +47,7 @@ export function ColumnPreferencesForm() {
             <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
               <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Field</th>
               <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Display label</th>
+              <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">Color</th>
               <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">Visible</th>
             </tr>
           </thead>
@@ -67,6 +79,26 @@ export function ColumnPreferencesForm() {
                       {preferences[key].label}
                     </button>
                   )}
+                </td>
+                <td className="px-4 py-2.5 text-center">
+                  {preferences[key].color !== undefined ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => colorRefs[key]!.current?.click()}
+                        style={{ backgroundColor: preferences[key].color }}
+                        className="w-3.5 h-3.5 rounded ring-1 ring-zinc-300 dark:ring-zinc-600 inline-block"
+                        aria-label="Pick color"
+                      />
+                      <input
+                        ref={colorRefs[key]}
+                        type="color"
+                        value={preferences[key].color}
+                        onChange={e => updateColor(key, e.target.value)}
+                        className="sr-only"
+                      />
+                    </>
+                  ) : null}
                 </td>
                 <td className="px-4 py-2.5 text-center">
                   <input
