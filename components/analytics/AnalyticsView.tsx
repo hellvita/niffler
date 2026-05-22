@@ -11,7 +11,6 @@ import {
 } from '@/lib/utils/aggregation';
 import { getMonthSummary } from '@/lib/api/summary';
 import { useAllTimeSummary, useAllTimeMonthlySummary } from '@/lib/hooks/useSummary';
-import { useLimits } from '@/lib/hooks/useLimits';
 import type { MonthSummary } from '@/lib/types/api';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { DateRangePicker } from './DateRangePicker';
@@ -58,7 +57,6 @@ export function AnalyticsView() {
   const { data: allTimeData, isLoading: allTimeLoading } = useAllTimeSummary();
   const { data: allTimeMonthlySummaries = [], isLoading: allTimeMonthlyLoading } =
     useAllTimeMonthlySummary(isAllTime);
-  const { data: limits } = useLimits();
   const { preferences: prefs } = useColumnPreferences();
 
   const isLoading = monthResults.some((r) => r.isLoading);
