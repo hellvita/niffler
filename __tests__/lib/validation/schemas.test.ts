@@ -16,7 +16,7 @@ function firstMessage(result: { success: false; error: { issues: Array<{ message
 
 type AnyParseResult =
   | { success: true }
-  | { success: false; error: { issues: Array<{ path: Array<string | number>; message: string }> } };
+  | { success: false; error: { issues: Array<{ path: PropertyKey[]; message: string }> } };
 
 function fieldMessages(result: AnyParseResult) {
   if (result.success) return {};
