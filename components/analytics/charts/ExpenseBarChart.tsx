@@ -31,14 +31,14 @@ export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
           labelStyle={{ color: '#18181b', fontWeight: 500 }}
         />
         <Legend />
-        <Bar dataKey="expenses" name="Expenses" fill="#ef4444" radius={[2, 2, 0, 0]} />
-        {showIncome && <Bar dataKey="income" name="Income" fill="#10b981" radius={[2, 2, 0, 0]} />}
+        <Bar dataKey="expenses" name="Expenses" fill={prefs.totalExpenses.color!} radius={[2, 2, 0, 0]} />
+        {showIncome && <Bar dataKey="income" name="Income" fill={prefs.income.color!} radius={[2, 2, 0, 0]} />}
         {showLimit && (
           <Line
             type="stepAfter"
             dataKey="limit"
             name="Limit"
-            stroke="#f59e0b"
+            stroke={prefs.effectiveLimit.color!}
             dot={false}
             strokeDasharray="4 4"
           />
@@ -48,7 +48,7 @@ export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
             type="monotone"
             dataKey="median"
             name="Median"
-            stroke="#8b5cf6"
+            stroke={prefs.medianDailyExpenses.color!}
             dot={false}
             strokeDasharray="4 4"
             strokeWidth={1.5}
