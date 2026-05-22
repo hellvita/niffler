@@ -19,7 +19,10 @@ test.describe('Register and login UI', () => {
     await page.request.delete('/api/proxy/users/me').catch(() => {});
   });
 
-  test('redirects to the app when already logged in and visiting /login', async ({ page, context }) => {
+  test('redirects to the app when already logged in and visiting /login', async ({
+    page,
+    context,
+  }) => {
     // Register to get a token
     const email = `test+${Date.now()}@example.com`;
     const password = 'testpassword123';
@@ -29,11 +32,16 @@ test.describe('Register and login UI', () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
-    const { token, expiresAt } = await res.json() as { token: string; expiresAt: string };
+    const { token, expiresAt } = (await res.json()) as { token: string; expiresAt: string };
     await context.addCookies([
       {
-        name: 'auth_token', value: token, domain: 'localhost', path: '/',
-        httpOnly: true, secure: false, sameSite: 'Strict',
+        name: 'auth_token',
+        value: token,
+        domain: 'localhost',
+        path: '/',
+        httpOnly: true,
+        secure: false,
+        sameSite: 'Strict',
         expires: Math.floor(new Date(expiresAt).getTime() / 1000),
       },
     ]);

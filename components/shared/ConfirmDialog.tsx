@@ -8,7 +8,13 @@ interface Props {
   destructive?: boolean;
 }
 
-export function ConfirmDialog({ message, onConfirm, onCancel, confirmLabel = 'Confirm', destructive = false }: Props) {
+export function ConfirmDialog({
+  message,
+  onConfirm,
+  onCancel,
+  confirmLabel = 'Confirm',
+  destructive = false,
+}: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
       <div className="w-full max-w-sm rounded-lg bg-white p-6 shadow-lg text-zinc-900">

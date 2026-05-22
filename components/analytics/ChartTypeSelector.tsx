@@ -22,7 +22,7 @@ export function ChartTypeSelector({ value }: { value: ChartType }) {
 
   return (
     <div className="flex gap-1 p-1 rounded-lg bg-zinc-100 dark:bg-zinc-800">
-      {OPTIONS.map(o => (
+      {OPTIONS.map((o) => (
         <button
           key={o.type}
           onClick={() => set(o.type)}

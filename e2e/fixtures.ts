@@ -33,11 +33,32 @@ export const test = base.extend<{ authenticated: AuthFixture }>({
       if (!fallbackRes.ok) {
         throw new Error(`Registration failed: ${fallbackRes.status} ${await fallbackRes.text()}`);
       }
-      const { token, expiresAt } = await fallbackRes.json() as { token: string; expiresAt: string };
+      const { token, expiresAt } = (await fallbackRes.json()) as {
+        token: string;
+        expiresAt: string;
+      };
       const expirySeconds = Math.floor(new Date(expiresAt).getTime() / 1000);
       await context.addCookies([
-        { name: 'auth_token', value: token, domain: hostname, path: '/', httpOnly: true, secure: false, sameSite: 'Strict', expires: expirySeconds },
-        { name: 'user_email', value: email, domain: hostname, path: '/', httpOnly: false, secure: false, sameSite: 'Strict', expires: expirySeconds },
+        {
+          name: 'auth_token',
+          value: token,
+          domain: hostname,
+          path: '/',
+          httpOnly: true,
+          secure: false,
+          sameSite: 'Strict',
+          expires: expirySeconds,
+        },
+        {
+          name: 'user_email',
+          value: email,
+          domain: hostname,
+          path: '/',
+          httpOnly: false,
+          secure: false,
+          sameSite: 'Strict',
+          expires: expirySeconds,
+        },
       ]);
       await apiCtx.dispose();
       await use({ page, email, password });
@@ -46,22 +67,46 @@ export const test = base.extend<{ authenticated: AuthFixture }>({
     }
 
     // Extract auth_token from Set-Cookie header (frontend proxy sets httpOnly cookie)
-    const setCookieHeaders = res.headersArray()
-      .filter(h => h.name.toLowerCase() === 'set-cookie')
-      .map(h => h.value);
+    const setCookieHeaders = res
+      .headersArray()
+      .filter((h) => h.name.toLowerCase() === 'set-cookie')
+      .map((h) => h.value);
 
-    const tokenCookieRaw = setCookieHeaders.find(h => h.startsWith('auth_token='));
-    if (!tokenCookieRaw) throw new Error('auth_token cookie not in response — did the register route handler fail?');
+    const tokenCookieRaw = setCookieHeaders.find((h) => h.startsWith('auth_token='));
+    if (!tokenCookieRaw)
+      throw new Error('auth_token cookie not in response — did the register route handler fail?');
 
     const tokenValue = tokenCookieRaw.split(';')[0].replace('auth_token=', '');
     const expiresMatch = tokenCookieRaw.match(/[Ee]xpires=([^;]+)/);
-    const expires = expiresMatch ? Math.floor(new Date(expiresMatch[1]).getTime() / 1000) : Math.floor(Date.now() / 1000) + 86400;
-    const userEmailRaw = setCookieHeaders.find(h => h.startsWith('user_email='));
-    const userEmailValue = userEmailRaw ? userEmailRaw.split(';')[0].replace('user_email=', '') : email;
+    const expires = expiresMatch
+      ? Math.floor(new Date(expiresMatch[1]).getTime() / 1000)
+      : Math.floor(Date.now() / 1000) + 86400;
+    const userEmailRaw = setCookieHeaders.find((h) => h.startsWith('user_email='));
+    const userEmailValue = userEmailRaw
+      ? userEmailRaw.split(';')[0].replace('user_email=', '')
+      : email;
 
     await context.addCookies([
-      { name: 'auth_token', value: tokenValue, domain: hostname, path: '/', httpOnly: true, secure: false, sameSite: 'Strict', expires },
-      { name: 'user_email', value: userEmailValue, domain: hostname, path: '/', httpOnly: false, secure: false, sameSite: 'Strict', expires },
+      {
+        name: 'auth_token',
+        value: tokenValue,
+        domain: hostname,
+        path: '/',
+        httpOnly: true,
+        secure: false,
+        sameSite: 'Strict',
+        expires,
+      },
+      {
+        name: 'user_email',
+        value: userEmailValue,
+        domain: hostname,
+        path: '/',
+        httpOnly: false,
+        secure: false,
+        sameSite: 'Strict',
+        expires,
+      },
     ]);
 
     await apiCtx.dispose();

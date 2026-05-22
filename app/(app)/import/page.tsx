@@ -57,9 +57,12 @@ export default function ImportPage() {
 
       {stage === 'upload' && (
         <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-4 flex flex-col gap-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">Template</p>
+          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+            Template
+          </p>
           <p className="text-sm text-zinc-600 dark:text-zinc-400">
-            Not sure what format to use? Download the template — it has sample data for two months and instructions inside the file explaining all column rules.
+            Not sure what format to use? Download the template — it has sample data for two months
+            and instructions inside the file explaining all column rules.
           </p>
           <a
             href="/import-template.xlsx"
@@ -76,7 +79,10 @@ export default function ImportPage() {
           parseResult={parseResult}
           initialMapping={mapping ?? undefined}
           onPreview={handlePreview}
-          onBack={() => { setStage('upload'); setParseResult(null); }}
+          onBack={() => {
+            setStage('upload');
+            setParseResult(null);
+          }}
         />
       )}
 

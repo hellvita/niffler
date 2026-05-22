@@ -40,51 +40,34 @@ const mockMonthSummary = (yearMonth: string) => {
 
 export const handlers = [
   // Categories
-  http.get(`${BASE}/categories`, () =>
-    HttpResponse.json(mockCategories)
-  ),
+  http.get(`${BASE}/categories`, () => HttpResponse.json(mockCategories)),
   http.post(`${BASE}/categories`, async ({ request }) => {
-    const { name } = await request.json() as { name: string };
+    const { name } = (await request.json()) as { name: string };
     return HttpResponse.json({ id: 'cat-new', name, isArchived: false }, { status: 201 });
   }),
   http.put(`${BASE}/categories/:id`, async ({ request }) => {
-    const body = await request.json() as { name: string };
+    const body = (await request.json()) as { name: string };
     return HttpResponse.json({ id: 'cat-1', name: body.name, isArchived: false });
   }),
-  http.post(`${BASE}/categories/:id/archive`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
-  http.post(`${BASE}/categories/:id/unarchive`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
-  http.post(`${BASE}/categories/:id/merge-into/:targetId`, () =>
-    new HttpResponse(null, { status: 204 })
+  http.post(`${BASE}/categories/:id/archive`, () => new HttpResponse(null, { status: 204 })),
+  http.post(`${BASE}/categories/:id/unarchive`, () => new HttpResponse(null, { status: 204 })),
+  http.post(
+    `${BASE}/categories/:id/merge-into/:targetId`,
+    () => new HttpResponse(null, { status: 204 })
   ),
 
   // Expenses
-  http.put(`${BASE}/expenses/:date/:categoryId`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
-  http.delete(`${BASE}/expenses/:date/:categoryId`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
+  http.put(`${BASE}/expenses/:date/:categoryId`, () => new HttpResponse(null, { status: 204 })),
+  http.delete(`${BASE}/expenses/:date/:categoryId`, () => new HttpResponse(null, { status: 204 })),
 
   // Incomes
-  http.put(`${BASE}/incomes/:date`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
-  http.delete(`${BASE}/incomes/:date`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
+  http.put(`${BASE}/incomes/:date`, () => new HttpResponse(null, { status: 204 })),
+  http.delete(`${BASE}/incomes/:date`, () => new HttpResponse(null, { status: 204 })),
 
   // Limits
   http.get(`${BASE}/limits`, () => HttpResponse.json([])),
-  http.put(`${BASE}/limits/:date`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
-  http.delete(`${BASE}/limits/:date`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
+  http.put(`${BASE}/limits/:date`, () => new HttpResponse(null, { status: 204 })),
+  http.delete(`${BASE}/limits/:date`, () => new HttpResponse(null, { status: 204 })),
 
   // Summary
   http.get(`${BASE}/summary/day/:date`, ({ params }) =>
@@ -105,12 +88,8 @@ export const handlers = [
   ),
 
   // Budget
-  http.get(`${BASE}/me/budget`, () =>
-    HttpResponse.json({ initialBudget: 0 })
-  ),
-  http.put(`${BASE}/me/budget`, () =>
-    new HttpResponse(null, { status: 204 })
-  ),
+  http.get(`${BASE}/me/budget`, () => HttpResponse.json({ initialBudget: 0 })),
+  http.put(`${BASE}/me/budget`, () => new HttpResponse(null, { status: 204 })),
 
   // Import
   http.post(`${BASE}/import/parse`, () =>
@@ -131,7 +110,7 @@ export const handlers = [
       preview: [
         {
           date: '2026-05-01',
-          expenses: [{ categoryName: 'Groceries', amount: 42.50 }],
+          expenses: [{ categoryName: 'Groceries', amount: 42.5 }],
           income: 100,
         },
       ],
@@ -148,31 +127,37 @@ export const handlers = [
   ),
 
   // Export
-  http.get(`${BASE}/export/month/:yearMonth`, () =>
-    new HttpResponse(new ArrayBuffer(0), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Disposition': 'attachment; filename="budget.xlsx"',
-      },
-    })
+  http.get(
+    `${BASE}/export/month/:yearMonth`,
+    () =>
+      new HttpResponse(new ArrayBuffer(0), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': 'attachment; filename="budget.xlsx"',
+        },
+      })
   ),
-  http.get(`${BASE}/export/zip`, () =>
-    new HttpResponse(new ArrayBuffer(0), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/zip',
-        'Content-Disposition': 'attachment; filename="budget-all.zip"',
-      },
-    })
+  http.get(
+    `${BASE}/export/zip`,
+    () =>
+      new HttpResponse(new ArrayBuffer(0), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/zip',
+          'Content-Disposition': 'attachment; filename="budget-all.zip"',
+        },
+      })
   ),
-  http.get(`${BASE}/export/combined`, () =>
-    new HttpResponse(new ArrayBuffer(0), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'Content-Disposition': 'attachment; filename="budget-all-time.xlsx"',
-      },
-    })
+  http.get(
+    `${BASE}/export/combined`,
+    () =>
+      new HttpResponse(new ArrayBuffer(0), {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Disposition': 'attachment; filename="budget-all-time.xlsx"',
+        },
+      })
   ),
 ];

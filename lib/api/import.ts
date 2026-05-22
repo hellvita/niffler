@@ -5,7 +5,11 @@ export async function parseFile(file: File): Promise<ParseResult> {
   const form = new FormData();
   form.append('file', file);
   const res = await fetch('/api/proxy/import/parse', { method: 'POST', body: form });
-  if (!res.ok) throw Object.assign(new Error(`${res.status}`), { status: res.status, detail: await res.json() });
+  if (!res.ok)
+    throw Object.assign(new Error(`${res.status}`), {
+      status: res.status,
+      detail: await res.json(),
+    });
   return res.json();
 }
 

@@ -45,7 +45,9 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
         isMutating ? 'opacity-50' : ''
       }`}
     >
-      <span className="flex-1 text-sm font-medium text-zinc-500 dark:text-zinc-400 italic">Income</span>
+      <span className="flex-1 text-sm font-medium text-zinc-500 dark:text-zinc-400 italic">
+        Income
+      </span>
 
       {editing ? (
         <div className="flex flex-col items-end gap-0.5">
@@ -55,14 +57,24 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
             min="0"
             step="0.01"
             value={inputValue}
-            onChange={e => { setInputValue(e.target.value); setInputError(null); }}
+            onChange={(e) => {
+              setInputValue(e.target.value);
+              setInputError(null);
+            }}
             disabled={isMutating}
-            onKeyDown={e => {
+            onKeyDown={(e) => {
               if (e.key === 'Enter') e.currentTarget.blur();
-              if (e.key === 'Escape') { escPressed.current = true; setInputError(null); setEditing(false); }
+              if (e.key === 'Escape') {
+                escPressed.current = true;
+                setInputError(null);
+                setEditing(false);
+              }
             }}
             onBlur={() => {
-              if (escPressed.current) { escPressed.current = false; return; }
+              if (escPressed.current) {
+                escPressed.current = false;
+                return;
+              }
               submit();
             }}
             className={`w-28 rounded border px-2 py-1 text-sm text-right text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 disabled:opacity-50 ${

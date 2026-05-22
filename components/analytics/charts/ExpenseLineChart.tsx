@@ -15,11 +15,11 @@ export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
   }
 
   const showIncome = prefs.income.visible;
-  const showLimit = prefs.effectiveLimit.visible && data.some(d => d.limit !== null);
+  const showLimit = prefs.effectiveLimit.visible && data.some((d) => d.limit !== null);
   const median = prefs.medianDailyExpenses.visible
-    ? computeMedian(data.map(d => d.expenses).filter(v => v > 0))
+    ? computeMedian(data.map((d) => d.expenses).filter((v) => v > 0))
     : null;
-  const chartData = median !== null ? data.map(d => ({ ...d, median })) : data;
+  const chartData = median !== null ? data.map((d) => ({ ...d, median })) : data;
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -31,8 +31,24 @@ export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
           labelStyle={{ color: '#18181b', fontWeight: 500 }}
         />
         <Legend />
-        <Line type="monotone" dataKey="expenses" name="Expenses" stroke={prefs.totalExpenses.color!} dot={false} strokeWidth={2} />
-        {showIncome && <Line type="monotone" dataKey="income" name="Income" stroke={prefs.income.color!} dot={false} strokeWidth={2} />}
+        <Line
+          type="monotone"
+          dataKey="expenses"
+          name="Expenses"
+          stroke={prefs.totalExpenses.color!}
+          dot={false}
+          strokeWidth={2}
+        />
+        {showIncome && (
+          <Line
+            type="monotone"
+            dataKey="income"
+            name="Income"
+            stroke={prefs.income.color!}
+            dot={false}
+            strokeWidth={2}
+          />
+        )}
         {showLimit && (
           <Line
             type="stepAfter"

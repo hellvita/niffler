@@ -20,7 +20,7 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
     );
   }
 
-  const categories = data?.monthTotals.expensesByCategory.filter(c => c.amount > 0) ?? [];
+  const categories = data?.monthTotals.expensesByCategory.filter((c) => c.amount > 0) ?? [];
   if (categories.length === 0) return null;
 
   const total = categories.reduce((sum, c) => sum + c.amount, 0);
@@ -29,7 +29,7 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
     <div className="flex flex-col gap-1">
       {[...categories]
         .sort((a, b) => b.amount - a.amount)
-        .map(c => {
+        .map((c) => {
           const pct = total > 0 ? (c.amount / total) * 100 : 0;
           return (
             <div key={c.categoryId} className="flex items-center gap-3">
@@ -85,7 +85,9 @@ export function MonthView({ yearMonth }: { yearMonth: string }) {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
       <div className="flex items-center gap-2">
-        <div className="flex-1 min-w-0"><MonthNavigator yearMonth={yearMonth} /></div>
+        <div className="flex-1 min-w-0">
+          <MonthNavigator yearMonth={yearMonth} />
+        </div>
         <button
           onClick={handleExport}
           disabled={exporting}

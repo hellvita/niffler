@@ -22,13 +22,13 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
   const firstIndex = cols[0]?.index ?? 0;
 
   const [dateColumnIndex, setDateColumnIndex] = useState(
-    initialMapping?.dateColumnIndex ?? firstIndex,
+    initialMapping?.dateColumnIndex ?? firstIndex
   );
   const [categoryColumnIndexes, setCategoryColumnIndexes] = useState<number[]>(
-    initialMapping?.categoryColumnIndexes ?? [],
+    initialMapping?.categoryColumnIndexes ?? []
   );
   const [incomeColumnIndex, setIncomeColumnIndex] = useState(
-    initialMapping?.incomeColumnIndex ?? firstIndex,
+    initialMapping?.incomeColumnIndex ?? firstIndex
   );
   const [scaleFactor, setScaleFactor] = useState(initialMapping?.scaleFactor ?? 1);
   const [invertSign, setInvertSign] = useState(initialMapping?.invertSign ?? false);
@@ -39,17 +39,17 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
 
   const handleDateChange = (index: number) => {
     setDateColumnIndex(index);
-    setCategoryColumnIndexes(prev => prev.filter(i => i !== index));
+    setCategoryColumnIndexes((prev) => prev.filter((i) => i !== index));
   };
 
   const handleIncomeChange = (index: number) => {
     setIncomeColumnIndex(index);
-    setCategoryColumnIndexes(prev => prev.filter(i => i !== index));
+    setCategoryColumnIndexes((prev) => prev.filter((i) => i !== index));
   };
 
   const toggleCategory = (index: number) => {
-    setCategoryColumnIndexes(prev =>
-      prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index],
+    setCategoryColumnIndexes((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
     );
   };
 
@@ -78,7 +78,7 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
     };
 
     preview.mutate(mapping, {
-      onSuccess: result => result && onPreview(mapping, result),
+      onSuccess: (result) => result && onPreview(mapping, result),
       onError: () => setApiError('Failed to generate preview. Please try again.'),
     });
   };
@@ -90,8 +90,12 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400 w-44">Role</th>
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Column(s) from your file</th>
+              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400 w-44">
+                Role
+              </th>
+              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                Column(s) from your file
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -101,11 +105,13 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
               <td className="px-4 py-3">
                 <select
                   value={dateColumnIndex}
-                  onChange={e => handleDateChange(Number(e.target.value))}
+                  onChange={(e) => handleDateChange(Number(e.target.value))}
                   className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm"
                 >
-                  {cols.map(c => (
-                    <option key={c.index} value={c.index}>{colLabel(c)}</option>
+                  {cols.map((c) => (
+                    <option key={c.index} value={c.index}>
+                      {colLabel(c)}
+                    </option>
                   ))}
                 </select>
               </td>
@@ -113,10 +119,12 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
 
             {/* Expense categories row */}
             <tr className="border-b border-zinc-100 dark:border-zinc-800">
-              <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium align-top">Expense categories</td>
+              <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium align-top">
+                Expense categories
+              </td>
               <td className="px-4 py-3">
                 <div className="flex flex-wrap gap-2">
-                  {cols.map(c => {
+                  {cols.map((c) => {
                     const disabled = c.index === dateColumnIndex || c.index === incomeColumnIndex;
                     const checked = categoryColumnIndexes.includes(c.index);
                     return (
@@ -147,11 +155,13 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
               <td className="px-4 py-3">
                 <select
                   value={incomeColumnIndex}
-                  onChange={e => handleIncomeChange(Number(e.target.value))}
+                  onChange={(e) => handleIncomeChange(Number(e.target.value))}
                   className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm"
                 >
-                  {cols.map(c => (
-                    <option key={c.index} value={c.index}>{colLabel(c)}</option>
+                  {cols.map((c) => (
+                    <option key={c.index} value={c.index}>
+                      {colLabel(c)}
+                    </option>
                   ))}
                 </select>
               </td>

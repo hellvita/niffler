@@ -31,7 +31,7 @@ export function DayView({ date }: { date: string }) {
           ))
         ) : (
           <>
-            {data?.expensesByCategory.map(e => (
+            {data?.expensesByCategory.map((e) => (
               <CategoryExpenseRow
                 key={e.categoryId}
                 date={date}

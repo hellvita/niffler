@@ -3,10 +3,10 @@ import { getInitialBudget, setInitialBudget } from '@/lib/api/budget';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;
-  const headers = bodyStr ? { 'Content-Type': 'application/json' } : {};
-  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(bodyStr, { status, headers })
-  );
+  const headers: HeadersInit = bodyStr ? { 'Content-Type': 'application/json' } : {};
+  return vi
+    .spyOn(globalThis, 'fetch')
+    .mockResolvedValueOnce(new Response(bodyStr, { status, headers }));
 }
 
 describe('getInitialBudget', () => {

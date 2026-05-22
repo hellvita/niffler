@@ -23,11 +23,11 @@ export function useUpsertExpense() {
     onMutate: async ({ date, categoryId, amount }) => {
       await qc.cancelQueries({ queryKey: ['summary', 'day', date] });
       const previous = qc.getQueryData<DaySummary>(['summary', 'day', date]);
-      qc.setQueryData<DaySummary>(['summary', 'day', date], old => {
+      qc.setQueryData<DaySummary>(['summary', 'day', date], (old) => {
         if (!old) return old;
         return {
           ...old,
-          expensesByCategory: old.expensesByCategory.map(e =>
+          expensesByCategory: old.expensesByCategory.map((e) =>
             e.categoryId === categoryId ? { ...e, amount } : e
           ),
         };
@@ -48,11 +48,11 @@ export function useDeleteExpense() {
     onMutate: async ({ date, categoryId }) => {
       await qc.cancelQueries({ queryKey: ['summary', 'day', date] });
       const previous = qc.getQueryData<DaySummary>(['summary', 'day', date]);
-      qc.setQueryData<DaySummary>(['summary', 'day', date], old => {
+      qc.setQueryData<DaySummary>(['summary', 'day', date], (old) => {
         if (!old) return old;
         return {
           ...old,
-          expensesByCategory: old.expensesByCategory.map(e =>
+          expensesByCategory: old.expensesByCategory.map((e) =>
             e.categoryId === categoryId ? { ...e, amount: 0 } : e
           ),
         };

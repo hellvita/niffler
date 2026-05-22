@@ -3,9 +3,7 @@ import { login, register, logout } from '@/lib/api/auth';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;
-  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(bodyStr, { status })
-  );
+  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response(bodyStr, { status }));
 }
 
 describe('login', () => {

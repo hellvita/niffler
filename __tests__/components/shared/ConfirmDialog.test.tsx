@@ -12,44 +12,34 @@ describe('ConfirmDialog', () => {
         onCancel={vi.fn()}
       />
     );
-    expect(
-      screen.getByText('Are you sure you want to archive this category?')
-    ).toBeInTheDocument();
+    expect(screen.getByText('Are you sure you want to archive this category?')).toBeInTheDocument();
   });
 
   it('does NOT call onConfirm when Cancel is clicked', async () => {
     const onConfirm = vi.fn();
     const onCancel = vi.fn();
-    render(
-      <ConfirmDialog message="Confirm?" onConfirm={onConfirm} onCancel={onCancel} />
-    );
+    render(<ConfirmDialog message="Confirm?" onConfirm={onConfirm} onCancel={onCancel} />);
     await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
     expect(onConfirm).not.toHaveBeenCalled();
   });
 
   it('calls onCancel when Cancel is clicked', async () => {
     const onCancel = vi.fn();
-    render(
-      <ConfirmDialog message="Confirm?" onConfirm={vi.fn()} onCancel={onCancel} />
-    );
+    render(<ConfirmDialog message="Confirm?" onConfirm={vi.fn()} onCancel={onCancel} />);
     await userEvent.click(screen.getByRole('button', { name: /cancel/i }));
     expect(onCancel).toHaveBeenCalledOnce();
   });
 
   it('calls onConfirm exactly once when Confirm is clicked', async () => {
     const onConfirm = vi.fn();
-    render(
-      <ConfirmDialog message="Confirm?" onConfirm={onConfirm} onCancel={vi.fn()} />
-    );
+    render(<ConfirmDialog message="Confirm?" onConfirm={onConfirm} onCancel={vi.fn()} />);
     await userEvent.click(screen.getByRole('button', { name: /confirm/i }));
     expect(onConfirm).toHaveBeenCalledOnce();
   });
 
   it('does NOT call onCancel when Confirm is clicked', async () => {
     const onCancel = vi.fn();
-    render(
-      <ConfirmDialog message="Confirm?" onConfirm={vi.fn()} onCancel={onCancel} />
-    );
+    render(<ConfirmDialog message="Confirm?" onConfirm={vi.fn()} onCancel={onCancel} />);
     await userEvent.click(screen.getByRole('button', { name: /confirm/i }));
     expect(onCancel).not.toHaveBeenCalled();
   });

@@ -4,13 +4,13 @@ import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { COLUMN_ORDER, DEFAULT_COLUMN_PREFERENCES, type ColumnKey } from '@/lib/types/ui';
 
 const FIELD_DESCRIPTIONS: Record<ColumnKey, string> = {
-  totalExpenses:       'Total Expenses',
+  totalExpenses: 'Total Expenses',
   medianDailyExpenses: 'Median Daily Expenses',
-  income:              'Income',
-  effectiveLimit:      'Daily Limit / Budget',
-  limitDiff:           'Limit Diff',
-  net:                 'Net',
-  currentBalance:      'Balance',
+  income: 'Income',
+  effectiveLimit: 'Daily Limit / Budget',
+  limitDiff: 'Limit Diff',
+  net: 'Net',
+  currentBalance: 'Balance',
 };
 
 export function ColumnPreferencesForm() {
@@ -23,10 +23,10 @@ export function ColumnPreferencesForm() {
   const colorRefIncome = useRef<HTMLInputElement>(null);
   const colorRefEffectiveLimit = useRef<HTMLInputElement>(null);
   const colorRefs: Partial<Record<ColumnKey, React.RefObject<HTMLInputElement | null>>> = {
-    totalExpenses:       colorRefTotalExpenses,
+    totalExpenses: colorRefTotalExpenses,
     medianDailyExpenses: colorRefMedianDailyExpenses,
-    income:              colorRefIncome,
-    effectiveLimit:      colorRefEffectiveLimit,
+    income: colorRefIncome,
+    effectiveLimit: colorRefEffectiveLimit,
   };
 
   const startEdit = (key: ColumnKey) => {
@@ -45,14 +45,22 @@ export function ColumnPreferencesForm() {
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Field</th>
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Display label</th>
-              <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">Color</th>
-              <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">Visible</th>
+              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                Field
+              </th>
+              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                Display label
+              </th>
+              <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">
+                Color
+              </th>
+              <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">
+                Visible
+              </th>
             </tr>
           </thead>
           <tbody>
-            {COLUMN_ORDER.map(key => (
+            {COLUMN_ORDER.map((key) => (
               <tr key={key} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0">
                 <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
                   {FIELD_DESCRIPTIONS[key]}
@@ -62,8 +70,8 @@ export function ColumnPreferencesForm() {
                     <input
                       autoFocus
                       value={editValue}
-                      onChange={e => setEditValue(e.target.value)}
-                      onKeyDown={e => {
+                      onChange={(e) => setEditValue(e.target.value)}
+                      onKeyDown={(e) => {
                         if (e.key === 'Enter') commitEdit(key);
                         if (e.key === 'Escape') setEditingKey(null);
                       }}
@@ -94,7 +102,7 @@ export function ColumnPreferencesForm() {
                         ref={colorRefs[key]}
                         type="color"
                         value={preferences[key].color}
-                        onChange={e => updateColor(key, e.target.value)}
+                        onChange={(e) => updateColor(key, e.target.value)}
                         className="sr-only"
                       />
                     </>

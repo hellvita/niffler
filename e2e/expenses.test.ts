@@ -19,7 +19,10 @@ test.describe('Expense entry — day view', () => {
     await catRow.waitFor({ state: 'visible', timeout: 10_000 });
 
     // Click the dash/amount button to start editing
-    const amountBtn = catRow.getByRole('button').filter({ hasText: /^[0-9—]/ }).last();
+    const amountBtn = catRow
+      .getByRole('button')
+      .filter({ hasText: /^[0-9—]/ })
+      .last();
     await amountBtn.click();
 
     // Type the amount and submit

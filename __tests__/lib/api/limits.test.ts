@@ -3,14 +3,16 @@ import { getLimits, setLimit, deleteLimit } from '@/lib/api/limits';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;
-  const headers = bodyStr ? { 'Content-Type': 'application/json' } : {};
-  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(bodyStr, { status, headers })
-  );
+  const headers: HeadersInit = bodyStr ? { 'Content-Type': 'application/json' } : {};
+  return vi
+    .spyOn(globalThis, 'fetch')
+    .mockResolvedValueOnce(new Response(bodyStr, { status, headers }));
 }
 
 const entry = (overrides = {}) => ({
-  effectiveFromDate: '2026-05-01', amount: 50, ...overrides,
+  effectiveFromDate: '2026-05-01',
+  amount: 50,
+  ...overrides,
 });
 
 describe('getLimits', () => {

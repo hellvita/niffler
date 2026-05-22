@@ -5,7 +5,15 @@ import { format } from 'date-fns';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLogout } from '@/lib/hooks/useAuth';
 
-function NavLink({ href, children, active }: { href: string; children: React.ReactNode; active: boolean }) {
+function NavLink({
+  href,
+  children,
+  active,
+}: {
+  href: string;
+  children: React.ReactNode;
+  active: boolean;
+}) {
   return (
     <Link
       href={href}
@@ -24,9 +32,11 @@ function BalanceDisplay() {
   const { data } = useAllTimeSummary();
   if (data === undefined) return null;
   return (
-    <span className={`text-sm font-semibold tabular-nums font-mono whitespace-nowrap ${
-      data.currentBalance < 0 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100'
-    }`}>
+    <span
+      className={`text-sm font-semibold tabular-nums font-mono whitespace-nowrap ${
+        data.currentBalance < 0 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100'
+      }`}
+    >
       {data.currentBalance.toFixed(2)}
     </span>
   );

@@ -13,7 +13,11 @@ import { categoryNameSchema } from '@/lib/validation/schemas';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import type { Category } from '@/lib/types/api';
 
-function CategoryColorSwatch({ id, color, onColorChange }: {
+function CategoryColorSwatch({
+  id,
+  color,
+  onColorChange,
+}: {
   id: string;
   color: string;
   onColorChange: (id: string, color: string) => void;
@@ -32,7 +36,7 @@ function CategoryColorSwatch({ id, color, onColorChange }: {
         ref={inputRef}
         type="color"
         value={color}
-        onChange={e => onColorChange(id, e.target.value)}
+        onChange={(e) => onColorChange(id, e.target.value)}
         className="sr-only"
       />
     </>
@@ -58,7 +62,10 @@ export function CategoryManager() {
 
   // Merge confirmation
   const [mergeConfirm, setMergeConfirm] = useState<{
-    fromId: string; fromName: string; targetId: string; targetName: string;
+    fromId: string;
+    fromName: string;
+    targetId: string;
+    targetName: string;
   } | null>(null);
 
   // Archive confirmation
@@ -88,12 +95,17 @@ export function CategoryManager() {
       setEditingId(null);
       return;
     }
-    const active = (categories ?? []).filter(c => !c.isArchived);
+    const active = (categories ?? []).filter((c) => !c.isArchived);
     const target = active.find(
-      c => c.name.toLowerCase() === trimmed.toLowerCase() && c.id !== cat.id,
+      (c) => c.name.toLowerCase() === trimmed.toLowerCase() && c.id !== cat.id
     );
     if (target) {
-      setMergeConfirm({ fromId: cat.id, fromName: cat.name, targetId: target.id, targetName: target.name });
+      setMergeConfirm({
+        fromId: cat.id,
+        fromName: cat.name,
+        targetId: target.id,
+        targetName: target.name,
+      });
       return;
     }
     renameCategory.mutate({ id: cat.id, name: trimmed });
@@ -147,18 +159,27 @@ export function CategoryManager() {
         <div
           key={cat.id}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 ${
-            cat.isArchived ? 'opacity-60 bg-zinc-50 dark:bg-zinc-900/50' : 'bg-white dark:bg-zinc-900'
+            cat.isArchived
+              ? 'opacity-60 bg-zinc-50 dark:bg-zinc-900/50'
+              : 'bg-white dark:bg-zinc-900'
           }`}
         >
-          <CategoryColorSwatch id={cat.id} color={getColor(cat.id, index)} onColorChange={setColor} />
+          <CategoryColorSwatch
+            id={cat.id}
+            color={getColor(cat.id, index)}
+            onColorChange={setColor}
+          />
           {editingId === cat.id ? (
             <input
               autoFocus
               value={editValue}
-              onChange={e => setEditValue(e.target.value)}
-              onKeyDown={e => {
+              onChange={(e) => setEditValue(e.target.value)}
+              onKeyDown={(e) => {
                 if (e.key === 'Enter') e.currentTarget.blur();
-                if (e.key === 'Escape') { escPressedRef.current = true; e.currentTarget.blur(); }
+                if (e.key === 'Escape') {
+                  escPressedRef.current = true;
+                  e.currentTarget.blur();
+                }
               }}
               onBlur={() => handleRenameBlur(cat)}
               className="flex-1 px-2 py-0.5 text-sm rounded border border-blue-400 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none"
@@ -193,16 +214,17 @@ export function CategoryManager() {
         </div>
       ))}
 
-      {unarchiveError && (
-        <p className="text-xs text-red-500">{unarchiveError}</p>
-      )}
+      {unarchiveError && <p className="text-xs text-red-500">{unarchiveError}</p>}
 
       {/* Add form */}
       <div className="flex gap-2 mt-1">
         <input
           value={addValue}
-          onChange={e => { setAddValue(e.target.value); setAddError(null); }}
-          onKeyDown={e => e.key === 'Enter' && handleAdd()}
+          onChange={(e) => {
+            setAddValue(e.target.value);
+            setAddError(null);
+          }}
+          onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="New category name"
           className="flex-1 px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
         />
@@ -221,7 +243,7 @@ export function CategoryManager() {
         <input
           type="checkbox"
           checked={showArchived}
-          onChange={e => setShowArchived(e.target.checked)}
+          onChange={(e) => setShowArchived(e.target.checked)}
           className="rounded border-zinc-300 dark:border-zinc-600"
         />
         <span className="text-sm text-zinc-600 dark:text-zinc-400">Show archived categories</span>

@@ -3,7 +3,10 @@ import { parseFile, previewImport, executeImport } from '@/lib/api/import';
 
 function mockFetch(status: number, body: unknown) {
   return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
+    new Response(JSON.stringify(body), {
+      status,
+      headers: { 'Content-Type': 'application/json' },
+    })
   );
 }
 
@@ -81,8 +84,11 @@ describe('executeImport', () => {
 
   it('POSTs to /api/proxy/import/execute with the ColumnMapping payload', async () => {
     const importResult = {
-      daysImported: 5, rowsSkipped: 1, categoriesCreated: ['Food'],
-      expensesUpserted: 12, incomesUpserted: 5,
+      daysImported: 5,
+      rowsSkipped: 1,
+      categoriesCreated: ['Food'],
+      expensesUpserted: 12,
+      incomesUpserted: 5,
     };
     const spy = mockFetch(200, importResult);
     const result = await executeImport(mapping);

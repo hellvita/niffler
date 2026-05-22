@@ -1,35 +1,45 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 
 const STORAGE_KEY = 'niffler_category_colors';
 const FALLBACK_PALETTE = [
-  '#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981',
-  '#ef4444', '#6366f1', '#14b8a6', '#f97316', '#84cc16',
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899',
+  '#f59e0b',
+  '#10b981',
+  '#ef4444',
+  '#6366f1',
+  '#14b8a6',
+  '#f97316',
+  '#84cc16',
 ];
 
 export function useCategoryColors() {
-  const [colors, setColors] = useState<Record<string, string>>({});
-
-  useEffect(() => {
+  const [colors, setColors] = useState<Record<string, string>>(() => {
+    if (typeof window === 'undefined') return {};
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setColors(JSON.parse(raw));
+      return raw ? (JSON.parse(raw) as Record<string, string>) : {};
     } catch {
-      // ignore parse errors — fall back to defaults
+      return {};
     }
-  }, []);
+  });
 
   const setColor = useCallback((id: string, color: string) => {
-    setColors(prev => {
+    setColors((prev) => {
       const next = { ...prev, [id]: color };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
       return next;
     });
   }, []);
 
-  const getColor = useCallback((id: string, index: number): string => {
-    return colors[id] ?? FALLBACK_PALETTE[index % FALLBACK_PALETTE.length];
-  }, [colors]);
+  const getColor = useCallback(
+    (id: string, index: number): string => {
+      return colors[id] ?? FALLBACK_PALETTE[index % FALLBACK_PALETTE.length];
+    },
+    [colors]
+  );
 
   return { getColor, setColor };
 }

@@ -17,8 +17,8 @@ export function DaySummaryBar({ date }: { date: string }) {
     ...(data.limitDiff !== null ? [{ key: 'limitDiff' as const, value: data.limitDiff }] : []),
     { key: 'net' as const, value: data.net },
   ]
-    .filter(item => prefs[item.key].visible)
-    .map(item => ({ ...item, label: prefs[item.key].label }));
+    .filter((item) => prefs[item.key].visible)
+    .map((item) => ({ ...item, label: prefs[item.key].label }));
 
   return (
     <div className="flex gap-6 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-6 py-4">

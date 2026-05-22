@@ -31,12 +31,12 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
   }
 
   const getExpense = (row: PreviewRow, name: string): number | null =>
-    row.expenses.find(e => e.categoryName === name)?.amount ?? null;
+    row.expenses.find((e) => e.categoryName === name)?.amount ?? null;
 
   const handleImport = () => {
     setExecuteError(null);
     execute.mutate(mapping, {
-      onSuccess: result => result && onImport(result),
+      onSuccess: (result) => result && onImport(result),
       onError: () => setExecuteError('Import failed. Please try again.'),
     });
   };
@@ -44,7 +44,9 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1 text-sm text-zinc-500 dark:text-zinc-400">
-        <span>Showing first {previewResult.preview.length} of {previewResult.totalDataRows} rows</span>
+        <span>
+          Showing first {previewResult.preview.length} of {previewResult.totalDataRows} rows
+        </span>
         {previewResult.skippedRows > 0 && (
           <span className="text-amber-600 dark:text-amber-400">
             {previewResult.skippedRows} rows were skipped (unparseable date format)
@@ -56,23 +58,36 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-              <th className="px-3 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Date</th>
-              {categoryNames.map(name => (
-                <th key={name} className="px-3 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-3 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+                Date
+              </th>
+              {categoryNames.map((name) => (
+                <th
+                  key={name}
+                  className="px-3 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400"
+                >
                   {name}
                 </th>
               ))}
-              <th className="px-3 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">Income</th>
+              <th className="px-3 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+                Income
+              </th>
             </tr>
           </thead>
           <tbody>
-            {previewResult.preview.map(row => (
-              <tr key={row.date} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+            {previewResult.preview.map((row) => (
+              <tr
+                key={row.date}
+                className="border-b border-zinc-100 dark:border-zinc-800 last:border-0"
+              >
                 <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300 whitespace-nowrap font-mono tabular-nums">
                   {row.date}
                 </td>
-                {categoryNames.map(name => (
-                  <td key={name} className="px-3 py-2 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
+                {categoryNames.map((name) => (
+                  <td
+                    key={name}
+                    className="px-3 py-2 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200"
+                  >
                     {fmt(getExpense(row, name))}
                   </td>
                 ))}

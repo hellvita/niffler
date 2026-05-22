@@ -12,7 +12,7 @@ test.describe('Analytics view', () => {
     // Track requests AFTER initial page load
     let trackingEnabled = false;
 
-    page.on('request', req => {
+    page.on('request', (req) => {
       if (trackingEnabled && req.url().includes('/api/proxy/summary')) {
         networkRequests.push(req.url());
       }
@@ -26,9 +26,7 @@ test.describe('Analytics view', () => {
     networkRequests.length = 0;
 
     // Find and click "Bar" chart type selector
-    const barButton = page.getByRole('button', { name: /bar/i }).or(
-      page.getByText('Bar').first()
-    );
+    const barButton = page.getByRole('button', { name: /bar/i }).or(page.getByText('Bar').first());
     await barButton.click();
 
     await page.waitForTimeout(500);
