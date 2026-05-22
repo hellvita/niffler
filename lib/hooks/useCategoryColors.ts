@@ -17,6 +17,7 @@ const FALLBACK_PALETTE = [
 
 export function useCategoryColors() {
   const [colors, setColors] = useState<Record<string, string>>(() => {
+    if (typeof window === 'undefined') return {};
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       return raw ? (JSON.parse(raw) as Record<string, string>) : {};

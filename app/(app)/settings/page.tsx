@@ -20,6 +20,7 @@ function Section({ heading, children }: { heading: string; children: React.React
 
 export default function SettingsPage() {
   const [email] = useState(() => {
+    if (typeof document === 'undefined') return '';
     const match = document.cookie.match(/(?:^|;\s*)user_email=([^;]*)/);
     return match ? decodeURIComponent(match[1]) : '';
   });

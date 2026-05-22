@@ -6,6 +6,7 @@ const STORAGE_KEY = 'niffler_column_prefs';
 
 export function useColumnPreferences() {
   const [preferences, setPreferences] = useState<ColumnPreferences>(() => {
+    if (typeof window === 'undefined') return DEFAULT_COLUMN_PREFERENCES;
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       return raw
