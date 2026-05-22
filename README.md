@@ -25,6 +25,29 @@ npm install
 npm run dev
 ```
 
+`npm install` automatically installs the pre-commit hook (via Husky's `prepare` script). No extra steps needed.
+
+## Development setup
+
+The pre-commit hook runs Prettier on staged files before every commit. If it reformats any files it aborts the commit so you can review the diff, stage the changes, and commit again:
+
+```bash
+git add -u
+git commit
+```
+
+To auto-format all files at any time:
+
+```bash
+npm run format:write
+```
+
+To check formatting without changing files (same check CI runs):
+
+```bash
+npm run format:check
+```
+
 Open [http://localhost:3000](http://localhost:3000).
 
 Copy `.env.local.example` to `.env.local` if you need to override the backend URL:
@@ -35,15 +58,17 @@ BACKEND_URL=http://localhost:5048
 
 ## Scripts
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Start the Next.js dev server (port 3000) |
-| `npm run build` | Production build |
-| `npm start` | Start the production server |
-| `npm run lint` | Run ESLint |
-| `npm test` | Run unit and component tests (Vitest, watch mode) |
-| `npm run test:run` | Run unit and component tests once |
-| `npm run test:e2e` | Run end-to-end tests (Playwright) |
+| Command                | Description                                          |
+| ---------------------- | ---------------------------------------------------- |
+| `npm run dev`          | Start the Next.js dev server (port 3000)             |
+| `npm run build`        | Production build                                     |
+| `npm start`            | Start the production server                          |
+| `npm run lint`         | Run ESLint                                           |
+| `npm run format:write` | Auto-format all files with Prettier                  |
+| `npm run format:check` | Check formatting without changing files (used by CI) |
+| `npm test`             | Run unit and component tests (Vitest, watch mode)    |
+| `npm run test:run`     | Run unit and component tests once                    |
+| `npm run test:e2e`     | Run end-to-end tests (Playwright)                    |
 
 ## Testing
 
@@ -100,14 +125,14 @@ src/test/             Test infrastructure (MSW handlers, render helpers, setup)
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Framework | Next.js 16, App Router |
-| Language | TypeScript |
-| Styling | Tailwind CSS v4 |
-| Server state | TanStack Query v5 |
-| Forms | React Hook Form + Zod |
-| Charts | Recharts |
-| Auth | JWT in `httpOnly` cookie, proxied to .NET API |
-| Unit/component tests | Vitest + React Testing Library + MSW |
-| E2E tests | Playwright |
+| Layer                | Choice                                        |
+| -------------------- | --------------------------------------------- |
+| Framework            | Next.js 16, App Router                        |
+| Language             | TypeScript                                    |
+| Styling              | Tailwind CSS v4                               |
+| Server state         | TanStack Query v5                             |
+| Forms                | React Hook Form + Zod                         |
+| Charts               | Recharts                                      |
+| Auth                 | JWT in `httpOnly` cookie, proxied to .NET API |
+| Unit/component tests | Vitest + React Testing Library + MSW          |
+| E2E tests            | Playwright                                    |

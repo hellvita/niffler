@@ -1,0 +1,28 @@
+#!/bin/sh
+# Pre-commit hook: runs Prettier on staged files and aborts if any were reformatted,
+# giving you a chance to review and stage the formatting fixes before committing.
+#
+# After an abort, just run:
+#   git add -u
+#   git commit
+#
+# Performance note: this hook runs Prettier across all staged files in one pass.
+# If the repo grows large and this becomes slow, lint-staged is a drop-in upgrade
+# that runs Prettier only on staged files in parallel — see https://github.com/lint-staged/lint-staged
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '\.(ts|tsx|js|jsx|json|css|md)$')
+
+[ -z "$STAGED" ] && exit 0
+
+echo "$STAGED" | tr '\n' '\0' | xargs -0 npx prettier --write
+
+if ! git diff --quiet; then
+    printf '\n'
+    printf '==> Prettier reformatted some files.\n'
+    printf '    Review the diff, stage the changes, and commit again:\n'
+    printf '\n'
+    printf '      git add -u\n'
+    printf '      git commit\n'
+    printf '\n'
+    exit 1
+fi
