@@ -8,7 +8,12 @@ interface Props {
   onInvertChange: (v: boolean) => void;
 }
 
-export function TransformOptions({ scaleFactor, invertSign, onScaleChange, onInvertChange }: Props) {
+export function TransformOptions({
+  scaleFactor,
+  invertSign,
+  onScaleChange,
+  onInvertChange,
+}: Props) {
   const [scaleStr, setScaleStr] = useState(String(scaleFactor));
 
   const handleScaleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,7 +51,7 @@ export function TransformOptions({ scaleFactor, invertSign, onScaleChange, onInv
         <input
           type="checkbox"
           checked={invertSign}
-          onChange={e => onInvertChange(e.target.checked)}
+          onChange={(e) => onInvertChange(e.target.checked)}
           className="rounded border-zinc-300 dark:border-zinc-600"
         />
         <span className="text-sm text-zinc-700 dark:text-zinc-300">

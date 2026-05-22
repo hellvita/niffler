@@ -19,14 +19,16 @@ export function ExpensePieChart({ categories }: { categories: CategoryTotal[] })
   }
 
   const total = categories.reduce((s, c) => s + c.amount, 0);
-  const significant = categories.filter(c => c.amount / total >= 0.01);
+  const significant = categories.filter((c) => c.amount / total >= 0.01);
   const otherAmount = categories
-    .filter(c => c.amount / total < 0.01)
+    .filter((c) => c.amount / total < 0.01)
     .reduce((s, c) => s + c.amount, 0);
 
   const data: CategoryTotal[] = [
     ...significant,
-    ...(otherAmount > 0 ? [{ categoryId: '_other', categoryName: 'Other', amount: otherAmount }] : []),
+    ...(otherAmount > 0
+      ? [{ categoryId: '_other', categoryName: 'Other', amount: otherAmount }]
+      : []),
   ];
 
   return (

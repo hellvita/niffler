@@ -8,8 +8,7 @@ export function DateNavigator({ date }: { date: string }) {
   const [showPicker, setShowPicker] = useState(false);
   const parsed = parseISO(date);
 
-  const navigate = (d: Date) =>
-    router.push(`/day/${format(d, 'yyyy-MM-dd')}`);
+  const navigate = (d: Date) => router.push(`/day/${format(d, 'yyyy-MM-dd')}`);
 
   return (
     <div className="flex items-center gap-3">
@@ -23,7 +22,7 @@ export function DateNavigator({ date }: { date: string }) {
 
       <div className="relative flex-1 text-center">
         <button
-          onClick={() => setShowPicker(v => !v)}
+          onClick={() => setShowPicker((v) => !v)}
           className="text-base font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors"
         >
           {format(parsed, 'EEEE, MMMM d, yyyy')}
@@ -32,7 +31,7 @@ export function DateNavigator({ date }: { date: string }) {
           <input
             type="date"
             value={date}
-            onChange={e => {
+            onChange={(e) => {
               if (e.target.value) {
                 navigate(parseISO(e.target.value));
                 setShowPicker(false);

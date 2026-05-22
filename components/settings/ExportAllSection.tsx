@@ -12,12 +12,20 @@ export function ExportAllSection() {
 
   const handleZip = async () => {
     setExportingZip(true);
-    try { await downloadAllExportZip(); } finally { setExportingZip(false); }
+    try {
+      await downloadAllExportZip();
+    } finally {
+      setExportingZip(false);
+    }
   };
 
   const handleCombined = async () => {
     setExportingCombined(true);
-    try { await downloadAllExportCombined(); } finally { setExportingCombined(false); }
+    try {
+      await downloadAllExportCombined();
+    } finally {
+      setExportingCombined(false);
+    }
   };
 
   return (

@@ -30,7 +30,7 @@ describe('DateNavigator', () => {
     expect(mockPush).toHaveBeenCalledWith('/day/2026-05-15');
   });
 
-  it('calls router.push with today\'s date when the Today button is clicked', async () => {
+  it("calls router.push with today's date when the Today button is clicked", async () => {
     render(<DateNavigator date="2026-05-14" />);
     await userEvent.click(screen.getByRole('button', { name: /today/i }));
     const today = format(new Date(), 'yyyy-MM-dd');

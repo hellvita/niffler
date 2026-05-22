@@ -18,7 +18,12 @@ export function LimitManager() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(limitSchema),
     defaultValues: {
       amount: 0,
@@ -31,15 +36,14 @@ export function LimitManager() {
     setLimit.mutate(
       { effectiveFromDate: data.effectiveFromDate, amount: data.amount },
       {
-        onSuccess: () =>
-          reset({ amount: 0, effectiveFromDate: format(new Date(), 'yyyy-MM-dd') }),
+        onSuccess: () => reset({ amount: 0, effectiveFromDate: format(new Date(), 'yyyy-MM-dd') }),
         onError: () => setApiError('Failed to save limit. Please try again.'),
-      },
+      }
     );
   };
 
   const sorted = [...(limits ?? [])].sort((a, b) =>
-    b.effectiveFromDate.localeCompare(a.effectiveFromDate),
+    b.effectiveFromDate.localeCompare(a.effectiveFromDate)
   );
   const current = sorted[0] ?? null;
 
@@ -52,7 +56,11 @@ export function LimitManager() {
       {/* Current limit summary */}
       <p className="text-sm text-zinc-700 dark:text-zinc-300">
         {current ? (
-          <>Current daily limit: <strong className="font-semibold">{current.amount.toFixed(2)}</strong> (effective since {current.effectiveFromDate})</>
+          <>
+            Current daily limit:{' '}
+            <strong className="font-semibold">{current.amount.toFixed(2)}</strong> (effective since{' '}
+            {current.effectiveFromDate})
+          </>
         ) : (
           <span className="text-zinc-400 dark:text-zinc-500">No limit set.</span>
         )}
@@ -76,9 +84,7 @@ export function LimitManager() {
               min="0"
               className="w-32 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm"
             />
-            {errors.amount && (
-              <span className="text-xs text-red-500">{errors.amount.message}</span>
-            )}
+            {errors.amount && <span className="text-xs text-red-500">{errors.amount.message}</span>}
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-xs text-zinc-500 dark:text-zinc-400">Effective from</label>
@@ -110,7 +116,7 @@ export function LimitManager() {
           <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide mb-1">
             History
           </p>
-          {sorted.map(entry => (
+          {sorted.map((entry) => (
             <div
               key={entry.effectiveFromDate}
               className="flex items-center gap-3 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900"

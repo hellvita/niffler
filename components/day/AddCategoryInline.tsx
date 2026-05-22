@@ -61,8 +61,11 @@ export function AddCategoryInline() {
         <input
           ref={inputRef}
           value={value}
-          onChange={e => { setValue(e.target.value); setError(''); }}
-          onKeyDown={e => {
+          onChange={(e) => {
+            setValue(e.target.value);
+            setError('');
+          }}
+          onKeyDown={(e) => {
             if (e.key === 'Enter') submit();
             if (e.key === 'Escape') close();
           }}

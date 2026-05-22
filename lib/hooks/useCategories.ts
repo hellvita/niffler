@@ -1,8 +1,12 @@
 'use client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  getCategories, createCategory, renameCategory,
-  mergeCategory, archiveCategory, unarchiveCategory,
+  getCategories,
+  createCategory,
+  renameCategory,
+  mergeCategory,
+  archiveCategory,
+  unarchiveCategory,
 } from '@/lib/api/categories';
 import { invalidateForCategory } from './invalidations';
 
@@ -32,8 +36,7 @@ export function useRenameCategory() {
 export function useMergeCategory() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, targetId }: { id: string; targetId: string }) =>
-      mergeCategory(id, targetId),
+    mutationFn: ({ id, targetId }: { id: string; targetId: string }) => mergeCategory(id, targetId),
     onSuccess: () => {
       // Merge moves expenses across categories — all summary levels may change
       qc.invalidateQueries({ queryKey: ['categories'] });

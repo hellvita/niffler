@@ -21,9 +21,7 @@ export function computeMedian(values: number[]): number | null {
   if (values.length === 0) return null;
   const sorted = [...values].sort((a, b) => a - b);
   const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 0
-    ? (sorted[mid - 1] + sorted[mid]) / 2
-    : sorted[mid];
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 }
 
 // Returns [year, month] tuples for every calendar month overlapping the range.
@@ -46,11 +44,7 @@ export function chooseBucket(from: Date, to: Date): 'day' | 'week' | 'month' {
   return 'month';
 }
 
-export function aggregateTotals(
-  summaries: MonthSummary[],
-  from: Date,
-  to: Date,
-): AggregatedTotals {
+export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date): AggregatedTotals {
   const fromStr = format(from, 'yyyy-MM-dd');
   const toStr = format(to, 'yyyy-MM-dd');
 
@@ -94,28 +88,33 @@ export function aggregateTotals(
     medianDailyExpenses: computeMedian(dailyExpenses),
     expensesByCategory: Array.from(catMap.entries())
       .map(([categoryId, { categoryName, amount }]) => ({ categoryId, categoryName, amount }))
-      .filter(c => c.amount > 0),
+      .filter((c) => c.amount > 0),
   };
 }
 
 export function buildChartSeries(
   summaries: MonthSummary[],
   from: Date,
-  to: Date,
+  to: Date
 ): ChartDataPoint[] {
   const bucket = chooseBucket(from, to);
   const fromStr = format(from, 'yyyy-MM-dd');
   const toStr = format(to, 'yyyy-MM-dd');
 
-  type DaySlice = { date: string; totalExpenses: number; totalIncome: number; effectiveLimit: number | null };
+  type DaySlice = {
+    date: string;
+    totalExpenses: number;
+    totalIncome: number;
+    effectiveLimit: number | null;
+  };
 
   const days: DaySlice[] = summaries
-    .flatMap(s => s.days)
-    .filter(d => d.date >= fromStr && d.date <= toStr)
+    .flatMap((s) => s.days)
+    .filter((d) => d.date >= fromStr && d.date <= toStr)
     .sort((a, b) => a.date.localeCompare(b.date));
 
   if (bucket === 'day') {
-    return days.map(d => ({
+    return days.map((d) => ({
       label: format(parseISO(d.date), 'MMM d'),
       expenses: d.totalExpenses,
       income: d.totalIncome,
@@ -124,7 +123,7 @@ export function buildChartSeries(
   }
 
   function sumLimit(slice: DaySlice[]): number | null {
-    const limited = slice.filter(d => d.effectiveLimit !== null);
+    const limited = slice.filter((d) => d.effectiveLimit !== null);
     if (limited.length === 0) return null;
     return limited.reduce((s, d) => s + (d.effectiveLimit ?? 0), 0);
   }

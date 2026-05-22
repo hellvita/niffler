@@ -13,9 +13,9 @@ export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
   }
   if (!data) return null;
 
-  const hasLimit = data.days.some(d => d.effectiveLimit !== null);
+  const hasLimit = data.days.some((d) => d.effectiveLimit !== null);
 
-  const chartData = data.days.map(d => ({
+  const chartData = data.days.map((d) => ({
     day: parseISO(d.date).getDate(),
     date: d.date,
     expenses: d.totalExpenses,
@@ -24,10 +24,7 @@ export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
 
   return (
     <ResponsiveContainer width="100%" height={200}>
-      <ComposedChart
-        data={chartData}
-        margin={{ top: 4, right: 4, left: 0, bottom: 4 }}
-      >
+      <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 4 }}>
         <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#52525b' }} interval={2} />
         <YAxis tick={{ fontSize: 10, fill: '#52525b' }} width={40} />
         <Tooltip

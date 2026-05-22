@@ -79,10 +79,13 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
 
   const submitName = () => {
     const trimmed = nameInput.trim();
-    if (!trimmed || trimmed === categoryName) { setMode('view'); return; }
+    if (!trimmed || trimmed === categoryName) {
+      setMode('view');
+      return;
+    }
 
     const existing = categories.find(
-      c => c.name.toLowerCase() === trimmed.toLowerCase() && c.id !== categoryId
+      (c) => c.name.toLowerCase() === trimmed.toLowerCase() && c.id !== categoryId
     );
     if (existing) {
       setMergeTarget(existing);
@@ -110,13 +113,19 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
             <input
               ref={nameRef}
               value={nameInput}
-              onChange={e => setNameInput(e.target.value)}
-              onKeyDown={e => {
+              onChange={(e) => setNameInput(e.target.value)}
+              onKeyDown={(e) => {
                 if (e.key === 'Enter') e.currentTarget.blur();
-                if (e.key === 'Escape') { escPressed.current = true; setMode('view'); }
+                if (e.key === 'Escape') {
+                  escPressed.current = true;
+                  setMode('view');
+                }
               }}
               onBlur={() => {
-                if (escPressed.current) { escPressed.current = false; return; }
+                if (escPressed.current) {
+                  escPressed.current = false;
+                  return;
+                }
                 submitName();
               }}
               className="w-full rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 text-sm text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400"
@@ -141,14 +150,24 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
               min="0"
               step="0.01"
               value={amountInput}
-              onChange={e => { setAmountInput(e.target.value); setAmountError(null); }}
+              onChange={(e) => {
+                setAmountInput(e.target.value);
+                setAmountError(null);
+              }}
               disabled={isMutating}
-              onKeyDown={e => {
+              onKeyDown={(e) => {
                 if (e.key === 'Enter') e.currentTarget.blur();
-                if (e.key === 'Escape') { escPressed.current = true; setAmountError(null); setMode('view'); }
+                if (e.key === 'Escape') {
+                  escPressed.current = true;
+                  setAmountError(null);
+                  setMode('view');
+                }
               }}
               onBlur={() => {
-                if (escPressed.current) { escPressed.current = false; return; }
+                if (escPressed.current) {
+                  escPressed.current = false;
+                  return;
+                }
                 submitAmount();
               }}
               className={`w-28 rounded border px-2 py-1 text-sm text-right text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 disabled:opacity-50 ${
@@ -159,10 +178,14 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
           </div>
         ) : (
           <button
-            onClick={() => { if (!isMutating && mode === 'view') startEditAmount(); }}
+            onClick={() => {
+              if (!isMutating && mode === 'view') startEditAmount();
+            }}
             disabled={isMutating}
             className={`text-sm font-mono tabular-nums min-w-[6rem] text-right px-2 py-1 rounded hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors ${
-              amount > 0 ? 'text-zinc-900 dark:text-zinc-100 font-semibold' : 'text-zinc-300 dark:text-zinc-600'
+              amount > 0
+                ? 'text-zinc-900 dark:text-zinc-100 font-semibold'
+                : 'text-zinc-300 dark:text-zinc-600'
             }`}
           >
             {amount > 0 ? amount.toFixed(2) : '—'}
@@ -173,7 +196,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
         {mode !== 'edit-name' && mode !== 'edit-amount' && (
           <div className="relative">
             <button
-              onClick={() => setMenuOpen(v => !v)}
+              onClick={() => setMenuOpen((v) => !v)}
               aria-label="Category actions"
               className="px-1.5 py-1 rounded text-zinc-300 dark:text-zinc-600 hover:text-zinc-600 dark:hover:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-xs leading-none"
             >
@@ -190,7 +213,10 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
                     Rename
                   </button>
                   <button
-                    onClick={() => { setMenuOpen(false); setMode('confirm-archive'); }}
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setMode('confirm-archive');
+                    }}
                     className="w-full text-left px-3 py-2 text-sm text-red-500 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition-colors"
                   >
                     Archive
@@ -209,10 +235,18 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
           onConfirm={() =>
             mergeCategory(
               { id: categoryId, targetId: mergeTarget.id },
-              { onSettled: () => { setMode('view'); setMergeTarget(null); } }
+              {
+                onSettled: () => {
+                  setMode('view');
+                  setMergeTarget(null);
+                },
+              }
             )
           }
-          onCancel={() => { setMode('edit-name'); setMergeTarget(null); }}
+          onCancel={() => {
+            setMode('edit-name');
+            setMergeTarget(null);
+          }}
         />
       )}
 
@@ -220,9 +254,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
       {mode === 'confirm-archive' && (
         <ConfirmDialog
           message="Archiving this category removes it from future day views. Expenses already entered for past dates are preserved."
-          onConfirm={() =>
-            archiveCategory(categoryId, { onSettled: () => setMode('view') })
-          }
+          onConfirm={() => archiveCategory(categoryId, { onSettled: () => setMode('view') })}
           onCancel={() => setMode('view')}
         />
       )}

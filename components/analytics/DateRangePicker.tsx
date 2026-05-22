@@ -1,6 +1,15 @@
 'use client';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths, startOfYear, endOfYear } from 'date-fns';
+import {
+  format,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  subMonths,
+  startOfYear,
+  endOfYear,
+} from 'date-fns';
 
 type Preset = 'this-week' | 'this-month' | 'last-3-months' | 'this-year' | 'all-time';
 
@@ -76,7 +85,7 @@ export function DateRangePicker({
   return (
     <div className="flex flex-wrap items-center gap-3">
       <div className="flex flex-wrap gap-1.5">
-        {PRESETS.map(p => (
+        {PRESETS.map((p) => (
           <button
             key={p.key}
             onClick={() => applyPreset(p.key)}
@@ -95,7 +104,7 @@ export function DateRangePicker({
           <input
             type="date"
             value={from}
-            onChange={e => updateParams({ from: e.target.value, preset: null })}
+            onChange={(e) => updateParams({ from: e.target.value, preset: null })}
             className="text-sm px-2 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
           />
           <span className="text-zinc-400 dark:text-zinc-500">–</span>
@@ -103,7 +112,7 @@ export function DateRangePicker({
             type="date"
             value={to}
             min={from}
-            onChange={e => updateParams({ to: e.target.value, preset: null })}
+            onChange={(e) => updateParams({ to: e.target.value, preset: null })}
             className="text-sm px-2 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
           />
         </div>

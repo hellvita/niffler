@@ -30,7 +30,9 @@ export function LoginForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
       <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium">Email</label>
+        <label htmlFor="email" className="text-sm font-medium">
+          Email
+        </label>
         <input
           id="email"
           type="email"
@@ -38,13 +40,13 @@ export function LoginForm() {
           className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-black"
           {...register('email')}
         />
-        {errors.email && (
-          <p className="text-sm text-red-600">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium">Password</label>
+        <label htmlFor="password" className="text-sm font-medium">
+          Password
+        </label>
         <input
           id="password"
           type="password"
@@ -52,9 +54,7 @@ export function LoginForm() {
           className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-black"
           {...register('password')}
         />
-        {errors.password && (
-          <p className="text-sm text-red-600">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
       </div>
 
       {errors.root && (

@@ -1,27 +1,58 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { getDaySummary, getMonthSummary, getAllTimeSummary, getAllTimeMonthly } from '@/lib/api/summary';
+import {
+  getDaySummary,
+  getMonthSummary,
+  getAllTimeSummary,
+  getAllTimeMonthly,
+} from '@/lib/api/summary';
 
 function mockFetch(status: number, body: unknown) {
-  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(JSON.stringify(body), { status })
-  );
+  return vi
+    .spyOn(globalThis, 'fetch')
+    .mockResolvedValueOnce(new Response(JSON.stringify(body), { status }));
 }
 
 const daySummary = {
-  date: '2026-05-14', income: 100,
+  date: '2026-05-14',
+  income: 100,
   expensesByCategory: [{ categoryId: 'c1', categoryName: 'Groceries', amount: 42.5 }],
-  totalExpenses: 42.5, effectiveLimit: 50, limitDiff: 7.5, net: 57.5,
+  totalExpenses: 42.5,
+  effectiveLimit: 50,
+  limitDiff: 7.5,
+  net: 57.5,
 };
 
 const monthSummary = {
-  year: 2026, month: 5, openingBalance: 1000,
-  days: [{ date: '2026-05-14', totalExpenses: 42.5, totalIncome: 100, effectiveLimit: 50, limitDiff: 7.5, net: 57.5 }],
-  monthTotals: { totalExpenses: 42.5, totalIncome: 100, expensesByCategory: [], allowedMonthlyBudget: 1550, totalLimitDiff: 7.5, net: 57.5 },
+  year: 2026,
+  month: 5,
+  openingBalance: 1000,
+  days: [
+    {
+      date: '2026-05-14',
+      totalExpenses: 42.5,
+      totalIncome: 100,
+      effectiveLimit: 50,
+      limitDiff: 7.5,
+      net: 57.5,
+    },
+  ],
+  monthTotals: {
+    totalExpenses: 42.5,
+    totalIncome: 100,
+    expensesByCategory: [],
+    allowedMonthlyBudget: 1550,
+    totalLimitDiff: 7.5,
+    net: 57.5,
+  },
 };
 
 const allTimeSummary = {
-  initialBudget: 5000, totalIncome: 3000, totalExpenses: 2000,
-  totalLimitDiff: 0, currentBalance: 6000, net: 1000,
+  initialBudget: 5000,
+  totalIncome: 3000,
+  totalExpenses: 2000,
+  totalLimitDiff: 0,
+  currentBalance: 6000,
+  net: 1000,
 };
 
 const allTimeMonthly = [monthSummary];

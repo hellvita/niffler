@@ -17,24 +17,29 @@ export function RegisterForm() {
   } = useForm<RegisterInput>({ resolver: zodResolver(registerSchema), reValidateMode: 'onBlur' });
 
   const onSubmit = ({ email, password }: RegisterInput) => {
-    register({ email, password }, {
-      onSuccess: () => router.push('/'),
-      onError: (err: unknown) => {
-        const apiErr = err as { status?: number; data?: { detail?: string; title?: string } };
-        if (apiErr.status === 409) {
-          setError('root', { message: 'An account with this email already exists.' });
-        } else {
-          const message = apiErr.data?.detail ?? apiErr.data?.title ?? 'Registration failed';
-          setError('root', { message });
-        }
-      },
-    });
+    register(
+      { email, password },
+      {
+        onSuccess: () => router.push('/'),
+        onError: (err: unknown) => {
+          const apiErr = err as { status?: number; data?: { detail?: string; title?: string } };
+          if (apiErr.status === 409) {
+            setError('root', { message: 'An account with this email already exists.' });
+          } else {
+            const message = apiErr.data?.detail ?? apiErr.data?.title ?? 'Registration failed';
+            setError('root', { message });
+          }
+        },
+      }
+    );
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
       <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium">Email</label>
+        <label htmlFor="email" className="text-sm font-medium">
+          Email
+        </label>
         <input
           id="email"
           type="email"
@@ -42,13 +47,13 @@ export function RegisterForm() {
           className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-black"
           {...field('email')}
         />
-        {errors.email && (
-          <p className="text-sm text-red-600">{errors.email.message}</p>
-        )}
+        {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium">Password</label>
+        <label htmlFor="password" className="text-sm font-medium">
+          Password
+        </label>
         <input
           id="password"
           type="password"
@@ -56,13 +61,13 @@ export function RegisterForm() {
           className="w-full rounded border border-zinc-300 bg-white px-3 py-2 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-black"
           {...field('password')}
         />
-        {errors.password && (
-          <p className="text-sm text-red-600">{errors.password.message}</p>
-        )}
+        {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
       </div>
 
       <div className="flex flex-col gap-1">
-        <label htmlFor="confirmPassword" className="text-sm font-medium">Confirm password</label>
+        <label htmlFor="confirmPassword" className="text-sm font-medium">
+          Confirm password
+        </label>
         <input
           id="confirmPassword"
           type="password"

@@ -10,14 +10,10 @@ const confirmMessage = (
       <strong>This action cannot be undone.</strong> All your data — expenses, incomes, categories,
       limits, and settings — will be permanently deleted.
     </p>
-    <p>
-      After deletion, you can create a new account using the same email address.
-    </p>
+    <p>After deletion, you can create a new account using the same email address.</p>
     <p className="text-amber-700">
-      We recommend{' '}
-      <strong>exporting your data</strong> before proceeding. Use the{' '}
-      <strong>Export data</strong> section above to download a complete copy of
-      your records.
+      We recommend <strong>exporting your data</strong> before proceeding. Use the{' '}
+      <strong>Export data</strong> section above to download a complete copy of your records.
     </p>
   </div>
 );

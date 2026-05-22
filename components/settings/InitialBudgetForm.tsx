@@ -13,7 +13,12 @@ export function InitialBudgetForm() {
   const { data, isLoading } = useInitialBudget();
   const mutation = useSetInitialBudget();
 
-  const { register, handleSubmit, reset, formState: { errors, isDirty } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { amount: 0 },
   });
@@ -44,9 +49,7 @@ export function InitialBudgetForm() {
           disabled={mutation.isPending}
           className="w-40 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm"
         />
-        {errors.amount && (
-          <span className="text-xs text-red-500">{errors.amount.message}</span>
-        )}
+        {errors.amount && <span className="text-xs text-red-500">{errors.amount.message}</span>}
       </div>
       <button
         type="submit"

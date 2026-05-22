@@ -29,16 +29,38 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-            <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">Date</th>
-            {prefs.totalExpenses.visible  && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.totalExpenses.label}</th>}
-            {prefs.income.visible         && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.income.label}</th>}
-            {prefs.effectiveLimit.visible && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.effectiveLimit.label}</th>}
-            {prefs.limitDiff.visible      && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.limitDiff.label}</th>}
-            {prefs.net.visible            && <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">{prefs.net.label}</th>}
+            <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+              Date
+            </th>
+            {prefs.totalExpenses.visible && (
+              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+                {prefs.totalExpenses.label}
+              </th>
+            )}
+            {prefs.income.visible && (
+              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+                {prefs.income.label}
+              </th>
+            )}
+            {prefs.effectiveLimit.visible && (
+              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+                {prefs.effectiveLimit.label}
+              </th>
+            )}
+            {prefs.limitDiff.visible && (
+              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+                {prefs.limitDiff.label}
+              </th>
+            )}
+            {prefs.net.visible && (
+              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+                {prefs.net.label}
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
-          {data.days.map(day => {
+          {data.days.map((day) => {
             const isOverBudget = day.limitDiff !== null && day.limitDiff < 0;
             const isEmpty = day.totalExpenses === 0 && day.totalIncome === 0;
 
@@ -47,9 +69,10 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
                 key={day.date}
                 onClick={() => router.push(`/day/${day.date}`)}
                 className={`cursor-pointer border-b border-zinc-100 dark:border-zinc-800 last:border-0 transition-colors
-                  ${isOverBudget
-                    ? 'bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50'
-                    : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                  ${
+                    isOverBudget
+                      ? 'bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50'
+                      : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
                   }
                   ${isEmpty ? 'opacity-40' : ''}`}
               >
@@ -72,16 +95,22 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
                   </td>
                 )}
                 {prefs.limitDiff.visible && (
-                  <td className={`px-4 py-2.5 text-right font-mono tabular-nums ${
-                    isOverBudget ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-zinc-500 dark:text-zinc-400'
-                  }`}>
+                  <td
+                    className={`px-4 py-2.5 text-right font-mono tabular-nums ${
+                      isOverBudget
+                        ? 'text-red-600 dark:text-red-400 font-semibold'
+                        : 'text-zinc-500 dark:text-zinc-400'
+                    }`}
+                  >
                     {fmt(day.limitDiff)}
                   </td>
                 )}
                 {prefs.net.visible && (
-                  <td className={`px-4 py-2.5 text-right font-mono tabular-nums ${
-                    day.net < 0 ? 'text-red-500' : 'text-zinc-800 dark:text-zinc-200'
-                  }`}>
+                  <td
+                    className={`px-4 py-2.5 text-right font-mono tabular-nums ${
+                      day.net < 0 ? 'text-red-500' : 'text-zinc-800 dark:text-zinc-200'
+                    }`}
+                  >
                     {day.net.toFixed(2)}
                   </td>
                 )}

@@ -2,9 +2,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { upsertExpense, deleteExpense } from '@/lib/api/expenses';
 
 function mockFetch(status: number) {
-  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(null, { status })
-  );
+  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response(null, { status }));
 }
 
 describe('upsertExpense', () => {

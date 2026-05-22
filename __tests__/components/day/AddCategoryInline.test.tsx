@@ -47,11 +47,7 @@ describe('AddCategoryInline', () => {
   });
 
   it('shows "A category with this name already exists" error on 409', async () => {
-    server.use(
-      http.post('/api/proxy/categories', () =>
-        new HttpResponse(null, { status: 409 })
-      )
-    );
+    server.use(http.post('/api/proxy/categories', () => new HttpResponse(null, { status: 409 })));
 
     renderWithProviders(<AddCategoryInline />);
     await userEvent.click(screen.getByRole('button', { name: /add category/i }));
@@ -59,9 +55,7 @@ describe('AddCategoryInline', () => {
     await userEvent.keyboard('{Enter}');
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/a category with this name already exists/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/a category with this name already exists/i)).toBeInTheDocument();
     });
   });
 

@@ -20,7 +20,12 @@ function addDays(date: Date, n: number) {
   return r;
 }
 
-function buildDaySummary(date: string, totalExpenses: number, totalIncome: number, effectiveLimit: number | null = 50) {
+function buildDaySummary(
+  date: string,
+  totalExpenses: number,
+  totalIncome: number,
+  effectiveLimit: number | null = 50
+) {
   return {
     date,
     totalExpenses,
@@ -45,9 +50,7 @@ const MAY_SUMMARY: MonthSummary = {
   monthTotals: {
     totalExpenses: 50,
     totalIncome: 100,
-    expensesByCategory: [
-      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 50 },
-    ],
+    expensesByCategory: [{ categoryId: 'cat-1', categoryName: 'Groceries', amount: 50 }],
     allowedMonthlyBudget: 250,
     totalLimitDiff: 200,
     net: 50,
@@ -58,10 +61,7 @@ const APRIL_SUMMARY: MonthSummary = {
   year: 2026,
   month: 4,
   openingBalance: 900,
-  days: [
-    buildDaySummary('2026-04-15', 30, 200, 50),
-    buildDaySummary('2026-04-30', 10, 0, 50),
-  ],
+  days: [buildDaySummary('2026-04-15', 30, 200, 50), buildDaySummary('2026-04-30', 10, 0, 50)],
   monthTotals: {
     totalExpenses: 40,
     totalIncome: 200,
@@ -199,24 +199,16 @@ describe('aggregateTotals', () => {
   });
 
   it('sums totals across multiple months', () => {
-    const result = aggregateTotals(
-      [APRIL_SUMMARY, MAY_SUMMARY],
-      d('2026-04-01'),
-      d('2026-05-31')
-    );
+    const result = aggregateTotals([APRIL_SUMMARY, MAY_SUMMARY], d('2026-04-01'), d('2026-05-31'));
     // May days: 10+20+15+5+0=50, April days: 30+10=40
     expect(result.totalExpenses).toBe(90);
     expect(result.totalIncome).toBe(300); // 100+200
   });
 
   it('merges expensesByCategory across months — same category amounts are summed', () => {
-    const result = aggregateTotals(
-      [APRIL_SUMMARY, MAY_SUMMARY],
-      d('2026-04-01'),
-      d('2026-05-31')
-    );
-    const groceries = result.expensesByCategory.find(c => c.categoryId === 'cat-1');
-    const dining = result.expensesByCategory.find(c => c.categoryId === 'cat-3');
+    const result = aggregateTotals([APRIL_SUMMARY, MAY_SUMMARY], d('2026-04-01'), d('2026-05-31'));
+    const groceries = result.expensesByCategory.find((c) => c.categoryId === 'cat-1');
+    const dining = result.expensesByCategory.find((c) => c.categoryId === 'cat-3');
     // cat-1: 50 (May) + 20 (April) = 70
     expect(groceries?.amount).toBe(70);
     // cat-3 only in April
@@ -226,7 +218,7 @@ describe('aggregateTotals', () => {
   it('returns allowedBudget as null when no limits are set for any day', () => {
     const noLimitSummary: MonthSummary = {
       ...MAY_SUMMARY,
-      days: MAY_SUMMARY.days.map(d => ({ ...d, effectiveLimit: null, limitDiff: null })),
+      days: MAY_SUMMARY.days.map((d) => ({ ...d, effectiveLimit: null, limitDiff: null })),
     };
     const result = aggregateTotals([noLimitSummary], d('2026-05-01'), d('2026-05-31'));
     expect(result.allowedBudget).toBeNull();
@@ -235,7 +227,7 @@ describe('aggregateTotals', () => {
   it('returns medianDailyExpenses as null when all days have zero expenses', () => {
     const zeroDaySummary: MonthSummary = {
       ...MAY_SUMMARY,
-      days: MAY_SUMMARY.days.map(d => ({ ...d, totalExpenses: 0 })),
+      days: MAY_SUMMARY.days.map((d) => ({ ...d, totalExpenses: 0 })),
     };
     const result = aggregateTotals([zeroDaySummary], d('2026-05-01'), d('2026-05-31'));
     expect(result.medianDailyExpenses).toBeNull();
@@ -258,7 +250,14 @@ describe('buildChartSeries', () => {
       buildDaySummary('2026-05-13', 12, 0, 50),
       buildDaySummary('2026-05-14', 3, 0, 50),
     ],
-    monthTotals: { totalExpenses: 73, totalIncome: 50, expensesByCategory: [], allowedMonthlyBudget: 350, totalLimitDiff: 277, net: -23 },
+    monthTotals: {
+      totalExpenses: 73,
+      totalIncome: 50,
+      expensesByCategory: [],
+      allowedMonthlyBudget: 350,
+      totalLimitDiff: 277,
+      net: -23,
+    },
   };
 
   it('returns one data point per day for a 7-day range', () => {
@@ -294,14 +293,32 @@ describe('buildChartSeries', () => {
     }
 
     const aprilWeekSummary: MonthSummary = {
-      year: 2026, month: 4, openingBalance: 0,
-      days: weekDays.filter(d => d.date.startsWith('2026-04')),
-      monthTotals: { totalExpenses: 0, totalIncome: 0, expensesByCategory: [], allowedMonthlyBudget: 0, totalLimitDiff: 0, net: 0 },
+      year: 2026,
+      month: 4,
+      openingBalance: 0,
+      days: weekDays.filter((d) => d.date.startsWith('2026-04')),
+      monthTotals: {
+        totalExpenses: 0,
+        totalIncome: 0,
+        expensesByCategory: [],
+        allowedMonthlyBudget: 0,
+        totalLimitDiff: 0,
+        net: 0,
+      },
     };
     const mayWeekSummary: MonthSummary = {
-      year: 2026, month: 5, openingBalance: 0,
-      days: weekDays.filter(d => d.date.startsWith('2026-05')),
-      monthTotals: { totalExpenses: 0, totalIncome: 0, expensesByCategory: [], allowedMonthlyBudget: 0, totalLimitDiff: 0, net: 0 },
+      year: 2026,
+      month: 5,
+      openingBalance: 0,
+      days: weekDays.filter((d) => d.date.startsWith('2026-05')),
+      monthTotals: {
+        totalExpenses: 0,
+        totalIncome: 0,
+        expensesByCategory: [],
+        allowedMonthlyBudget: 0,
+        totalLimitDiff: 0,
+        net: 0,
+      },
     };
 
     const result = buildChartSeries(
@@ -322,9 +339,18 @@ describe('buildChartSeries', () => {
     for (let m = 1; m <= 7; m++) {
       const monthStr = String(m).padStart(2, '0');
       longRange.push({
-        year: 2026, month: m, openingBalance: 0,
+        year: 2026,
+        month: m,
+        openingBalance: 0,
         days: [buildDaySummary(`2026-${monthStr}-15`, 100, 0, 50)],
-        monthTotals: { totalExpenses: 100, totalIncome: 0, expensesByCategory: [], allowedMonthlyBudget: 0, totalLimitDiff: 0, net: 0 },
+        monthTotals: {
+          totalExpenses: 100,
+          totalIncome: 0,
+          expensesByCategory: [],
+          allowedMonthlyBudget: 0,
+          totalLimitDiff: 0,
+          net: 0,
+        },
       });
     }
 
@@ -336,7 +362,9 @@ describe('buildChartSeries', () => {
   it('handles a range starting mid-week: first bucket is a partial week', () => {
     // Wednesday May 13 to Friday May 22 (10 days, 2 buckets: Wed-Sun, Mon-Fri)
     const days10: MonthSummary = {
-      year: 2026, month: 5, openingBalance: 0,
+      year: 2026,
+      month: 5,
+      openingBalance: 0,
       days: [
         buildDaySummary('2026-05-13', 10, 0),
         buildDaySummary('2026-05-14', 10, 0),
@@ -349,29 +377,54 @@ describe('buildChartSeries', () => {
         buildDaySummary('2026-05-21', 10, 0),
         buildDaySummary('2026-05-22', 10, 0),
       ],
-      monthTotals: { totalExpenses: 100, totalIncome: 0, expensesByCategory: [], allowedMonthlyBudget: 0, totalLimitDiff: 0, net: 0 },
+      monthTotals: {
+        totalExpenses: 100,
+        totalIncome: 0,
+        expensesByCategory: [],
+        allowedMonthlyBudget: 0,
+        totalLimitDiff: 0,
+        net: 0,
+      },
     };
 
     // 10 days is ≤ 31, so bucket = 'day', not week
     // Use a >31 day range to force week bucket
     // Let's use a summary that covers 35 days
     const days35: MonthSummary = {
-      year: 2026, month: 5, openingBalance: 0,
+      year: 2026,
+      month: 5,
+      openingBalance: 0,
       days: Array.from({ length: 31 }, (_, i) => {
         const dt = new Date('2026-05-01');
         dt.setDate(dt.getDate() + i);
         return buildDaySummary(dt.toISOString().slice(0, 10), 10, 0);
       }),
-      monthTotals: { totalExpenses: 310, totalIncome: 0, expensesByCategory: [], allowedMonthlyBudget: 0, totalLimitDiff: 0, net: 0 },
+      monthTotals: {
+        totalExpenses: 310,
+        totalIncome: 0,
+        expensesByCategory: [],
+        allowedMonthlyBudget: 0,
+        totalLimitDiff: 0,
+        net: 0,
+      },
     };
     const june35: MonthSummary = {
-      year: 2026, month: 6, openingBalance: 0,
+      year: 2026,
+      month: 6,
+      openingBalance: 0,
       days: Array.from({ length: 4 }, (_, i) => {
         const dt = new Date('2026-06-01');
         dt.setDate(dt.getDate() + i);
         return buildDaySummary(dt.toISOString().slice(0, 10), 10, 0);
       }),
-      monthTotals: { totalExpenses: 40, totalIncome: 0, expensesByCategory: [], allowedMonthlyBudget: 0, totalLimitDiff: 0, net: 0 },
+      monthTotals: {
+        totalExpenses: 40,
+        totalIncome: 0,
+        expensesByCategory: [],
+        allowedMonthlyBudget: 0,
+        totalLimitDiff: 0,
+        net: 0,
+      },
     };
 
     // 35 days → week bucket; start on May 13 (Wednesday)

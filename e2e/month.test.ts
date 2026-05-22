@@ -1,5 +1,4 @@
 import { test, expect, currentYearMonth } from './fixtures';
-import { format } from 'date-fns';
 
 test.describe('Month view', () => {
   test('monthly totals are visible and clicking a day navigates to the day view', async ({

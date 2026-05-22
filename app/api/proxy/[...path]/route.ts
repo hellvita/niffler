@@ -3,10 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const BACKEND = process.env.INTERNAL_API_URL!;
 
-async function handler(
-  req: NextRequest,
-  { params }: { params: Promise<{ path: string[] }> }
-) {
+async function handler(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;
   const token = (await cookies()).get('auth_token')?.value;
 

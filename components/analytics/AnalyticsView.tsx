@@ -2,7 +2,13 @@
 import { useSearchParams } from 'next/navigation';
 import { useQueries } from '@tanstack/react-query';
 import { format, startOfMonth, endOfMonth, parseISO } from 'date-fns';
-import { getMonthsInRange, aggregateTotals, buildChartSeries, chooseBucket, computeMedian } from '@/lib/utils/aggregation';
+import {
+  getMonthsInRange,
+  aggregateTotals,
+  buildChartSeries,
+  chooseBucket,
+  computeMedian,
+} from '@/lib/utils/aggregation';
 import { getMonthSummary } from '@/lib/api/summary';
 import { useAllTimeSummary, useAllTimeMonthlySummary } from '@/lib/hooks/useSummary';
 import { useLimits } from '@/lib/hooks/useLimits';
@@ -55,9 +61,9 @@ export function AnalyticsView() {
   const { data: limits } = useLimits();
   const { preferences: prefs } = useColumnPreferences();
 
-  const isLoading = monthResults.some(r => r.isLoading);
+  const isLoading = monthResults.some((r) => r.isLoading);
   const summaries = monthResults
-    .map(r => r.data)
+    .map((r) => r.data)
     .filter((d): d is MonthSummary => d !== undefined);
 
   const allLoaded = summaries.length === months.length;
@@ -65,57 +71,61 @@ export function AnalyticsView() {
   const displaySummaries = isAllTime ? allTimeMonthlySummaries : summaries;
   const chartLoading = isAllTime ? allTimeMonthlyLoading : isLoading;
 
-  const chartFrom = isAllTime && allTimeMonthlySummaries.length > 0
-    ? new Date(allTimeMonthlySummaries[0].year, allTimeMonthlySummaries[0].month - 1, 1)
-    : from;
-  const chartTo = isAllTime && allTimeMonthlySummaries.length > 0
-    ? endOfMonth(new Date(
-        allTimeMonthlySummaries.at(-1)!.year,
-        allTimeMonthlySummaries.at(-1)!.month - 1,
-        1,
-      ))
-    : to;
+  const chartFrom =
+    isAllTime && allTimeMonthlySummaries.length > 0
+      ? new Date(allTimeMonthlySummaries[0].year, allTimeMonthlySummaries[0].month - 1, 1)
+      : from;
+  const chartTo =
+    isAllTime && allTimeMonthlySummaries.length > 0
+      ? endOfMonth(
+          new Date(
+            allTimeMonthlySummaries.at(-1)!.year,
+            allTimeMonthlySummaries.at(-1)!.month - 1,
+            1
+          )
+        )
+      : to;
 
   const totalsReady = isAllTime ? !allTimeMonthlyLoading : allLoaded;
-  const totals = totalsReady && displaySummaries.length > 0
-    ? aggregateTotals(displaySummaries, chartFrom, chartTo)
-    : null;
+  const totals =
+    totalsReady && displaySummaries.length > 0
+      ? aggregateTotals(displaySummaries, chartFrom, chartTo)
+      : null;
   const chartData = totals ? buildChartSeries(displaySummaries, chartFrom, chartTo) : [];
-
-  const hasAnyLimit = (limits?.length ?? 0) > 0;
 
   const allTimeMedian = isAllTime
     ? computeMedian(
         allTimeMonthlySummaries
-          .flatMap(s => s.days)
-          .map(d => d.totalExpenses)
-          .filter(v => v > 0)
+          .flatMap((s) => s.days)
+          .map((d) => d.totalExpenses)
+          .filter((v) => v > 0)
       )
     : null;
 
-  const summaryItems: { label: string; value: number | null }[] = isAllTime && allTimeData
-    ? [
-        { key: 'totalExpenses' as const,       value: allTimeData.totalExpenses },
-        { key: 'medianDailyExpenses' as const,  value: allTimeMedian },
-        { key: 'income' as const,              value: allTimeData.totalIncome },
-        { key: 'net' as const,                 value: allTimeData.net },
-        { key: 'currentBalance' as const,      value: allTimeData.currentBalance },
-      ]
-        .filter(item => prefs[item.key].visible)
-        .map(item => ({ label: prefs[item.key].label, value: item.value }))
-    : totals
-    ? [
-        { key: 'totalExpenses' as const,       value: totals.totalExpenses },
-        { key: 'medianDailyExpenses' as const,  value: totals.medianDailyExpenses },
-        { key: 'income' as const,              value: totals.totalIncome },
-        ...(totals.allowedBudget !== null
-          ? [{ key: 'effectiveLimit' as const, value: totals.allowedBudget }]
-          : []),
-        { key: 'net' as const,                 value: totals.net },
-      ]
-        .filter(item => prefs[item.key].visible)
-        .map(item => ({ label: prefs[item.key].label, value: item.value }))
-    : [];
+  const summaryItems: { label: string; value: number | null }[] =
+    isAllTime && allTimeData
+      ? [
+          { key: 'totalExpenses' as const, value: allTimeData.totalExpenses },
+          { key: 'medianDailyExpenses' as const, value: allTimeMedian },
+          { key: 'income' as const, value: allTimeData.totalIncome },
+          { key: 'net' as const, value: allTimeData.net },
+          { key: 'currentBalance' as const, value: allTimeData.currentBalance },
+        ]
+          .filter((item) => prefs[item.key].visible)
+          .map((item) => ({ label: prefs[item.key].label, value: item.value }))
+      : totals
+        ? [
+            { key: 'totalExpenses' as const, value: totals.totalExpenses },
+            { key: 'medianDailyExpenses' as const, value: totals.medianDailyExpenses },
+            { key: 'income' as const, value: totals.totalIncome },
+            ...(totals.allowedBudget !== null
+              ? [{ key: 'effectiveLimit' as const, value: totals.allowedBudget }]
+              : []),
+            { key: 'net' as const, value: totals.net },
+          ]
+            .filter((item) => prefs[item.key].visible)
+            .map((item) => ({ label: prefs[item.key].label, value: item.value }))
+        : [];
 
   const summaryLoading = isAllTime ? allTimeLoading : isLoading;
 

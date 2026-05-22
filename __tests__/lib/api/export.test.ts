@@ -1,13 +1,17 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { downloadMonthExport, downloadAllExportZip, downloadAllExportCombined } from '@/lib/api/export';
+import {
+  downloadMonthExport,
+  downloadAllExportZip,
+  downloadAllExportCombined,
+} from '@/lib/api/export';
 
 function setupMocks() {
   vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock');
   vi.spyOn(URL, 'revokeObjectURL').mockReturnValue(undefined);
   const anchor = { href: '', download: '', click: vi.fn() };
   vi.spyOn(document, 'createElement').mockReturnValueOnce(anchor as unknown as HTMLElement);
-  vi.spyOn(document.body, 'appendChild').mockImplementation(n => n);
-  vi.spyOn(document.body, 'removeChild').mockImplementation(n => n);
+  vi.spyOn(document.body, 'appendChild').mockImplementation((n) => n);
+  vi.spyOn(document.body, 'removeChild').mockImplementation((n) => n);
   return anchor;
 }
 

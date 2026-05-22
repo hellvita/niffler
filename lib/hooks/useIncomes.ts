@@ -7,12 +7,11 @@ import type { DaySummary } from '@/lib/types/api';
 export function useUpsertIncome() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ date, amount }: { date: string; amount: number }) =>
-      upsertIncome(date, amount),
+    mutationFn: ({ date, amount }: { date: string; amount: number }) => upsertIncome(date, amount),
     onMutate: async ({ date, amount }) => {
       await qc.cancelQueries({ queryKey: ['summary', 'day', date] });
       const previous = qc.getQueryData<DaySummary>(['summary', 'day', date]);
-      qc.setQueryData<DaySummary>(['summary', 'day', date], old => {
+      qc.setQueryData<DaySummary>(['summary', 'day', date], (old) => {
         if (!old) return old;
         return { ...old, income: amount };
       });
@@ -32,7 +31,7 @@ export function useDeleteIncome() {
     onMutate: async ({ date }) => {
       await qc.cancelQueries({ queryKey: ['summary', 'day', date] });
       const previous = qc.getQueryData<DaySummary>(['summary', 'day', date]);
-      qc.setQueryData<DaySummary>(['summary', 'day', date], old => {
+      qc.setQueryData<DaySummary>(['summary', 'day', date], (old) => {
         if (!old) return old;
         return { ...old, income: 0 };
       });

@@ -14,7 +14,11 @@ function firstMessage(result: { success: false; error: { issues: Array<{ message
   return result.error.issues[0]?.message ?? '';
 }
 
-function fieldMessages(result: ReturnType<typeof loginSchema.safeParse>) {
+type AnyParseResult =
+  | { success: true }
+  | { success: false; error: { issues: Array<{ path: Array<string | number>; message: string }> } };
+
+function fieldMessages(result: AnyParseResult) {
   if (result.success) return {};
   const map: Record<string, string> = {};
   for (const issue of result.error.issues) {
@@ -47,15 +51,13 @@ describe('loginSchema', () => {
   it('rejects empty password with "Password is required"', () => {
     const result = loginSchema.safeParse({ email: 'a@b.com', password: '' });
     expect(result.success).toBe(false);
-    if (!result.success)
-      expect(fieldMessages(result).password).toContain('Password is required');
+    if (!result.success) expect(fieldMessages(result).password).toContain('Password is required');
   });
 
   it('rejects password shorter than 8 characters with generic message', () => {
     const result = loginSchema.safeParse({ email: 'a@b.com', password: 'short' });
     expect(result.success).toBe(false);
-    if (!result.success)
-      expect(fieldMessages(result).password).toContain('Invalid credentials');
+    if (!result.success) expect(fieldMessages(result).password).toContain('Invalid credentials');
   });
 });
 
@@ -84,32 +86,52 @@ describe('registerSchema', () => {
   });
 
   it('rejects empty email with "Email is required"', () => {
-    const result = registerSchema.safeParse({ email: '', password: 'password1', confirmPassword: 'password1' });
+    const result = registerSchema.safeParse({
+      email: '',
+      password: 'password1',
+      confirmPassword: 'password1',
+    });
     expect(result.success).toBe(false);
     if (!result.success) expect(fieldMessages(result).email).toContain('Email is required');
   });
 
   it('rejects non-empty invalid email with "Invalid email"', () => {
-    const result = registerSchema.safeParse({ email: 'bad', password: 'password1', confirmPassword: 'password1' });
+    const result = registerSchema.safeParse({
+      email: 'bad',
+      password: 'password1',
+      confirmPassword: 'password1',
+    });
     expect(result.success).toBe(false);
     if (!result.success) expect(fieldMessages(result).email).toContain('Invalid email');
   });
 
   it('rejects empty password with "Password is required"', () => {
-    const result = registerSchema.safeParse({ email: 'a@b.com', password: '', confirmPassword: '' });
+    const result = registerSchema.safeParse({
+      email: 'a@b.com',
+      password: '',
+      confirmPassword: '',
+    });
     expect(result.success).toBe(false);
     if (!result.success) expect(fieldMessages(result).password).toContain('Password is required');
   });
 
   it('rejects short password with length hint', () => {
-    const result = registerSchema.safeParse({ email: 'a@b.com', password: 'short', confirmPassword: 'short' });
+    const result = registerSchema.safeParse({
+      email: 'a@b.com',
+      password: 'short',
+      confirmPassword: 'short',
+    });
     expect(result.success).toBe(false);
     if (!result.success)
       expect(fieldMessages(result).password).toContain('Password must be at least 8 characters');
   });
 
   it('rejects empty confirmPassword with "Confirm password is required"', () => {
-    const result = registerSchema.safeParse({ email: 'a@b.com', password: 'password1', confirmPassword: '' });
+    const result = registerSchema.safeParse({
+      email: 'a@b.com',
+      password: 'password1',
+      confirmPassword: '',
+    });
     expect(result.success).toBe(false);
     if (!result.success)
       expect(fieldMessages(result).confirmPassword).toContain('Confirm password is required');
@@ -237,9 +259,7 @@ describe('columnMappingSchema', () => {
     const result = columnMappingSchema.safeParse({ ...valid, scaleFactor: 0 });
     expect(result.success).toBe(false);
     if (!result.success)
-      expect(fieldMessages(result).scaleFactor).toContain(
-        'Scale factor must be a positive number'
-      );
+      expect(fieldMessages(result).scaleFactor).toContain('Scale factor must be a positive number');
   });
 
   it('rejects empty categoryColumnIndexes', () => {

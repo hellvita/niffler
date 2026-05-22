@@ -1,27 +1,27 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { type ColumnKey, type ColumnPreferences, DEFAULT_COLUMN_PREFERENCES } from '@/lib/types/ui';
 
 const STORAGE_KEY = 'niffler_column_prefs';
 
 export function useColumnPreferences() {
-  const [preferences, setPreferences] = useState<ColumnPreferences>(DEFAULT_COLUMN_PREFERENCES);
-
-  useEffect(() => {
+  const [preferences, setPreferences] = useState<ColumnPreferences>(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setPreferences(prev => ({ ...prev, ...JSON.parse(raw) }));
+      return raw
+        ? { ...DEFAULT_COLUMN_PREFERENCES, ...JSON.parse(raw) }
+        : DEFAULT_COLUMN_PREFERENCES;
     } catch {
-      // ignore parse errors — fall back to defaults
+      return DEFAULT_COLUMN_PREFERENCES;
     }
-  }, []);
+  });
 
   const persist = (next: ColumnPreferences) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
   };
 
   const updateLabel = useCallback((key: ColumnKey, label: string) => {
-    setPreferences(prev => {
+    setPreferences((prev) => {
       const next = {
         ...prev,
         [key]: {
@@ -35,7 +35,7 @@ export function useColumnPreferences() {
   }, []);
 
   const toggleVisible = useCallback((key: ColumnKey) => {
-    setPreferences(prev => {
+    setPreferences((prev) => {
       const next = { ...prev, [key]: { ...prev[key], visible: !prev[key].visible } };
       persist(next);
       return next;
@@ -43,7 +43,7 @@ export function useColumnPreferences() {
   }, []);
 
   const updateColor = useCallback((key: ColumnKey, color: string) => {
-    setPreferences(prev => {
+    setPreferences((prev) => {
       const next = { ...prev, [key]: { ...prev[key], color } };
       persist(next);
       return next;

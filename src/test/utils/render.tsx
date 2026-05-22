@@ -13,9 +13,7 @@ function makeQueryClient() {
 
 function TestWrapper({ children }: { children: React.ReactNode }) {
   const [queryClient] = React.useState(makeQueryClient);
-  return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  );
+  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 }
 
 export function renderWithProviders(ui: React.ReactElement, options?: RenderOptions) {

@@ -3,10 +3,10 @@ import { apiGet, apiMutate } from '@/lib/api/client';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;
-  const headers = bodyStr ? { 'Content-Type': 'application/json' } : {};
-  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(bodyStr, { status, headers })
-  );
+  const headers: HeadersInit = bodyStr ? { 'Content-Type': 'application/json' } : {};
+  return vi
+    .spyOn(globalThis, 'fetch')
+    .mockResolvedValueOnce(new Response(bodyStr, { status, headers }));
 }
 
 describe('apiGet', () => {
@@ -32,7 +32,7 @@ describe('apiGet', () => {
 
   it('attaches a status property to the thrown error', async () => {
     mockFetch(401);
-    const err = await apiGet('anything').catch(e => e);
+    const err = (await apiGet('anything').catch((e) => e)) as { status: number };
     expect(err.status).toBe(401);
   });
 
@@ -93,7 +93,9 @@ describe('apiMutate', () => {
 
   it('attaches a status property to the thrown error', async () => {
     mockFetch(422);
-    const err = await apiMutate('PUT', 'me/budget', { initialBudget: -1 }).catch(e => e);
+    const err = (await apiMutate('PUT', 'me/budget', { initialBudget: -1 }).catch((e) => e)) as {
+      status: number;
+    };
     expect(err.status).toBe(422);
   });
 });

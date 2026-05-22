@@ -1,6 +1,11 @@
 'use client';
 import { useQuery } from '@tanstack/react-query';
-import { getDaySummary, getMonthSummary, getAllTimeSummary, getAllTimeMonthly } from '@/lib/api/summary';
+import {
+  getDaySummary,
+  getMonthSummary,
+  getAllTimeSummary,
+  getAllTimeMonthly,
+} from '@/lib/api/summary';
 
 export function useDaySummary(date: string) {
   return useQuery({

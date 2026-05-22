@@ -52,7 +52,10 @@ export function FileDropzone({ onSuccess }: { onSuccess: (result: ParseResult) =
         type="button"
         disabled={isPending}
         onClick={() => !isPending && fileInputRef.current?.click()}
-        onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
+        onDragOver={(e) => {
+          e.preventDefault();
+          setIsDragging(true);
+        }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={handleDrop}
         className={`flex flex-col items-center justify-center gap-3 w-full h-48 rounded-xl border-2 border-dashed transition-colors ${
@@ -86,9 +89,7 @@ export function FileDropzone({ onSuccess }: { onSuccess: (result: ParseResult) =
         className="hidden"
       />
 
-      {fileError && (
-        <p className="text-sm text-red-500 px-1">{fileError}</p>
-      )}
+      {fileError && <p className="text-sm text-red-500 px-1">{fileError}</p>}
     </div>
   );
 }

@@ -1,15 +1,19 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
-  getCategories, createCategory, renameCategory,
-  mergeCategory, archiveCategory, unarchiveCategory,
+  getCategories,
+  createCategory,
+  renameCategory,
+  mergeCategory,
+  archiveCategory,
+  unarchiveCategory,
 } from '@/lib/api/categories';
 
 function mockFetch(status: number, body?: unknown) {
   const bodyStr = body !== undefined ? JSON.stringify(body) : null;
-  const headers = bodyStr ? { 'Content-Type': 'application/json' } : {};
-  return vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(
-    new Response(bodyStr, { status, headers })
-  );
+  const headers: HeadersInit = bodyStr ? { 'Content-Type': 'application/json' } : {};
+  return vi
+    .spyOn(globalThis, 'fetch')
+    .mockResolvedValueOnce(new Response(bodyStr, { status, headers }));
 }
 
 const cat = (overrides = {}) => ({ id: 'c1', name: 'Groceries', isArchived: false, ...overrides });
