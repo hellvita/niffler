@@ -21,15 +21,15 @@ export function ChartTypeSelector({ value }: { value: ChartType }) {
   };
 
   return (
-    <div className="flex gap-1 p-1 rounded-lg bg-zinc-100 dark:bg-zinc-800">
+    <div className="flex gap-1 p-1 rounded-lg bg-[var(--color-bg-secondary)]">
       {OPTIONS.map((o) => (
         <button
           key={o.type}
           onClick={() => set(o.type)}
           className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
             value === o.type
-              ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm'
-              : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100'
+              ? 'bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-sm'
+              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
           }`}
         >
           {o.label}

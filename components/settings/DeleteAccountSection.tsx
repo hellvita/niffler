@@ -11,7 +11,7 @@ const confirmMessage = (
       limits, and settings — will be permanently deleted.
     </p>
     <p>After deletion, you can create a new account using the same email address.</p>
-    <p className="text-amber-700">
+    <p style={{ color: 'var(--color-warning)' }}>
       We recommend <strong>exporting your data</strong> before proceeding. Use the{' '}
       <strong>Export data</strong> section above to download a complete copy of your records.
     </p>
@@ -37,15 +37,15 @@ export function DeleteAccountSection() {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm text-[var(--color-text-secondary)]">
         Permanently delete your account and all associated data.
       </p>
-      {apiError && <p className="text-xs text-red-500">{apiError}</p>}
+      {apiError && <p className="text-xs text-[var(--color-error)]">{apiError}</p>}
       <div>
         <button
           onClick={() => setShowConfirm(true)}
           disabled={deleteAccount.isPending}
-          className="px-4 py-2 text-sm rounded-lg border border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 disabled:opacity-40 transition-colors"
+          className="px-4 py-2 text-sm rounded-lg border border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error-bg)] disabled:opacity-40 transition-colors"
         >
           {deleteAccount.isPending ? 'Deleting…' : 'Delete my account'}
         </button>

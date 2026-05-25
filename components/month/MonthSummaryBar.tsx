@@ -8,12 +8,10 @@ export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
   const { preferences: prefs } = useColumnPreferences();
 
   if (isLoading) {
-    return <div className="h-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />;
+    return <div className="h-20 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />;
   }
   if (!data) return null;
 
-  // Display "—" for budget when no limit has ever been set for any day in the month.
-  // Do NOT use allowedMonthlyBudget === 0 as the signal — $0 is a valid configured limit.
   const hasAnyLimit = data.days.some((d) => d.effectiveLimit !== null);
 
   const medianDailyExpenses = computeMedian(
@@ -35,19 +33,19 @@ export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
     .map((item) => ({ ...item, label: prefs[item.key].label }));
 
   return (
-    <div className="flex gap-6 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-6 py-4">
+    <div className="flex gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-6 py-4">
       {items.map(({ label, value }) => (
         <div key={label} className="flex flex-col gap-0.5">
-          <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+          <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
             {label}
           </span>
           <span
             className={`text-xl font-semibold tabular-nums ${
               value === null
-                ? 'text-zinc-400 dark:text-zinc-600'
+                ? 'text-[var(--color-text-muted)]'
                 : value < 0
-                  ? 'text-red-500'
-                  : 'text-zinc-900 dark:text-zinc-100'
+                  ? 'text-[var(--color-error)]'
+                  : 'text-[var(--color-text-primary)]'
             }`}
           >
             {value === null ? '—' : value.toFixed(2)}

@@ -60,21 +60,21 @@ export function FileDropzone({ onSuccess }: { onSuccess: (result: ParseResult) =
         onDrop={handleDrop}
         className={`flex flex-col items-center justify-center gap-3 w-full h-48 rounded-xl border-2 border-dashed transition-colors ${
           isPending
-            ? 'border-zinc-300 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 cursor-not-allowed'
+            ? 'border-[var(--color-border)] bg-[var(--color-bg-secondary)] cursor-not-allowed'
             : isDragging
-              ? 'border-blue-400 bg-blue-50 dark:bg-blue-950/20'
-              : 'border-zinc-300 dark:border-zinc-700 hover:border-zinc-400 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-900 cursor-pointer'
+              ? 'border-[var(--color-focus-ring)] bg-[var(--color-bg-secondary)]'
+              : 'border-[var(--color-btn-secondary-border)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-btn-secondary-hover)] cursor-pointer'
         }`}
       >
         {isPending ? (
           <>
-            <div className="w-8 h-8 rounded-full border-2 border-zinc-300 dark:border-zinc-600 border-t-zinc-900 dark:border-t-zinc-100 animate-spin" />
-            <span className="text-sm text-zinc-500 dark:text-zinc-400">Processing…</span>
+            <div className="w-8 h-8 rounded-full border-2 border-[var(--color-btn-secondary-border)] border-t-[var(--color-text-primary)] animate-spin" />
+            <span className="text-sm text-[var(--color-text-secondary)]">Processing…</span>
           </>
         ) : (
           <>
             <span className="text-3xl">📂</span>
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">
+            <span className="text-sm text-[var(--color-text-secondary)]">
               Drop an <strong>.xlsx</strong> file here, or click to browse
             </span>
           </>
@@ -89,7 +89,7 @@ export function FileDropzone({ onSuccess }: { onSuccess: (result: ParseResult) =
         className="hidden"
       />
 
-      {fileError && <p className="text-sm text-red-500 px-1">{fileError}</p>}
+      {fileError && <p className="text-sm text-[var(--color-error)] px-1">{fileError}</p>}
     </div>
   );
 }

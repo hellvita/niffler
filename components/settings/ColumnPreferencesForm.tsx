@@ -44,28 +44,28 @@ export function ColumnPreferencesForm() {
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+      <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+              <th className="px-4 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Field
               </th>
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Display label
               </th>
-              <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-center font-medium text-[var(--color-text-secondary)]">
                 Color
               </th>
-              <th className="px-4 py-2 text-center font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-center font-medium text-[var(--color-text-secondary)]">
                 Visible
               </th>
             </tr>
           </thead>
           <tbody>
             {COLUMN_ORDER.map((key) => (
-              <tr key={key} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0">
-                <td className="px-4 py-2.5 text-zinc-600 dark:text-zinc-400">
+              <tr key={key} className="border-b border-[var(--color-border)] last:border-0">
+                <td className="px-4 py-2.5 text-[var(--color-text-secondary)]">
                   {FIELD_DESCRIPTIONS[key]}
                 </td>
                 <td className="px-4 py-2.5">
@@ -80,12 +80,12 @@ export function ColumnPreferencesForm() {
                       }}
                       onBlur={() => commitEdit(key)}
                       placeholder={DEFAULT_COLUMN_PREFERENCES[key].label}
-                      className="w-36 px-2 py-0.5 text-sm rounded border border-blue-400 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none"
+                      className="w-36 px-2 py-0.5 text-sm rounded border border-[var(--color-focus-ring)] bg-[var(--color-surface)] text-[var(--color-text-primary)] focus:outline-none"
                     />
                   ) : (
                     <button
                       onClick={() => startEdit(key)}
-                      className="text-zinc-800 dark:text-zinc-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      className="text-[var(--color-text-primary)] hover:text-[var(--color-text-secondary)] transition-colors"
                     >
                       {preferences[key].label}
                     </button>
@@ -98,7 +98,7 @@ export function ColumnPreferencesForm() {
                         type="button"
                         onClick={() => colorRefs[key]!.current?.click()}
                         style={{ backgroundColor: preferences[key].color }}
-                        className="w-3.5 h-3.5 rounded ring-1 ring-zinc-300 dark:ring-zinc-600 inline-block"
+                        className="w-3.5 h-3.5 rounded ring-1 ring-[var(--color-border)] inline-block"
                         aria-label="Pick color"
                       />
                       <input
@@ -116,7 +116,7 @@ export function ColumnPreferencesForm() {
                     type="checkbox"
                     checked={preferences[key].visible}
                     onChange={() => toggleVisible(key)}
-                    className="rounded border-zinc-300 dark:border-zinc-600"
+                    className="rounded border-[var(--color-btn-secondary-border)]"
                   />
                 </td>
               </tr>
@@ -127,7 +127,7 @@ export function ColumnPreferencesForm() {
 
       <button
         onClick={resetAll}
-        className="self-start text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 underline transition-colors"
+        className="self-start text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] underline transition-colors"
       >
         Reset all to defaults
       </button>

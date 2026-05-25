@@ -32,13 +32,13 @@ export function InitialBudgetForm() {
   };
 
   if (isLoading) {
-    return <div className="h-12 w-64 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />;
+    return <div className="h-12 w-64 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />;
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex items-end gap-3">
       <div className="flex flex-col gap-1">
-        <label className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+        <label className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
           Amount
         </label>
         <input
@@ -47,19 +47,21 @@ export function InitialBudgetForm() {
           step="0.01"
           min="0"
           disabled={mutation.isPending}
-          className="w-40 px-3 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm"
+          className="w-40 px-3 py-2 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
         />
-        {errors.amount && <span className="text-xs text-red-500">{errors.amount.message}</span>}
+        {errors.amount && (
+          <span className="text-xs text-[var(--color-error)]">{errors.amount.message}</span>
+        )}
       </div>
       <button
         type="submit"
         disabled={mutation.isPending || !isDirty}
-        className="px-4 py-2 text-sm rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium disabled:opacity-40 transition-colors hover:bg-zinc-700 dark:hover:bg-zinc-300"
+        className="px-4 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
       >
         {mutation.isPending ? 'Saving…' : 'Save'}
       </button>
       {mutation.isSuccess && !isDirty && (
-        <span className="text-sm text-green-600 dark:text-green-400">Saved</span>
+        <span className="text-sm text-[var(--color-success)]">Saved</span>
       )}
     </form>
   );

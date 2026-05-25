@@ -13,26 +13,26 @@ export function MonthNavigator({ yearMonth }: { yearMonth: string }) {
       <button
         onClick={() => navigate(subMonths(parsed, 1))}
         aria-label="Previous month"
-        className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         ←
       </button>
 
-      <h1 className="flex-1 text-center text-base font-semibold text-zinc-900 dark:text-zinc-100">
+      <h1 className="flex-1 text-center text-base font-semibold text-[var(--color-text-primary)]">
         {format(parsed, 'MMMM yyyy')}
       </h1>
 
       <button
         onClick={() => navigate(addMonths(parsed, 1))}
         aria-label="Next month"
-        className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         →
       </button>
 
       <button
         onClick={() => navigate(new Date())}
-        className="px-3 py-1 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+        className="px-3 py-1 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
       >
         This month
       </button>

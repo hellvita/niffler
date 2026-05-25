@@ -12,7 +12,7 @@ export function ExpensePieChart({ categories }: { categories: CategoryTotal[] })
   const { getColor } = useCategoryColors();
   if (categories.length === 0) {
     return (
-      <div className="flex items-center justify-center h-64 text-sm text-zinc-400 dark:text-zinc-500">
+      <div className="flex items-center justify-center h-64 text-sm text-[var(--color-text-muted)]">
         No expense data for this period.
       </div>
     );

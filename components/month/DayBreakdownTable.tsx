@@ -17,7 +17,7 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
     return (
       <div className="flex flex-col gap-1">
         {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className="h-10 rounded bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+          <div key={i} className="h-10 rounded bg-[var(--color-bg-secondary)] animate-pulse" />
         ))}
       </div>
     );
@@ -25,35 +25,35 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
   if (!data) return null;
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+    <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-            <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+          <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+            <th className="px-4 py-2 text-left font-medium text-[var(--color-text-secondary)]">
               Date
             </th>
             {prefs.totalExpenses.visible && (
-              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-right font-medium text-[var(--color-text-secondary)]">
                 {prefs.totalExpenses.label}
               </th>
             )}
             {prefs.income.visible && (
-              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-right font-medium text-[var(--color-text-secondary)]">
                 {prefs.income.label}
               </th>
             )}
             {prefs.effectiveLimit.visible && (
-              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-right font-medium text-[var(--color-text-secondary)]">
                 {prefs.effectiveLimit.label}
               </th>
             )}
             {prefs.limitDiff.visible && (
-              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-right font-medium text-[var(--color-text-secondary)]">
                 {prefs.limitDiff.label}
               </th>
             )}
             {prefs.net.visible && (
-              <th className="px-4 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-right font-medium text-[var(--color-text-secondary)]">
                 {prefs.net.label}
               </th>
             )}
@@ -68,29 +68,29 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
               <tr
                 key={day.date}
                 onClick={() => router.push(`/day/${day.date}`)}
-                className={`cursor-pointer border-b border-zinc-100 dark:border-zinc-800 last:border-0 transition-colors
+                className={`cursor-pointer border-b border-[var(--color-border)] last:border-0 transition-colors
                   ${
                     isOverBudget
-                      ? 'bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50'
-                      : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50'
+                      ? 'bg-[var(--color-error-bg)] hover:opacity-90'
+                      : 'hover:bg-[var(--color-btn-secondary-hover)]'
                   }
                   ${isEmpty ? 'opacity-40' : ''}`}
               >
-                <td className="px-4 py-2.5 text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
+                <td className="px-4 py-2.5 text-[var(--color-text-secondary)] whitespace-nowrap">
                   {format(parseISO(day.date), 'EEE d')}
                 </td>
                 {prefs.totalExpenses.visible && (
-                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-[var(--color-text-primary)]">
                     {day.totalExpenses > 0 ? day.totalExpenses.toFixed(2) : '—'}
                   </td>
                 )}
                 {prefs.income.visible && (
-                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-[var(--color-text-primary)]">
                     {day.totalIncome > 0 ? day.totalIncome.toFixed(2) : '—'}
                   </td>
                 )}
                 {prefs.effectiveLimit.visible && (
-                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-zinc-500 dark:text-zinc-400">
+                  <td className="px-4 py-2.5 text-right font-mono tabular-nums text-[var(--color-text-secondary)]">
                     {fmt(day.effectiveLimit)}
                   </td>
                 )}
@@ -98,8 +98,8 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
                   <td
                     className={`px-4 py-2.5 text-right font-mono tabular-nums ${
                       isOverBudget
-                        ? 'text-red-600 dark:text-red-400 font-semibold'
-                        : 'text-zinc-500 dark:text-zinc-400'
+                        ? 'text-[var(--color-error)] font-semibold'
+                        : 'text-[var(--color-text-secondary)]'
                     }`}
                   >
                     {fmt(day.limitDiff)}
@@ -108,7 +108,7 @@ export function DayBreakdownTable({ yearMonth }: { yearMonth: string }) {
                 {prefs.net.visible && (
                   <td
                     className={`px-4 py-2.5 text-right font-mono tabular-nums ${
-                      day.net < 0 ? 'text-red-500' : 'text-zinc-800 dark:text-zinc-200'
+                      day.net < 0 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-primary)]'
                     }`}
                   >
                     {day.net.toFixed(2)}

@@ -137,26 +137,26 @@ export function AnalyticsView() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 flex flex-col gap-6">
-      <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Analytics</h1>
+      <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Analytics</h1>
 
       <DateRangePicker from={fromStr} to={toStr} preset={preset} />
 
       {summaryLoading ? (
-        <div className="h-20 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+        <div className="h-20 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />
       ) : summaryItems.length > 0 ? (
-        <div className="flex flex-wrap gap-6 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900 px-6 py-4">
+        <div className="flex flex-wrap gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-6 py-4">
           {summaryItems.map(({ label, value }) => (
             <div key={label} className="flex flex-col gap-0.5">
-              <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+              <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
                 {label}
               </span>
               <span
                 className={`text-xl font-semibold tabular-nums ${
                   value === null
-                    ? 'text-zinc-400 dark:text-zinc-600'
+                    ? 'text-[var(--color-text-muted)]'
                     : value < 0
-                      ? 'text-red-500'
-                      : 'text-zinc-900 dark:text-zinc-100'
+                      ? 'text-[var(--color-error)]'
+                      : 'text-[var(--color-text-primary)]'
                 }`}
               >
                 {value === null ? '—' : value.toFixed(2)}
@@ -168,7 +168,7 @@ export function AnalyticsView() {
 
       <>
         <div className="flex items-center justify-between flex-wrap gap-3">
-          <span className="text-sm text-zinc-500 dark:text-zinc-400">
+          <span className="text-sm text-[var(--color-text-secondary)]">
             {chartLoading
               ? 'Loading…'
               : (() => {
@@ -182,7 +182,7 @@ export function AnalyticsView() {
         </div>
 
         {chartLoading ? (
-          <div className="h-72 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+          <div className="h-72 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />
         ) : (
           <div>
             {chartType === 'pie' && totals && (

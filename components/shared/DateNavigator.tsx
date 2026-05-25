@@ -15,7 +15,7 @@ export function DateNavigator({ date }: { date: string }) {
       <button
         onClick={() => navigate(subDays(parsed, 1))}
         aria-label="Previous day"
-        className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         ←
       </button>
@@ -23,7 +23,7 @@ export function DateNavigator({ date }: { date: string }) {
       <div className="relative flex-1 text-center">
         <button
           onClick={() => setShowPicker((v) => !v)}
-          className="text-base font-semibold text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors"
+          className="text-base font-semibold text-[var(--color-text-primary)] hover:text-[var(--color-text-secondary)] transition-colors"
         >
           {format(parsed, 'EEEE, MMMM d, yyyy')}
         </button>
@@ -37,7 +37,7 @@ export function DateNavigator({ date }: { date: string }) {
                 setShowPicker(false);
               }
             }}
-            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-10 rounded border border-zinc-300 dark:border-zinc-600 px-2 py-1 text-sm text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 shadow-md"
+            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-10 rounded border border-[var(--color-btn-secondary-border)] px-2 py-1 text-sm text-[var(--color-text-primary)] bg-[var(--color-surface)] shadow-md"
           />
         )}
       </div>
@@ -45,14 +45,14 @@ export function DateNavigator({ date }: { date: string }) {
       <button
         onClick={() => navigate(addDays(parsed, 1))}
         aria-label="Next day"
-        className="p-2 rounded-lg text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         →
       </button>
 
       <button
         onClick={() => navigate(new Date())}
-        className="px-3 py-1 text-sm rounded-lg border border-zinc-300 text-zinc-600 hover:bg-zinc-50 transition-colors"
+        className="px-3 py-1 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
       >
         Today
       </button>

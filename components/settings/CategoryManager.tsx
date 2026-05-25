@@ -28,7 +28,7 @@ function CategoryColorSwatch({
       <button
         onClick={() => inputRef.current?.click()}
         style={{ backgroundColor: color }}
-        className="w-5 h-5 rounded flex-shrink-0 ring-1 ring-zinc-300 dark:ring-zinc-600"
+        className="w-5 h-5 rounded flex-shrink-0 ring-1 ring-[var(--color-border)]"
         aria-label="Pick color"
         type="button"
       />
@@ -55,12 +55,10 @@ export function CategoryManager() {
   const archiveCategory = useArchiveCategory();
   const unarchiveCategory = useUnarchiveCategory();
 
-  // Inline rename state
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
   const escPressedRef = useRef(false);
 
-  // Merge confirmation
   const [mergeConfirm, setMergeConfirm] = useState<{
     fromId: string;
     fromName: string;
@@ -68,14 +66,11 @@ export function CategoryManager() {
     targetName: string;
   } | null>(null);
 
-  // Archive confirmation
   const [archiveTarget, setArchiveTarget] = useState<Category | null>(null);
 
-  // Add form
   const [addValue, setAddValue] = useState('');
   const [addError, setAddError] = useState<string | null>(null);
 
-  // Unarchive error
   const [unarchiveError, setUnarchiveError] = useState<string | null>(null);
 
   const startRename = (cat: Category) => {
@@ -141,7 +136,7 @@ export function CategoryManager() {
     return (
       <div className="flex flex-col gap-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-10 rounded bg-zinc-100 dark:bg-zinc-800 animate-pulse" />
+          <div key={i} className="h-10 rounded bg-[var(--color-bg-secondary)] animate-pulse" />
         ))}
       </div>
     );
@@ -151,17 +146,16 @@ export function CategoryManager() {
 
   return (
     <div className="flex flex-col gap-3">
-      {/* Category rows */}
       {list.length === 0 && (
-        <p className="text-sm text-zinc-400 dark:text-zinc-500">No categories yet.</p>
+        <p className="text-sm text-[var(--color-text-muted)]">No categories yet.</p>
       )}
       {list.map((cat, index) => (
         <div
           key={cat.id}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-zinc-200 dark:border-zinc-700 ${
+          className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--color-border)] ${
             cat.isArchived
-              ? 'opacity-60 bg-zinc-50 dark:bg-zinc-900/50'
-              : 'bg-white dark:bg-zinc-900'
+              ? 'opacity-60 bg-[var(--color-surface-raised)]'
+              : 'bg-[var(--color-surface)]'
           }`}
         >
           <CategoryColorSwatch
@@ -182,16 +176,16 @@ export function CategoryManager() {
                 }
               }}
               onBlur={() => handleRenameBlur(cat)}
-              className="flex-1 px-2 py-0.5 text-sm rounded border border-blue-400 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none"
+              className="flex-1 px-2 py-0.5 text-sm rounded border border-[var(--color-focus-ring)] bg-[var(--color-surface)] text-[var(--color-text-primary)] focus:outline-none"
             />
           ) : (
-            <span className="flex-1 text-sm text-zinc-800 dark:text-zinc-200">{cat.name}</span>
+            <span className="flex-1 text-sm text-[var(--color-text-primary)]">{cat.name}</span>
           )}
 
           {cat.isArchived ? (
             <button
               onClick={() => handleUnarchive(cat)}
-              className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
             >
               Unarchive
             </button>
@@ -199,13 +193,13 @@ export function CategoryManager() {
             <>
               <button
                 onClick={() => startRename(cat)}
-                className="text-xs text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
               >
                 Rename
               </button>
               <button
                 onClick={() => setArchiveTarget(cat)}
-                className="text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 transition-colors"
+                className="text-xs text-[var(--color-error)] hover:opacity-70 transition-opacity"
               >
                 Archive
               </button>
@@ -214,9 +208,8 @@ export function CategoryManager() {
         </div>
       ))}
 
-      {unarchiveError && <p className="text-xs text-red-500">{unarchiveError}</p>}
+      {unarchiveError && <p className="text-xs text-[var(--color-error)]">{unarchiveError}</p>}
 
-      {/* Add form */}
       <div className="flex gap-2 mt-1">
         <input
           value={addValue}
@@ -226,30 +219,28 @@ export function CategoryManager() {
           }}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="New category name"
-          className="flex-1 px-3 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+          className="flex-1 px-3 py-2 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
         />
         <button
           onClick={handleAdd}
           disabled={createCategory.isPending}
-          className="px-4 py-2 text-sm rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium disabled:opacity-40 transition-colors hover:bg-zinc-700 dark:hover:bg-zinc-300"
+          className="px-4 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
         >
           Add
         </button>
       </div>
-      {addError && <p className="text-xs text-red-500">{addError}</p>}
+      {addError && <p className="text-xs text-[var(--color-error)]">{addError}</p>}
 
-      {/* Show archived toggle */}
       <label className="flex items-center gap-2 cursor-pointer select-none mt-1">
         <input
           type="checkbox"
           checked={showArchived}
           onChange={(e) => setShowArchived(e.target.checked)}
-          className="rounded border-zinc-300 dark:border-zinc-600"
+          className="rounded border-[var(--color-btn-secondary-border)]"
         />
-        <span className="text-sm text-zinc-600 dark:text-zinc-400">Show archived categories</span>
+        <span className="text-sm text-[var(--color-text-secondary)]">Show archived categories</span>
       </label>
 
-      {/* Archive confirmation */}
       {archiveTarget && (
         <ConfirmDialog
           message={`Archiving removes "${archiveTarget.name}" from the day view going forward. All past expenses for this category are preserved.`}
@@ -261,7 +252,6 @@ export function CategoryManager() {
         />
       )}
 
-      {/* Merge confirmation */}
       {mergeConfirm && (
         <ConfirmDialog
           message={`A category named "${mergeConfirm.targetName}" already exists. Merge "${mergeConfirm.fromName}" into "${mergeConfirm.targetName}"? All expenses recorded under "${mergeConfirm.fromName}" will be moved to "${mergeConfirm.targetName}" and "${mergeConfirm.fromName}" will be removed.`}

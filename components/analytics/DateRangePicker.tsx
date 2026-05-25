@@ -91,8 +91,8 @@ export function DateRangePicker({
             onClick={() => applyPreset(p.key)}
             className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
               p.key === preset
-                ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
-                : 'border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+                ? 'border-[var(--color-btn-primary-bg)] bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]'
+                : 'border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)]'
             }`}
           >
             {p.label}
@@ -105,15 +105,15 @@ export function DateRangePicker({
             type="date"
             value={from}
             onChange={(e) => updateParams({ from: e.target.value, preset: null })}
-            className="text-sm px-2 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+            className="text-sm px-2 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)]"
           />
-          <span className="text-zinc-400 dark:text-zinc-500">–</span>
+          <span className="text-[var(--color-text-muted)]">–</span>
           <input
             type="date"
             value={to}
             min={from}
             onChange={(e) => updateParams({ to: e.target.value, preset: null })}
-            className="text-sm px-2 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100"
+            className="text-sm px-2 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)]"
           />
         </div>
       )}
