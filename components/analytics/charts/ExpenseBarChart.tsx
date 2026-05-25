@@ -25,7 +25,8 @@ export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
 
   const showIncome = prefs.income.visible;
   const showLimit = prefs.effectiveLimit.visible && data.some((d) => d.limit !== null);
-  const median = prefs.medianDailyExpenses.visible
+  const showMedianLine = prefs.medianDailyExpenses.visible || prefs.medianMonthlyExpenses.visible;
+  const median = showMedianLine
     ? computeMedian(data.map((d) => d.expenses).filter((v) => v > 0))
     : null;
   const chartData = median !== null ? data.map((d) => ({ ...d, median })) : data;

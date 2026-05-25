@@ -1,9 +1,11 @@
 'use client';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLogout } from '@/lib/hooks/useAuth';
+import { AboutModal } from './AboutModal';
 
 function NavLink({
   href,
@@ -46,6 +48,7 @@ export function NavBar() {
   const router = useRouter();
   const pathname = usePathname();
   const logout = useLogout();
+  const [showAbout, setShowAbout] = useState(false);
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const currentMonth = format(new Date(), 'yyyy-MM');
@@ -57,49 +60,73 @@ export function NavBar() {
   };
 
   return (
-    <nav className="sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
-      <div className="max-w-5xl mx-auto px-4 h-12 flex items-center gap-2 overflow-x-auto">
-        {/* Wordmark */}
-        <Link
-          href="/"
-          className="mr-2 text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0"
-        >
-          Niffler
-        </Link>
+    <>
+      <nav className="sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+        <div className="max-w-5xl mx-auto px-4 h-12 flex items-center gap-2 overflow-x-auto">
+          {/* Wordmark */}
+          <Link
+            href="/"
+            className="mr-2 text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0"
+          >
+            Niffler
+          </Link>
 
-        {/* Navigation links */}
-        <NavLink href={`/day/${today}`} active={pathname.startsWith('/day/')}>
-          Today
-        </NavLink>
-        <NavLink href={`/month/${currentMonth}`} active={pathname.startsWith('/month/')}>
-          Month
-        </NavLink>
-        <NavLink href="/analytics" active={pathname.startsWith('/analytics')}>
-          Analytics
-        </NavLink>
-        <NavLink href="/import" active={pathname.startsWith('/import')}>
-          Import
-        </NavLink>
-        <NavLink href="/settings" active={pathname.startsWith('/settings')}>
-          Settings
-        </NavLink>
+          {/* Navigation links */}
+          <NavLink href={`/day/${today}`} active={pathname.startsWith('/day/')}>
+            Today
+          </NavLink>
+          <NavLink href={`/month/${currentMonth}`} active={pathname.startsWith('/month/')}>
+            Month
+          </NavLink>
+          <NavLink href="/analytics" active={pathname.startsWith('/analytics')}>
+            Analytics
+          </NavLink>
+          <NavLink href="/import" active={pathname.startsWith('/import')}>
+            Import
+          </NavLink>
+          <NavLink href="/settings" active={pathname.startsWith('/settings')}>
+            Settings
+          </NavLink>
+          <button
+            onClick={() => setShowAbout(true)}
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shrink-0"
+            aria-label="About Niffler"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+          </button>
 
-        {/* Spacer */}
-        <div className="flex-1" />
+          {/* Spacer */}
+          <div className="flex-1" />
 
-        {/* Balance */}
-        <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0">Balance</span>
-        <BalanceDisplay />
+          {/* Balance */}
+          <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0">Balance</span>
+          <BalanceDisplay />
 
-        {/* Logout */}
-        <button
-          onClick={handleLogout}
-          disabled={logout.isPending}
-          className="ml-2 px-3 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors shrink-0"
-        >
-          {logout.isPending ? 'Logging out…' : 'Logout'}
-        </button>
-      </div>
-    </nav>
+          {/* Logout */}
+          <button
+            onClick={handleLogout}
+            disabled={logout.isPending}
+            className="ml-2 px-3 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors shrink-0"
+          >
+            {logout.isPending ? 'Logging out…' : 'Logout'}
+          </button>
+        </div>
+      </nav>
+      <AboutModal open={showAbout} onClose={() => setShowAbout(false)} />
+    </>
   );
 }

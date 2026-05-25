@@ -14,6 +14,7 @@ export interface AggregatedTotals {
   allowedBudget: number | null; // null when no limits set for the range
   net: number;
   medianDailyExpenses: number | null; // null when no days had expenses
+  medianMonthlyExpenses: number | null; // null when no months had expenses
   expensesByCategory: { categoryId: string; categoryName: string; amount: number }[];
 }
 
@@ -53,6 +54,7 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
   let allowedBudget = 0;
   let hasAnyLimit = false;
   const dailyExpenses: number[] = [];
+  const monthlyExpenses = new Map<string, number>();
   const catMap = new Map<string, { categoryName: string; amount: number }>();
 
   for (const summary of summaries) {
@@ -66,6 +68,8 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
         allowedBudget += day.effectiveLimit;
       }
       if (day.totalExpenses > 0) dailyExpenses.push(day.totalExpenses);
+      const monthKey = day.date.slice(0, 7);
+      monthlyExpenses.set(monthKey, (monthlyExpenses.get(monthKey) ?? 0) + day.totalExpenses);
     }
 
     // Category-level: monthTotals is whole-month only; used as-is (may include days outside
@@ -86,6 +90,7 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
     allowedBudget: hasAnyLimit ? allowedBudget : null,
     net: totalIncome - totalExpenses,
     medianDailyExpenses: computeMedian(dailyExpenses),
+    medianMonthlyExpenses: computeMedian(Array.from(monthlyExpenses.values()).filter((v) => v > 0)),
     expensesByCategory: Array.from(catMap.entries())
       .map(([categoryId, { categoryName, amount }]) => ({ categoryId, categoryName, amount }))
       .filter((c) => c.amount > 0),
