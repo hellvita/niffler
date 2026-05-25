@@ -6,6 +6,7 @@ import { COLUMN_ORDER, DEFAULT_COLUMN_PREFERENCES, type ColumnKey } from '@/lib/
 const FIELD_DESCRIPTIONS: Record<ColumnKey, string> = {
   totalExpenses: 'Total Expenses',
   medianDailyExpenses: 'Median Daily Expenses',
+  medianMonthlyExpenses: 'Median Monthly Expenses',
   income: 'Income',
   effectiveLimit: 'Daily Limit / Budget',
   limitDiff: 'Limit Diff',
@@ -20,11 +21,13 @@ export function ColumnPreferencesForm() {
 
   const colorRefTotalExpenses = useRef<HTMLInputElement>(null);
   const colorRefMedianDailyExpenses = useRef<HTMLInputElement>(null);
+  const colorRefMedianMonthlyExpenses = useRef<HTMLInputElement>(null);
   const colorRefIncome = useRef<HTMLInputElement>(null);
   const colorRefEffectiveLimit = useRef<HTMLInputElement>(null);
   const colorRefs: Partial<Record<ColumnKey, React.RefObject<HTMLInputElement | null>>> = {
     totalExpenses: colorRefTotalExpenses,
     medianDailyExpenses: colorRefMedianDailyExpenses,
+    medianMonthlyExpenses: colorRefMedianMonthlyExpenses,
     income: colorRefIncome,
     effectiveLimit: colorRefEffectiveLimit,
   };

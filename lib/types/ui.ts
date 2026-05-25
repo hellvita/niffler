@@ -2,6 +2,7 @@ export type ColumnKey =
   | 'income'
   | 'totalExpenses'
   | 'medianDailyExpenses'
+  | 'medianMonthlyExpenses'
   | 'effectiveLimit'
   | 'limitDiff'
   | 'net'
@@ -19,6 +20,7 @@ export const DEFAULT_COLUMN_PREFERENCES: ColumnPreferences = {
   income: { label: 'Income', visible: true, color: '#10b981' },
   totalExpenses: { label: 'Expenses', visible: true, color: '#ef4444' },
   medianDailyExpenses: { label: 'Median/Day', visible: true, color: '#8b5cf6' },
+  medianMonthlyExpenses: { label: 'Median/Month', visible: false, color: '#a78bfa' },
   effectiveLimit: { label: 'Limit', visible: true, color: '#f59e0b' },
   limitDiff: { label: 'Limit Diff', visible: true },
   net: { label: 'Net', visible: true },
@@ -28,6 +30,7 @@ export const DEFAULT_COLUMN_PREFERENCES: ColumnPreferences = {
 export const COLUMN_ORDER: ColumnKey[] = [
   'totalExpenses',
   'medianDailyExpenses',
+  'medianMonthlyExpenses',
   'income',
   'effectiveLimit',
   'limitDiff',

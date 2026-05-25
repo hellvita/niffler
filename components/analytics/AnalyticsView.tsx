@@ -91,7 +91,7 @@ export function AnalyticsView() {
       : null;
   const chartData = totals ? buildChartSeries(displaySummaries, chartFrom, chartTo) : [];
 
-  const allTimeMedian = isAllTime
+  const allTimeMedianDaily = isAllTime
     ? computeMedian(
         allTimeMonthlySummaries
           .flatMap((s) => s.days)
@@ -100,11 +100,18 @@ export function AnalyticsView() {
       )
     : null;
 
+  const allTimeMedianMonthly = isAllTime
+    ? computeMedian(
+        allTimeMonthlySummaries.map((s) => s.monthTotals.totalExpenses).filter((v) => v > 0)
+      )
+    : null;
+
   const summaryItems: { label: string; value: number | null }[] =
     isAllTime && allTimeData
       ? [
           { key: 'totalExpenses' as const, value: allTimeData.totalExpenses },
-          { key: 'medianDailyExpenses' as const, value: allTimeMedian },
+          { key: 'medianDailyExpenses' as const, value: allTimeMedianDaily },
+          { key: 'medianMonthlyExpenses' as const, value: allTimeMedianMonthly },
           { key: 'income' as const, value: allTimeData.totalIncome },
           { key: 'net' as const, value: allTimeData.net },
           { key: 'currentBalance' as const, value: allTimeData.currentBalance },
@@ -115,6 +122,7 @@ export function AnalyticsView() {
         ? [
             { key: 'totalExpenses' as const, value: totals.totalExpenses },
             { key: 'medianDailyExpenses' as const, value: totals.medianDailyExpenses },
+            { key: 'medianMonthlyExpenses' as const, value: totals.medianMonthlyExpenses },
             { key: 'income' as const, value: totals.totalIncome },
             ...(totals.allowedBudget !== null
               ? [{ key: 'effectiveLimit' as const, value: totals.allowedBudget }]
