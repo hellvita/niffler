@@ -85,28 +85,26 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
 
   return (
     <div className="flex flex-col gap-6">
-      {/* Mapping table */}
-      <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+      <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400 w-44">
+            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+              <th className="px-4 py-2 text-left font-medium text-[var(--color-text-secondary)] w-44">
                 Role
               </th>
-              <th className="px-4 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-4 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Column(s) from your file
               </th>
             </tr>
           </thead>
           <tbody>
-            {/* Date row */}
-            <tr className="border-b border-zinc-100 dark:border-zinc-800">
-              <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Date</td>
+            <tr className="border-b border-[var(--color-border)]">
+              <td className="px-4 py-3 text-[var(--color-text-primary)] font-medium">Date</td>
               <td className="px-4 py-3">
                 <select
                   value={dateColumnIndex}
                   onChange={(e) => handleDateChange(Number(e.target.value))}
-                  className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm"
+                  className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
                 >
                   {cols.map((c) => (
                     <option key={c.index} value={c.index}>
@@ -117,9 +115,8 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
               </td>
             </tr>
 
-            {/* Expense categories row */}
-            <tr className="border-b border-zinc-100 dark:border-zinc-800">
-              <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium align-top">
+            <tr className="border-b border-[var(--color-border)]">
+              <td className="px-4 py-3 text-[var(--color-text-primary)] font-medium align-top">
                 Expense categories
               </td>
               <td className="px-4 py-3">
@@ -135,10 +132,10 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
                         onClick={() => !disabled && toggleCategory(c.index)}
                         className={`px-3 py-1 text-xs rounded-full border transition-colors ${
                           disabled
-                            ? 'border-zinc-200 dark:border-zinc-700 text-zinc-300 dark:text-zinc-600 cursor-not-allowed'
+                            ? 'border-[var(--color-border)] text-[var(--color-text-muted)] cursor-not-allowed'
                             : checked
-                              ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300'
-                              : 'border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:border-zinc-400 dark:hover:border-zinc-500'
+                              ? 'border-[var(--color-btn-primary-bg)] bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]'
+                              : 'border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:border-[var(--color-border-strong)]'
                         }`}
                       >
                         {c.letter} — {c.header}
@@ -149,14 +146,13 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
               </td>
             </tr>
 
-            {/* Income row */}
             <tr>
-              <td className="px-4 py-3 text-zinc-700 dark:text-zinc-300 font-medium">Income</td>
+              <td className="px-4 py-3 text-[var(--color-text-primary)] font-medium">Income</td>
               <td className="px-4 py-3">
                 <select
                   value={incomeColumnIndex}
                   onChange={(e) => handleIncomeChange(Number(e.target.value))}
-                  className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 text-sm"
+                  className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
                 >
                   {cols.map((c) => (
                     <option key={c.index} value={c.index}>
@@ -177,20 +173,20 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
         onInvertChange={setInvertSign}
       />
 
-      {validationError && <p className="text-sm text-red-500">{validationError}</p>}
-      {apiError && <p className="text-sm text-red-500">{apiError}</p>}
+      {validationError && <p className="text-sm text-[var(--color-error)]">{validationError}</p>}
+      {apiError && <p className="text-sm text-[var(--color-error)]">{apiError}</p>}
 
       <div className="flex justify-between">
         <button
           onClick={onBack}
-          className="px-4 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+          className="px-4 py-2 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
         >
           ← Back
         </button>
         <button
           onClick={handlePreview}
           disabled={preview.isPending}
-          className="px-6 py-2 text-sm rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium disabled:opacity-40 transition-colors hover:bg-zinc-700 dark:hover:bg-zinc-300"
+          className="px-6 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
         >
           {preview.isPending ? 'Loading preview…' : 'Preview →'}
         </button>

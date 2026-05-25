@@ -10,7 +10,7 @@ import { ExportAllSection } from '@/components/settings/ExportAllSection';
 function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-3">
-      <h2 className="text-sm font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+      <h2 className="text-sm font-semibold text-[var(--color-text-secondary)] uppercase tracking-wide">
         {heading}
       </h2>
       {children}
@@ -27,11 +27,11 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-10">
-      <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Settings</h1>
+      <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Settings</h1>
 
       <Section heading="Account">
-        <p className="text-sm text-zinc-700 dark:text-zinc-300">
-          {email || <span className="text-zinc-400 dark:text-zinc-500">—</span>}
+        <p className="text-sm text-[var(--color-text-primary)]">
+          {email || <span className="text-[var(--color-text-muted)]">—</span>}
         </p>
       </Section>
 

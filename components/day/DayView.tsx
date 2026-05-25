@@ -16,18 +16,18 @@ export function DayView({ date }: { date: string }) {
 
       <div className="flex flex-col gap-2">
         {error ? (
-          <div className="flex flex-col items-center gap-3 py-8 text-zinc-500">
+          <div className="flex flex-col items-center gap-3 py-8 text-[var(--color-text-secondary)]">
             <p className="text-sm">Failed to load day data.</p>
             <button
               onClick={() => refetch()}
-              className="px-4 py-2 text-sm rounded border border-zinc-300 hover:bg-zinc-50 transition-colors text-zinc-700"
+              className="px-4 py-2 text-sm rounded border border-[var(--color-btn-secondary-border)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors text-[var(--color-btn-secondary-text)]"
             >
               Retry
             </button>
           </div>
         ) : isLoading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-12 rounded-lg bg-zinc-100 animate-pulse" />
+            <div key={i} className="h-12 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />
           ))
         ) : (
           <>
@@ -42,7 +42,7 @@ export function DayView({ date }: { date: string }) {
             ))}
             <AddCategoryInline />
 
-            <div className="mt-2 border-t border-zinc-100 pt-2">
+            <div className="mt-2 border-t border-[var(--color-border)] pt-2">
               <IncomeRow date={date} income={data?.income ?? 0} />
             </div>
           </>

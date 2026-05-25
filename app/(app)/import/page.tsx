@@ -49,25 +49,25 @@ export default function ImportPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
       <div className="flex items-center gap-2">
-        <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">Import</h1>
-        <span className="text-sm text-zinc-400 dark:text-zinc-500">{STAGE_LABELS[stage]}</span>
+        <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Import</h1>
+        <span className="text-sm text-[var(--color-text-muted)]">{STAGE_LABELS[stage]}</span>
       </div>
 
       {stage === 'upload' && <FileDropzone onSuccess={handleParsed} />}
 
       {stage === 'upload' && (
-        <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900 p-4 flex flex-col gap-2">
-          <p className="text-xs font-medium uppercase tracking-wide text-zinc-400 dark:text-zinc-500">
+        <div className="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] p-4 flex flex-col gap-2">
+          <p className="text-xs font-medium uppercase tracking-wide text-[var(--color-text-muted)]">
             Template
           </p>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="text-sm text-[var(--color-text-secondary)]">
             Not sure what format to use? Download the template — it has sample data for two months
             and instructions inside the file explaining all column rules.
           </p>
           <a
             href="/import-template.xlsx"
             download
-            className="self-start text-sm px-3 py-1.5 rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            className="self-start text-sm px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
           >
             Download template
           </a>

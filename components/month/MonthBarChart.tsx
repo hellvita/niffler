@@ -9,7 +9,7 @@ export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
   const router = useRouter();
 
   if (isLoading) {
-    return <div className="h-48 rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-pulse" />;
+    return <div className="h-48 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />;
   }
   if (!data) return null;
 

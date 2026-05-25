@@ -21,8 +21,8 @@ function NavLink({
       href={href}
       className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
         active
-          ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100'
-          : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800'
+          ? 'bg-[var(--color-bg-secondary)] text-[var(--color-text-primary)]'
+          : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-btn-secondary-hover)]'
       }`}
     >
       {children}
@@ -36,7 +36,7 @@ function BalanceDisplay() {
   return (
     <span
       className={`text-sm font-semibold tabular-nums font-mono whitespace-nowrap ${
-        data.currentBalance < 0 ? 'text-red-500' : 'text-zinc-900 dark:text-zinc-100'
+        data.currentBalance < 0 ? 'text-[var(--color-error)]' : 'text-[var(--color-text-primary)]'
       }`}
     >
       {data.currentBalance.toFixed(2)}
@@ -61,17 +61,15 @@ export function NavBar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-30 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+      <nav className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
         <div className="max-w-5xl mx-auto px-4 h-12 flex items-center gap-2 overflow-x-auto">
-          {/* Wordmark */}
           <Link
             href="/"
-            className="mr-2 text-base font-bold text-zinc-900 dark:text-zinc-100 tracking-tight shrink-0"
+            className="mr-2 text-base font-bold text-[var(--color-text-primary)] tracking-tight shrink-0"
           >
             Niffler
           </Link>
 
-          {/* Navigation links */}
           <NavLink href={`/day/${today}`} active={pathname.startsWith('/day/')}>
             Today
           </NavLink>
@@ -89,7 +87,7 @@ export function NavBar() {
           </NavLink>
           <button
             onClick={() => setShowAbout(true)}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors shrink-0"
+            className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors shrink-0"
             aria-label="About Niffler"
           >
             <svg
@@ -109,18 +107,15 @@ export function NavBar() {
             </svg>
           </button>
 
-          {/* Spacer */}
           <div className="flex-1" />
 
-          {/* Balance */}
-          <span className="text-xs text-zinc-400 dark:text-zinc-500 shrink-0">Balance</span>
+          <span className="text-xs text-[var(--color-text-muted)] shrink-0">Balance</span>
           <BalanceDisplay />
 
-          {/* Logout */}
           <button
             onClick={handleLogout}
             disabled={logout.isPending}
-            className="ml-2 px-3 py-1.5 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors shrink-0"
+            className="ml-2 px-3 py-1.5 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors shrink-0"
           >
             {logout.isPending ? 'Logging out…' : 'Logout'}
           </button>

@@ -43,7 +43,7 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1 text-sm text-zinc-500 dark:text-zinc-400">
+      <div className="flex flex-col gap-1 text-sm text-[var(--color-text-secondary)]">
         <span>
           Showing first {previewResult.preview.length} of {previewResult.totalDataRows} rows
         </span>
@@ -54,44 +54,41 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
         )}
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-zinc-200 dark:border-zinc-700">
+      <div className="overflow-x-auto rounded-lg border border-[var(--color-border)]">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900">
-              <th className="px-3 py-2 text-left font-medium text-zinc-500 dark:text-zinc-400">
+            <tr className="border-b border-[var(--color-border)] bg-[var(--color-surface-raised)]">
+              <th className="px-3 py-2 text-left font-medium text-[var(--color-text-secondary)]">
                 Date
               </th>
               {categoryNames.map((name) => (
                 <th
                   key={name}
-                  className="px-3 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400"
+                  className="px-3 py-2 text-right font-medium text-[var(--color-text-secondary)]"
                 >
                   {name}
                 </th>
               ))}
-              <th className="px-3 py-2 text-right font-medium text-zinc-500 dark:text-zinc-400">
+              <th className="px-3 py-2 text-right font-medium text-[var(--color-text-secondary)]">
                 Income
               </th>
             </tr>
           </thead>
           <tbody>
             {previewResult.preview.map((row) => (
-              <tr
-                key={row.date}
-                className="border-b border-zinc-100 dark:border-zinc-800 last:border-0"
-              >
-                <td className="px-3 py-2 text-zinc-700 dark:text-zinc-300 whitespace-nowrap font-mono tabular-nums">
+              <tr key={row.date} className="border-b border-[var(--color-border)] last:border-0">
+                <td className="px-3 py-2 text-[var(--color-text-secondary)] whitespace-nowrap font-mono tabular-nums">
                   {row.date}
                 </td>
                 {categoryNames.map((name) => (
                   <td
                     key={name}
-                    className="px-3 py-2 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200"
+                    className="px-3 py-2 text-right font-mono tabular-nums text-[var(--color-text-primary)]"
                   >
                     {fmt(getExpense(row, name))}
                   </td>
                 ))}
-                <td className="px-3 py-2 text-right font-mono tabular-nums text-zinc-800 dark:text-zinc-200">
+                <td className="px-3 py-2 text-right font-mono tabular-nums text-[var(--color-text-primary)]">
                   {fmt(row.income)}
                 </td>
               </tr>
@@ -100,20 +97,20 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
         </table>
       </div>
 
-      {executeError && <p className="text-sm text-red-500">{executeError}</p>}
+      {executeError && <p className="text-sm text-[var(--color-error)]">{executeError}</p>}
 
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
           disabled={execute.isPending}
-          className="px-4 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors"
+          className="px-4 py-2 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors"
         >
           ← Back
         </button>
         <button
           onClick={handleImport}
           disabled={execute.isPending}
-          className="px-6 py-2 text-sm rounded-lg bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-medium disabled:opacity-40 transition-colors hover:bg-zinc-700 dark:hover:bg-zinc-300"
+          className="px-6 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
         >
           {execute.isPending ? 'Importing…' : 'Import'}
         </button>

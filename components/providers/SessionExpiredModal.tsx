@@ -1,6 +1,8 @@
 'use client';
 import { useState } from 'react';
 import { useSessionExpired } from './SessionExpiredContext';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
 
 function getEmailFromCookie(): string {
   if (typeof document === 'undefined') return '';
@@ -47,42 +49,39 @@ export function SessionExpiredModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-sm">
-        <h2 className="text-lg font-semibold mb-1">Session expired</h2>
-        <p className="text-sm text-gray-500 mb-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-backdrop)]">
+      <div className="bg-[var(--color-surface)] rounded-lg shadow-xl p-8 w-full max-w-sm">
+        <h2 className="text-lg font-semibold mb-1 text-[var(--color-text-primary)]">
+          Session expired
+        </h2>
+        <p className="text-sm text-[var(--color-text-secondary)] mb-4">
           Re-enter your password to continue as <strong>{email}</strong>.
         </p>
         <form onSubmit={handleContinue} className="space-y-4">
           <div>
             <label
               htmlFor="session-password"
-              className="block text-sm font-medium text-gray-700 mb-1"
+              className="block text-sm font-medium text-[var(--color-text-primary)] mb-1"
             >
               Password
             </label>
-            <input
+            <Input
               id="session-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isPending}
               autoFocus
-              className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
             />
           </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit"
-            disabled={isPending || !password}
-            className="w-full bg-blue-600 text-white rounded px-4 py-2 text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
-          >
+          {error && <p className="text-sm text-[var(--color-error)]">{error}</p>}
+          <Button type="submit" disabled={isPending || !password} className="w-full">
             {isPending ? 'Signing in…' : 'Continue'}
-          </button>
+          </Button>
         </form>
         <button
           onClick={handleSignInDifferent}
-          className="mt-4 w-full text-sm text-gray-500 hover:text-gray-700 text-center"
+          className="mt-4 w-full text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center transition-colors"
         >
           Sign in as a different account
         </button>

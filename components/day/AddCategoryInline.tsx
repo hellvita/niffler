@@ -47,7 +47,7 @@ export function AddCategoryInline() {
     return (
       <button
         onClick={open}
-        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 rounded-lg border border-dashed border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+        className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] rounded-lg border border-dashed border-[var(--color-border)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
       >
         <span className="text-base leading-none font-light">+</span>
         Add category
@@ -71,23 +71,23 @@ export function AddCategoryInline() {
           }}
           placeholder="Category name"
           disabled={isPending}
-          className="flex-1 rounded border border-zinc-300 dark:border-zinc-600 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 bg-white dark:bg-zinc-800 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-black dark:focus:ring-zinc-400 disabled:opacity-50"
+          className="flex-1 rounded border border-[var(--color-btn-secondary-border)] px-3 py-2 text-sm text-[var(--color-text-primary)] bg-[var(--color-surface)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)] disabled:opacity-50"
         />
         <button
           onClick={submit}
           disabled={isPending || !value.trim()}
-          className="px-4 py-2 text-sm rounded bg-black dark:bg-zinc-100 text-white dark:text-zinc-900 disabled:opacity-40 transition-opacity"
+          className="px-4 py-2 text-sm rounded bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] disabled:opacity-40 transition-opacity hover:bg-[var(--color-btn-primary-hover)]"
         >
           {isPending ? '…' : 'Add'}
         </button>
         <button
           onClick={close}
-          className="px-3 py-2 text-sm rounded border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+          className="px-3 py-2 text-sm rounded border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
         >
           Cancel
         </button>
       </div>
-      {error && <p className="text-sm text-red-500 px-1">{error}</p>}
+      {error && <p className="text-sm text-[var(--color-error)] px-1">{error}</p>}
     </div>
   );
 }

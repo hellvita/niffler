@@ -30,24 +30,24 @@ export function ExportAllSection() {
 
   return (
     <div className="flex flex-col gap-3">
-      <p className="text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="text-sm text-[var(--color-text-secondary)]">
         Download all your data across every month.
       </p>
       {summary && !hasData && (
-        <p className="text-xs text-zinc-400 dark:text-zinc-500">No data to export yet.</p>
+        <p className="text-xs text-[var(--color-text-muted)]">No data to export yet.</p>
       )}
       <div className="flex flex-wrap gap-2">
         <button
           onClick={handleZip}
           disabled={!hasData || exportingZip || exportingCombined}
-          className="px-3 py-1.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors"
+          className="px-3 py-1.5 text-xs rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors"
         >
           {exportingZip ? 'Exporting…' : 'Download ZIP (one file per month)'}
         </button>
         <button
           onClick={handleCombined}
           disabled={!hasData || exportingZip || exportingCombined}
-          className="px-3 py-1.5 text-xs rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 disabled:opacity-40 transition-colors"
+          className="px-3 py-1.5 text-xs rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors"
         >
           {exportingCombined ? 'Exporting…' : 'Download combined XLSX'}
         </button>

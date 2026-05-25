@@ -20,20 +20,20 @@ export function AboutModal({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-backdrop)] px-4"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-lg rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 shadow-xl overflow-y-auto max-h-[80vh]"
+        className="relative w-full max-w-lg rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-xl overflow-y-auto max-h-[80vh] scrollbar-hide"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-          <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-[var(--color-border)]">
+          <h2 className="text-base font-semibold text-[var(--color-text-primary)]">
             About Niffler
           </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
             aria-label="Close"
           >
             <svg
@@ -53,9 +53,9 @@ export function AboutModal({ open, onClose }: Props) {
           </button>
         </div>
 
-        <div className="px-6 py-5 flex flex-col gap-6 text-sm text-zinc-700 dark:text-zinc-300">
+        <div className="px-6 py-5 flex flex-col gap-6 text-sm text-[var(--color-text-primary)]">
           <section className="flex flex-col gap-2">
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">The Name</h3>
+            <h3 className="font-semibold text-[var(--color-text-primary)]">The Name</h3>
             <p className="leading-relaxed">
               Niffler is a magical creature from the Harry Potter universe — a small, burrowing
               beast with an insatiable obsession with shiny things: gold coins, gems, anything that
@@ -66,7 +66,7 @@ export function AboutModal({ open, onClose }: Props) {
           </section>
 
           <section className="flex flex-col gap-2">
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">What Niffler Does</h3>
+            <h3 className="font-semibold text-[var(--color-text-primary)]">What Niffler Does</h3>
             <ul className="list-disc list-inside space-y-1 leading-relaxed">
               <li>Log daily expenses by category and track income.</li>
               <li>Review monthly summaries and stay within budget limits.</li>
@@ -77,20 +77,20 @@ export function AboutModal({ open, onClose }: Props) {
           </section>
 
           <section className="flex flex-col gap-2">
-            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">Metrics Reference</h3>
+            <h3 className="font-semibold text-[var(--color-text-primary)]">Metrics Reference</h3>
             <div className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-zinc-200 dark:border-zinc-700">
-                    <th className="text-left py-1.5 pr-4 font-semibold text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
+                  <tr className="border-b border-[var(--color-border)]">
+                    <th className="text-left py-1.5 pr-4 font-semibold text-[var(--color-text-primary)] whitespace-nowrap">
                       Metric
                     </th>
-                    <th className="text-left py-1.5 font-semibold text-zinc-900 dark:text-zinc-100">
+                    <th className="text-left py-1.5 font-semibold text-[var(--color-text-primary)]">
                       What it means
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
+                <tbody className="divide-y divide-[var(--color-border)]">
                   {[
                     {
                       metric: 'Expenses',
@@ -126,7 +126,7 @@ export function AboutModal({ open, onClose }: Props) {
                     },
                   ].map(({ metric, desc }) => (
                     <tr key={metric}>
-                      <td className="py-2 pr-4 font-medium text-zinc-900 dark:text-zinc-100 whitespace-nowrap align-top">
+                      <td className="py-2 pr-4 font-medium text-[var(--color-text-primary)] whitespace-nowrap align-top">
                         {metric}
                       </td>
                       <td className="py-2 leading-relaxed align-top">{desc}</td>
