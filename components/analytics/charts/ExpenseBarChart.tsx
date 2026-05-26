@@ -11,9 +11,11 @@ import {
 } from 'recharts';
 import { computeMedian, type ChartDataPoint } from '@/lib/utils/aggregation';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
+import { useRechartsTheme } from '@/lib/hooks/useRechartsTheme';
 
 export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
   const { preferences: prefs } = useColumnPreferences();
+  const theme = useRechartsTheme();
 
   if (data.length === 0) {
     return (
@@ -34,11 +36,12 @@ export function ExpenseBarChart({ data }: { data: ChartDataPoint[] }) {
   return (
     <ResponsiveContainer width="100%" height={300}>
       <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 4 }}>
-        <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#52525b' }} />
-        <YAxis tick={{ fontSize: 11, fill: '#52525b' }} />
+        <XAxis dataKey="label" tick={{ fontSize: 11, fill: theme.axis }} />
+        <YAxis tick={{ fontSize: 11, fill: theme.axis }} />
         <Tooltip
           formatter={(v) => (typeof v === 'number' ? v.toFixed(2) : String(v))}
-          labelStyle={{ color: '#18181b', fontWeight: 500 }}
+          contentStyle={{ backgroundColor: theme.surface, borderColor: theme.border }}
+          labelStyle={{ color: theme.text, fontWeight: 500 }}
         />
         <Legend />
         <Bar
