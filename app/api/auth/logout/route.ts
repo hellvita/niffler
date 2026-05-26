@@ -15,6 +15,7 @@ export async function POST() {
 
   cookieStore.delete('auth_token');
   cookieStore.delete('user_email');
+  cookieStore.delete('auth_expires_at');
 
   return NextResponse.json({ ok: true });
 }
