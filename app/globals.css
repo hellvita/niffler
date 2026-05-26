@@ -38,6 +38,11 @@
   --color-success-bg: #f0fdf4;
   --color-warning: #d97706;
 
+  /* Chart */
+  --color-chart-bar: #3b82f6; /* blue-500 */
+  --color-chart-limit: #f59e0b; /* amber-500 */
+  --color-chart-axis: #52525b; /* zinc-600 */
+
   /* Focus ring */
   --color-focus-ring: #18181b;
 
@@ -88,6 +93,11 @@
     --color-error-bg: #450a0a;
     --color-success: #4ade80;
     --color-success-bg: #052e16;
+    --color-warning: #fbbf24; /* amber-400 */
+
+    --color-chart-bar: #60a5fa; /* blue-400 */
+    --color-chart-limit: #fbbf24; /* amber-400 */
+    --color-chart-axis: #a1a1aa; /* zinc-400 */
 
     --color-focus-ring: #a1a1aa;
     --color-backdrop: rgba(0, 0, 0, 0.6);
@@ -120,6 +130,11 @@
   --color-error-bg: #450a0a;
   --color-success: #4ade80;
   --color-success-bg: #052e16;
+  --color-warning: #fbbf24; /* amber-400 */
+
+  --color-chart-bar: #60a5fa; /* blue-400 */
+  --color-chart-limit: #fbbf24; /* amber-400 */
+  --color-chart-axis: #a1a1aa; /* zinc-400 */
 
   --color-focus-ring: #a1a1aa;
   --color-backdrop: rgba(0, 0, 0, 0.6);
