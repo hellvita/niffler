@@ -1,5 +1,5 @@
 'use client';
-import { QueryClient, QueryClientProvider, QueryCache } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider, QueryCache, MutationCache } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useSessionExpired } from './SessionExpiredContext';
 
@@ -10,9 +10,12 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
       new QueryClient({
         queryCache: new QueryCache({
           onError: (error: unknown) => {
-            if (error instanceof Error && error.message === '401') {
-              triggerExpired();
-            }
+            if (error instanceof Error && error.message === '401') triggerExpired();
+          },
+        }),
+        mutationCache: new MutationCache({
+          onError: (error: unknown) => {
+            if (error instanceof Error && error.message === '401') triggerExpired();
           },
         }),
       })
