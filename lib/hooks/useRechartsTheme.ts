@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 const light = {
   bar: '#3b82f6',
@@ -28,19 +28,17 @@ function getTheme() {
   return isDark ? dark : light;
 }
 
+function subscribe(onStoreChange: () => void) {
+  const mql = window.matchMedia('(prefers-color-scheme: dark)');
+  mql.addEventListener('change', onStoreChange);
+  const obs = new MutationObserver(onStoreChange);
+  obs.observe(document.documentElement, { attributeFilter: ['class'] });
+  return () => {
+    mql.removeEventListener('change', onStoreChange);
+    obs.disconnect();
+  };
+}
+
 export function useRechartsTheme() {
-  const [c, setC] = useState(light);
-  useEffect(() => {
-    setC(getTheme());
-    const handler = () => setC(getTheme());
-    const mql = window.matchMedia('(prefers-color-scheme: dark)');
-    mql.addEventListener('change', handler);
-    const obs = new MutationObserver(handler);
-    obs.observe(document.documentElement, { attributeFilter: ['class'] });
-    return () => {
-      mql.removeEventListener('change', handler);
-      obs.disconnect();
-    };
-  }, []);
-  return c;
+  return useSyncExternalStore(subscribe, getTheme, () => light);
 }

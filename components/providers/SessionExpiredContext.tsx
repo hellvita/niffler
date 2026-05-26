@@ -1,5 +1,5 @@
 'use client';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 interface SessionExpiredContextValue {
   isExpired: boolean;
@@ -23,8 +23,8 @@ function readExpiresAt(): Date | null {
 export function SessionExpiredProvider({ children }: { children: React.ReactNode }) {
   const [isExpired, setIsExpired] = useState(false);
 
-  const triggerExpired = () => setIsExpired(true);
-  const clearExpired = () => setIsExpired(false);
+  const triggerExpired = useCallback(() => setIsExpired(true), []);
+  const clearExpired = useCallback(() => setIsExpired(false), []);
 
   useEffect(() => {
     if (isExpired) return;
@@ -33,12 +33,7 @@ export function SessionExpiredProvider({ children }: { children: React.ReactNode
     if (!expiresAt) return;
 
     const ms = expiresAt.getTime() - Date.now();
-    if (ms <= 0) {
-      setIsExpired(true);
-      return;
-    }
-
-    const timer = setTimeout(() => setIsExpired(true), ms);
+    const timer = setTimeout(() => setIsExpired(true), Math.max(ms, 0));
     return () => clearTimeout(timer);
   }, [isExpired]);
 
