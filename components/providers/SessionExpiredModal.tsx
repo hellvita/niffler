@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useSessionExpired } from './SessionExpiredContext';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
+import { Modal } from '@/components/shared/Modal';
 
 function getEmailFromCookie(): string {
   if (typeof document === 'undefined') return '';
@@ -15,8 +16,6 @@ export function SessionExpiredModal() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-
-  if (!isExpired) return null;
 
   const email = getEmailFromCookie();
 
@@ -49,11 +48,8 @@ export function SessionExpiredModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-backdrop)]">
-      <div className="bg-[var(--color-surface)] rounded-lg shadow-xl p-8 w-full max-w-sm">
-        <h2 className="text-lg font-semibold mb-1 text-[var(--color-text-primary)]">
-          Session expired
-        </h2>
+    <Modal open={isExpired} onClose={() => {}} title="Session expired" maxWidth="sm" preventClose>
+      <div className="px-6 pb-6 pt-4">
         <p className="text-sm text-[var(--color-text-secondary)] mb-4">
           Re-enter your password to continue as <strong>{email}</strong>.
         </p>
@@ -86,6 +82,6 @@ export function SessionExpiredModal() {
           Sign in as a different account
         </button>
       </div>
-    </div>
+    </Modal>
   );
 }
