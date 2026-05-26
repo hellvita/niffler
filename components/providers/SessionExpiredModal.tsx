@@ -1,23 +1,17 @@
 'use client';
 import { useState } from 'react';
 import { useSessionExpired } from './SessionExpiredContext';
+import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { Modal } from '@/components/shared/Modal';
 
-function getEmailFromCookie(): string {
-  if (typeof document === 'undefined') return '';
-  const match = document.cookie.split('; ').find((r) => r.startsWith('user_email='));
-  return match ? decodeURIComponent(match.split('=')[1]) : '';
-}
-
 export function SessionExpiredModal() {
   const { isExpired, clearExpired } = useSessionExpired();
+  const { email } = useCurrentUser();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-
-  const email = getEmailFromCookie();
 
   async function handleContinue(e: React.FormEvent) {
     e.preventDefault();
@@ -27,7 +21,7 @@ export function SessionExpiredModal() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email ?? '', password }),
       });
       if (!res.ok) {
         setError('Incorrect password. Please try again.');

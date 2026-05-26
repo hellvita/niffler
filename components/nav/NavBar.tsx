@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLogout } from '@/lib/hooks/useAuth';
+import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
 import { Button } from '@/components/shared/Button';
 import { AboutModal } from './AboutModal';
 
@@ -49,6 +50,7 @@ export function NavBar() {
   const router = useRouter();
   const pathname = usePathname();
   const logout = useLogout();
+  const { email } = useCurrentUser();
   const [showAbout, setShowAbout] = useState(false);
 
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -130,6 +132,15 @@ export function NavBar() {
 
           <span className="text-xs text-[var(--color-text-muted)] shrink-0">Balance</span>
           <BalanceDisplay />
+
+          {email && (
+            <span
+              title={email}
+              className="text-xs text-[var(--color-text-muted)] truncate max-w-[12rem] shrink-0 ml-2"
+            >
+              {email}
+            </span>
+          )}
 
           <Button
             variant="secondary"
