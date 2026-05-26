@@ -70,7 +70,7 @@ export function Modal({
             </Button>
           </div>
         )}
-        <div className="overflow-y-auto min-h-0">{children}</div>
+        <div className="overflow-y-auto min-h-0 scrollbar-hide">{children}</div>
       </div>
     </div>
   );
