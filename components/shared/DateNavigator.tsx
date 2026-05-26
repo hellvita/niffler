@@ -2,6 +2,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { format, addDays, subDays, parseISO } from 'date-fns';
+import { Button } from './Button';
+import { Input } from './Input';
 
 export function DateNavigator({ date }: { date: string }) {
   const router = useRouter();
@@ -12,13 +14,14 @@ export function DateNavigator({ date }: { date: string }) {
 
   return (
     <div className="flex items-center gap-3">
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => navigate(subDays(parsed, 1))}
         aria-label="Previous day"
-        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         ←
-      </button>
+      </Button>
 
       <div className="relative flex-1 text-center">
         <button
@@ -28,7 +31,7 @@ export function DateNavigator({ date }: { date: string }) {
           {format(parsed, 'EEEE, MMMM d, yyyy')}
         </button>
         {showPicker && (
-          <input
+          <Input
             type="date"
             value={date}
             onChange={(e) => {
@@ -37,25 +40,23 @@ export function DateNavigator({ date }: { date: string }) {
                 setShowPicker(false);
               }
             }}
-            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-10 rounded border border-[var(--color-btn-secondary-border)] px-2 py-1 text-sm text-[var(--color-text-primary)] bg-[var(--color-surface)] shadow-md"
+            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-10 w-auto shadow-md"
           />
         )}
       </div>
 
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => navigate(addDays(parsed, 1))}
         aria-label="Next day"
-        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         →
-      </button>
+      </Button>
 
-      <button
-        onClick={() => navigate(new Date())}
-        className="px-3 py-1 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
-      >
+      <Button variant="secondary" size="sm" onClick={() => navigate(new Date())}>
         Today
-      </button>
+      </Button>
     </div>
   );
 }

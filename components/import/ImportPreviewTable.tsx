@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useExecuteImport } from '@/lib/hooks/useImport';
+import { Button } from '@/components/shared/Button';
 import type { ColumnMapping, PreviewResult, ImportResult, PreviewRow } from '@/lib/types/api';
 
 function fmt(v: number | null): string {
@@ -48,7 +49,7 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
           Showing first {previewResult.preview.length} of {previewResult.totalDataRows} rows
         </span>
         {previewResult.skippedRows > 0 && (
-          <span className="text-amber-600 dark:text-amber-400">
+          <span className="text-[var(--color-warning)]">
             {previewResult.skippedRows} rows were skipped (unparseable date format)
           </span>
         )}
@@ -100,20 +101,12 @@ export function ImportPreviewTable({ mapping, previewResult, onImport, onBack }:
       {executeError && <p className="text-sm text-[var(--color-error)]">{executeError}</p>}
 
       <div className="flex items-center justify-between">
-        <button
-          onClick={onBack}
-          disabled={execute.isPending}
-          className="px-4 py-2 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors"
-        >
-          ← Back
-        </button>
-        <button
-          onClick={handleImport}
-          disabled={execute.isPending}
-          className="px-6 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
-        >
-          {execute.isPending ? 'Importing…' : 'Import'}
-        </button>
+        <Button variant="secondary" onClick={onBack} disabled={execute.isPending}>
+          Back
+        </Button>
+        <Button variant="primary" loading={execute.isPending} onClick={handleImport}>
+          Import
+        </Button>
       </div>
     </div>
   );

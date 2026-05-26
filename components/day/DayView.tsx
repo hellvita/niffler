@@ -4,6 +4,8 @@ import { DaySummaryBar } from '@/components/day/DaySummaryBar';
 import { CategoryExpenseRow } from '@/components/day/CategoryExpenseRow';
 import { IncomeRow } from '@/components/day/IncomeRow';
 import { AddCategoryInline } from '@/components/day/AddCategoryInline';
+import { Skeleton } from '@/components/shared/Skeleton';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { useDaySummary } from '@/lib/hooks/useSummary';
 
 export function DayView({ date }: { date: string }) {
@@ -16,19 +18,12 @@ export function DayView({ date }: { date: string }) {
 
       <div className="flex flex-col gap-2">
         {error ? (
-          <div className="flex flex-col items-center gap-3 py-8 text-[var(--color-text-secondary)]">
-            <p className="text-sm">Failed to load day data.</p>
-            <button
-              onClick={() => refetch()}
-              className="px-4 py-2 text-sm rounded border border-[var(--color-btn-secondary-border)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors text-[var(--color-btn-secondary-text)]"
-            >
-              Retry
-            </button>
-          </div>
+          <EmptyState
+            message="Failed to load day data."
+            action={{ label: 'Retry', onClick: refetch }}
+          />
         ) : isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-12 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />
-          ))
+          Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12" />)
         ) : (
           <>
             {data?.expensesByCategory.map((e) => (

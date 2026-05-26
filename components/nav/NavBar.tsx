@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { format } from 'date-fns';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLogout } from '@/lib/hooks/useAuth';
+import { Button } from '@/components/shared/Button';
 import { AboutModal } from './AboutModal';
 
 function NavLink({
@@ -85,10 +86,13 @@ export function NavBar() {
           <NavLink href="/settings" active={pathname.startsWith('/settings')}>
             Settings
           </NavLink>
-          <button
+
+          <Button
+            variant="ghost"
+            size="icon-sm"
             onClick={() => setShowAbout(true)}
-            className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors shrink-0"
             aria-label="About Niffler"
+            className="shrink-0"
           >
             <svg
               width="16"
@@ -105,20 +109,22 @@ export function NavBar() {
               <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
               <line x1="12" y1="17" x2="12.01" y2="17" />
             </svg>
-          </button>
+          </Button>
 
           <div className="flex-1" />
 
           <span className="text-xs text-[var(--color-text-muted)] shrink-0">Balance</span>
           <BalanceDisplay />
 
-          <button
+          <Button
+            variant="secondary"
+            size="sm"
+            loading={logout.isPending}
             onClick={handleLogout}
-            disabled={logout.isPending}
-            className="ml-2 px-3 py-1.5 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors shrink-0"
+            className="ml-2 shrink-0"
           >
-            {logout.isPending ? 'Logging out…' : 'Logout'}
-          </button>
+            Logout
+          </Button>
         </div>
       </nav>
       <AboutModal open={showAbout} onClose={() => setShowAbout(false)} />

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { parseISO } from 'date-fns';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
 import { useRechartsTheme } from '@/lib/hooks/useRechartsTheme';
+import { Skeleton } from '@/components/shared/Skeleton';
 
 export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
   const { data, isLoading } = useMonthSummary(yearMonth);
@@ -11,7 +12,7 @@ export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
   const theme = useRechartsTheme();
 
   if (isLoading) {
-    return <div className="h-48 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />;
+    return <Skeleton className="h-48" />;
   }
   if (!data) return null;
 

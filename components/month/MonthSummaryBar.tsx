@@ -2,13 +2,14 @@
 import { useMonthSummary } from '@/lib/hooks/useSummary';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { computeMedian } from '@/lib/utils/aggregation';
+import { Skeleton } from '@/components/shared/Skeleton';
 
 export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
   const { data, isLoading } = useMonthSummary(yearMonth);
   const { preferences: prefs } = useColumnPreferences();
 
   if (isLoading) {
-    return <div className="h-20 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />;
+    return <Skeleton className="h-20" />;
   }
   if (!data) return null;
 

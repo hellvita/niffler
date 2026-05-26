@@ -10,6 +10,8 @@ import {
   startOfYear,
   endOfYear,
 } from 'date-fns';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
 
 type Preset = 'this-week' | 'this-month' | 'last-3-months' | 'this-year' | 'all-time';
 
@@ -86,34 +88,29 @@ export function DateRangePicker({
     <div className="flex flex-wrap items-center gap-3">
       <div className="flex flex-wrap gap-1.5">
         {PRESETS.map((p) => (
-          <button
+          <Button
             key={p.key}
+            variant={p.key === preset ? 'primary' : 'secondary'}
+            size="sm"
             onClick={() => applyPreset(p.key)}
-            className={`px-3 py-1.5 text-sm rounded-lg border transition-colors ${
-              p.key === preset
-                ? 'border-[var(--color-btn-primary-bg)] bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]'
-                : 'border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)]'
-            }`}
           >
             {p.label}
-          </button>
+          </Button>
         ))}
       </div>
       {!isAllTime && (
         <div className="flex items-center gap-2">
-          <input
+          <Input
             type="date"
             value={from}
             onChange={(e) => updateParams({ from: e.target.value, preset: null })}
-            className="text-sm px-2 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)]"
           />
           <span className="text-[var(--color-text-muted)]">–</span>
-          <input
+          <Input
             type="date"
             value={to}
             min={from}
             onChange={(e) => updateParams({ to: e.target.value, preset: null })}
-            className="text-sm px-2 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)]"
           />
         </div>
       )}

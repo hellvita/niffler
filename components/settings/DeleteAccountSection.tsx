@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDeleteAccount } from '@/lib/hooks/useUsers';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { Button } from '@/components/shared/Button';
 
 const confirmMessage = (
   <div className="flex flex-col gap-3 text-sm leading-relaxed">
@@ -11,7 +12,7 @@ const confirmMessage = (
       limits, and settings — will be permanently deleted.
     </p>
     <p>After deletion, you can create a new account using the same email address.</p>
-    <p style={{ color: 'var(--color-warning)' }}>
+    <p className="text-[var(--color-warning)]">
       We recommend <strong>exporting your data</strong> before proceeding. Use the{' '}
       <strong>Export data</strong> section above to download a complete copy of your records.
     </p>
@@ -42,13 +43,13 @@ export function DeleteAccountSection() {
       </p>
       {apiError && <p className="text-xs text-[var(--color-error)]">{apiError}</p>}
       <div>
-        <button
+        <Button
+          variant="destructive-outline"
+          loading={deleteAccount.isPending}
           onClick={() => setShowConfirm(true)}
-          disabled={deleteAccount.isPending}
-          className="px-4 py-2 text-sm rounded-lg border border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error-bg)] disabled:opacity-40 transition-colors"
         >
-          {deleteAccount.isPending ? 'Deleting…' : 'Delete my account'}
-        </button>
+          Delete my account
+        </Button>
       </div>
 
       {showConfirm && (

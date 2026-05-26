@@ -75,12 +75,9 @@ export function SessionExpiredModal() {
             {isPending ? 'Signing in…' : 'Continue'}
           </Button>
         </form>
-        <button
-          onClick={handleSignInDifferent}
-          className="mt-4 w-full text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center transition-colors"
-        >
+        <Button variant="text" className="w-full text-center mt-4" onClick={handleSignInDifferent}>
           Sign in as a different account
-        </button>
+        </Button>
       </div>
     </Modal>
   );

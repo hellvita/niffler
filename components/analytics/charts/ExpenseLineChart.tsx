@@ -3,17 +3,14 @@ import { LineChart, Line, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } f
 import { computeMedian, type ChartDataPoint } from '@/lib/utils/aggregation';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { useRechartsTheme } from '@/lib/hooks/useRechartsTheme';
+import { EmptyState } from '@/components/shared/EmptyState';
 
 export function ExpenseLineChart({ data }: { data: ChartDataPoint[] }) {
   const { preferences: prefs } = useColumnPreferences();
   const theme = useRechartsTheme();
 
   if (data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64 text-sm text-[var(--color-text-muted)]">
-        No data for this period.
-      </div>
-    );
+    return <EmptyState message="No data for this period." className="h-64" />;
   }
 
   const showIncome = prefs.income.visible;
