@@ -16,33 +16,41 @@ export function DayView({ date }: { date: string }) {
       <DateNavigator date={date} />
       <DaySummaryBar date={date} />
 
-      <div className="flex flex-col gap-2">
+      <ul className="flex flex-col gap-2 list-none">
         {error ? (
-          <EmptyState
-            message="Failed to load day data."
-            action={{ label: 'Retry', onClick: refetch }}
-          />
+          <li>
+            <EmptyState
+              message="Failed to load day data."
+              action={{ label: 'Retry', onClick: refetch }}
+            />
+          </li>
         ) : isLoading ? (
-          Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12" />)
+          Array.from({ length: 4 }).map((_, i) => (
+            <li key={i}>
+              <Skeleton className="h-12" />
+            </li>
+          ))
         ) : (
           <>
             {data?.expensesByCategory.map((e) => (
-              <CategoryExpenseRow
-                key={e.categoryId}
-                date={date}
-                categoryId={e.categoryId}
-                categoryName={e.categoryName}
-                amount={e.amount}
-              />
+              <li key={e.categoryId}>
+                <CategoryExpenseRow
+                  date={date}
+                  categoryId={e.categoryId}
+                  categoryName={e.categoryName}
+                  amount={e.amount}
+                />
+              </li>
             ))}
-            <AddCategoryInline />
-
-            <div className="mt-2 border-t border-[var(--color-border)] pt-2">
+            <li>
+              <AddCategoryInline />
+            </li>
+            <li className="mt-2 border-t border-[var(--color-border)] pt-2">
               <IncomeRow date={date} income={data?.income ?? 0} />
-            </div>
+            </li>
           </>
         )}
-      </div>
+      </ul>
     </div>
   );
 }

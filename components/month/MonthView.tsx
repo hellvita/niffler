@@ -29,13 +29,13 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
   const total = categories.reduce((sum, c) => sum + c.amount, 0);
 
   return (
-    <div className="flex flex-col gap-1">
+    <ul className="flex flex-col gap-1 list-none">
       {[...categories]
         .sort((a, b) => b.amount - a.amount)
         .map((c) => {
           const pct = total > 0 ? (c.amount / total) * 100 : 0;
           return (
-            <div key={c.categoryId} className="flex items-center gap-3">
+            <li key={c.categoryId} className="flex items-center gap-3">
               <span className="flex-1 text-sm text-[var(--color-text-primary)] truncate">
                 {c.categoryName}
               </span>
@@ -48,10 +48,10 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
               <span className="w-20 text-right text-sm font-mono tabular-nums text-[var(--color-text-primary)]">
                 {c.amount.toFixed(2)}
               </span>
-            </div>
+            </li>
           );
         })}
-    </div>
+    </ul>
   );
 }
 

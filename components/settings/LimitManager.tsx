@@ -108,26 +108,28 @@ export function LimitManager() {
           <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-1">
             History
           </p>
-          {sorted.map((entry) => (
-            <div
-              key={entry.effectiveFromDate}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
-            >
-              <span className="flex-1 text-sm text-[var(--color-text-secondary)] font-mono tabular-nums">
-                {entry.effectiveFromDate}
-              </span>
-              <span className="text-sm font-semibold font-mono tabular-nums text-[var(--color-text-primary)]">
-                {entry.amount.toFixed(2)}
-              </span>
-              <Button
-                variant="text"
-                className="text-[var(--color-error)] hover:opacity-70"
-                onClick={() => setDeleteTarget(entry.effectiveFromDate)}
+          <ul className="flex flex-col gap-1 list-none">
+            {sorted.map((entry) => (
+              <li
+                key={entry.effectiveFromDate}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
               >
-                Delete
-              </Button>
-            </div>
-          ))}
+                <span className="flex-1 text-sm text-[var(--color-text-secondary)] font-mono tabular-nums">
+                  {entry.effectiveFromDate}
+                </span>
+                <span className="text-sm font-semibold font-mono tabular-nums text-[var(--color-text-primary)]">
+                  {entry.amount.toFixed(2)}
+                </span>
+                <Button
+                  variant="text"
+                  className="text-[var(--color-error)] hover:opacity-70"
+                  onClick={() => setDeleteTarget(entry.effectiveFromDate)}
+                >
+                  Delete
+                </Button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

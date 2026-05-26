@@ -62,7 +62,10 @@ export function NavBar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
+      <nav
+        aria-label="Main"
+        className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-surface)]"
+      >
         <div className="max-w-5xl mx-auto px-4 h-12 flex items-center gap-2 overflow-x-auto">
           <Link
             href="/"
@@ -71,21 +74,33 @@ export function NavBar() {
             Niffler
           </Link>
 
-          <NavLink href={`/day/${today}`} active={pathname.startsWith('/day/')}>
-            Today
-          </NavLink>
-          <NavLink href={`/month/${currentMonth}`} active={pathname.startsWith('/month/')}>
-            Month
-          </NavLink>
-          <NavLink href="/analytics" active={pathname.startsWith('/analytics')}>
-            Analytics
-          </NavLink>
-          <NavLink href="/import" active={pathname.startsWith('/import')}>
-            Import
-          </NavLink>
-          <NavLink href="/settings" active={pathname.startsWith('/settings')}>
-            Settings
-          </NavLink>
+          <ul className="flex items-center gap-1 list-none">
+            <li>
+              <NavLink href={`/day/${today}`} active={pathname.startsWith('/day/')}>
+                Today
+              </NavLink>
+            </li>
+            <li>
+              <NavLink href={`/month/${currentMonth}`} active={pathname.startsWith('/month/')}>
+                Month
+              </NavLink>
+            </li>
+            <li>
+              <NavLink href="/analytics" active={pathname.startsWith('/analytics')}>
+                Analytics
+              </NavLink>
+            </li>
+            <li>
+              <NavLink href="/import" active={pathname.startsWith('/import')}>
+                Import
+              </NavLink>
+            </li>
+            <li>
+              <NavLink href="/settings" active={pathname.startsWith('/settings')}>
+                Settings
+              </NavLink>
+            </li>
+          </ul>
 
           <Button
             variant="ghost"

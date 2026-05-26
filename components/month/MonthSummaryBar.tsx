@@ -34,13 +34,13 @@ export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
     .map((item) => ({ ...item, label: prefs[item.key].label }));
 
   return (
-    <div className="flex gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-6 py-4">
+    <dl className="flex gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-6 py-4">
       {items.map(({ label, value }) => (
         <div key={label} className="flex flex-col gap-0.5">
-          <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
+          <dt className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
             {label}
-          </span>
-          <span
+          </dt>
+          <dd
             className={`text-xl font-semibold tabular-nums ${
               value === null
                 ? 'text-[var(--color-text-muted)]'
@@ -50,9 +50,9 @@ export function MonthSummaryBar({ yearMonth }: { yearMonth: string }) {
             }`}
           >
             {value === null ? '—' : value.toFixed(2)}
-          </span>
+          </dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }

@@ -152,59 +152,61 @@ export function CategoryManager() {
       {list.length === 0 && (
         <p className="text-sm text-[var(--color-text-muted)]">No categories yet.</p>
       )}
-      {list.map((cat, index) => (
-        <div
-          key={cat.id}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--color-border)] ${
-            cat.isArchived
-              ? 'opacity-60 bg-[var(--color-surface-raised)]'
-              : 'bg-[var(--color-surface)]'
-          }`}
-        >
-          <CategoryColorSwatch
-            id={cat.id}
-            color={getColor(cat.id, index)}
-            onColorChange={setColor}
-          />
-          {editingId === cat.id ? (
-            <Input
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') e.currentTarget.blur();
-                if (e.key === 'Escape') {
-                  escPressedRef.current = true;
-                  e.currentTarget.blur();
-                }
-              }}
-              onBlur={() => handleRenameBlur(cat)}
-              className="flex-1 px-2 py-0.5 focus:ring-1"
+      <ul className="flex flex-col gap-3 list-none">
+        {list.map((cat, index) => (
+          <li
+            key={cat.id}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--color-border)] ${
+              cat.isArchived
+                ? 'opacity-60 bg-[var(--color-surface-raised)]'
+                : 'bg-[var(--color-surface)]'
+            }`}
+          >
+            <CategoryColorSwatch
+              id={cat.id}
+              color={getColor(cat.id, index)}
+              onColorChange={setColor}
             />
-          ) : (
-            <span className="flex-1 text-sm text-[var(--color-text-primary)]">{cat.name}</span>
-          )}
+            {editingId === cat.id ? (
+              <Input
+                autoFocus
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                  if (e.key === 'Escape') {
+                    escPressedRef.current = true;
+                    e.currentTarget.blur();
+                  }
+                }}
+                onBlur={() => handleRenameBlur(cat)}
+                className="flex-1 px-2 py-0.5 focus:ring-1"
+              />
+            ) : (
+              <span className="flex-1 text-sm text-[var(--color-text-primary)]">{cat.name}</span>
+            )}
 
-          {cat.isArchived ? (
-            <Button variant="text" onClick={() => handleUnarchive(cat)}>
-              Unarchive
-            </Button>
-          ) : (
-            <>
-              <Button variant="text" onClick={() => startRename(cat)}>
-                Rename
+            {cat.isArchived ? (
+              <Button variant="text" onClick={() => handleUnarchive(cat)}>
+                Unarchive
               </Button>
-              <Button
-                variant="text"
-                className="text-[var(--color-error)] hover:opacity-70"
-                onClick={() => setArchiveTarget(cat)}
-              >
-                Archive
-              </Button>
-            </>
-          )}
-        </div>
-      ))}
+            ) : (
+              <>
+                <Button variant="text" onClick={() => startRename(cat)}>
+                  Rename
+                </Button>
+                <Button
+                  variant="text"
+                  className="text-[var(--color-error)] hover:opacity-70"
+                  onClick={() => setArchiveTarget(cat)}
+                >
+                  Archive
+                </Button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
 
       {unarchiveError && <p className="text-xs text-[var(--color-error)]">{unarchiveError}</p>}
 
