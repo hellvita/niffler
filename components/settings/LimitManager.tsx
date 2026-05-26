@@ -7,6 +7,10 @@ import { format } from 'date-fns';
 import { useLimits, useSetLimit, useDeleteLimit } from '@/lib/hooks/useLimits';
 import { limitSchema } from '@/lib/validation/schemas';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
+import { FormField } from '@/components/shared/FormField';
+import { Skeleton } from '@/components/shared/Skeleton';
 
 type FormData = z.infer<typeof limitSchema>;
 
@@ -48,7 +52,7 @@ export function LimitManager() {
   const current = sorted[0] ?? null;
 
   if (isLoading) {
-    return <div className="h-32 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />;
+    return <Skeleton className="h-32" />;
   }
 
   return (
@@ -73,41 +77,28 @@ export function LimitManager() {
           Set limit
         </p>
         <div className="flex flex-wrap items-start gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-[var(--color-text-secondary)]">Amount</label>
-            <input
+          <FormField label="Amount" htmlFor="limit-amount" error={errors.amount?.message}>
+            <Input
+              id="limit-amount"
               {...register('amount', { valueAsNumber: true })}
               type="number"
               step="0.01"
               min="0"
-              className="w-32 px-3 py-2 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
+              className="w-32"
             />
-            {errors.amount && (
-              <span className="text-xs text-[var(--color-error)]">{errors.amount.message}</span>
-            )}
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-[var(--color-text-secondary)]">Effective from</label>
-            <input
-              {...register('effectiveFromDate')}
-              type="date"
-              className="px-3 py-2 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
-            />
-            {errors.effectiveFromDate && (
-              <span className="text-xs text-[var(--color-error)]">
-                {errors.effectiveFromDate.message}
-              </span>
-            )}
-          </div>
+          </FormField>
+          <FormField
+            label="Effective from"
+            htmlFor="limit-date"
+            error={errors.effectiveFromDate?.message}
+          >
+            <Input id="limit-date" {...register('effectiveFromDate')} type="date" />
+          </FormField>
           <div className="flex flex-col justify-end gap-1 pt-5">
             {apiError && <span className="text-xs text-[var(--color-error)]">{apiError}</span>}
-            <button
-              type="submit"
-              disabled={setLimit.isPending}
-              className="px-4 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
-            >
-              {setLimit.isPending ? 'Saving…' : 'Set limit'}
-            </button>
+            <Button type="submit" loading={setLimit.isPending}>
+              Set limit
+            </Button>
           </div>
         </div>
       </form>
@@ -117,25 +108,28 @@ export function LimitManager() {
           <p className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide mb-1">
             History
           </p>
-          {sorted.map((entry) => (
-            <div
-              key={entry.effectiveFromDate}
-              className="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
-            >
-              <span className="flex-1 text-sm text-[var(--color-text-secondary)] font-mono tabular-nums">
-                {entry.effectiveFromDate}
-              </span>
-              <span className="text-sm font-semibold font-mono tabular-nums text-[var(--color-text-primary)]">
-                {entry.amount.toFixed(2)}
-              </span>
-              <button
-                onClick={() => setDeleteTarget(entry.effectiveFromDate)}
-                className="text-xs text-[var(--color-error)] hover:opacity-70 transition-opacity"
+          <ul className="flex flex-col gap-1 list-none">
+            {sorted.map((entry) => (
+              <li
+                key={entry.effectiveFromDate}
+                className="flex items-center gap-3 px-3 py-2 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
               >
-                Delete
-              </button>
-            </div>
-          ))}
+                <span className="flex-1 text-sm text-[var(--color-text-secondary)] font-mono tabular-nums">
+                  {entry.effectiveFromDate}
+                </span>
+                <span className="text-sm font-semibold font-mono tabular-nums text-[var(--color-text-primary)]">
+                  {entry.amount.toFixed(2)}
+                </span>
+                <Button
+                  variant="text"
+                  className="text-[var(--color-error)] hover:opacity-70"
+                  onClick={() => setDeleteTarget(entry.effectiveFromDate)}
+                >
+                  Delete
+                </Button>
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 

@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { usePreviewImport } from '@/lib/hooks/useImport';
 import { columnMappingSchema } from '@/lib/validation/schemas';
 import { TransformOptions } from './TransformOptions';
+import { Button } from '@/components/shared/Button';
+import { Select } from '@/components/shared/Select';
 import type { ParsedColumn, ParseResult, ColumnMapping, PreviewResult } from '@/lib/types/api';
 
 function colLabel(col: ParsedColumn): string {
@@ -101,17 +103,17 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
             <tr className="border-b border-[var(--color-border)]">
               <td className="px-4 py-3 text-[var(--color-text-primary)] font-medium">Date</td>
               <td className="px-4 py-3">
-                <select
+                <Select
                   value={dateColumnIndex}
                   onChange={(e) => handleDateChange(Number(e.target.value))}
-                  className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
+                  className="max-w-xs"
                 >
                   {cols.map((c) => (
                     <option key={c.index} value={c.index}>
                       {colLabel(c)}
                     </option>
                   ))}
-                </select>
+                </Select>
               </td>
             </tr>
 
@@ -125,21 +127,17 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
                     const disabled = c.index === dateColumnIndex || c.index === incomeColumnIndex;
                     const checked = categoryColumnIndexes.includes(c.index);
                     return (
-                      <button
+                      <Button
                         key={c.index}
                         type="button"
                         disabled={disabled}
                         onClick={() => !disabled && toggleCategory(c.index)}
-                        className={`px-3 py-1 text-xs rounded-full border transition-colors ${
-                          disabled
-                            ? 'border-[var(--color-border)] text-[var(--color-text-muted)] cursor-not-allowed'
-                            : checked
-                              ? 'border-[var(--color-btn-primary-bg)] bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)]'
-                              : 'border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:border-[var(--color-border-strong)]'
-                        }`}
+                        variant={checked ? 'primary' : 'secondary'}
+                        size="sm"
+                        className="rounded-full"
                       >
                         {c.letter} — {c.header}
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -149,17 +147,17 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
             <tr>
               <td className="px-4 py-3 text-[var(--color-text-primary)] font-medium">Income</td>
               <td className="px-4 py-3">
-                <select
+                <Select
                   value={incomeColumnIndex}
                   onChange={(e) => handleIncomeChange(Number(e.target.value))}
-                  className="w-full max-w-xs px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
+                  className="max-w-xs"
                 >
                   {cols.map((c) => (
                     <option key={c.index} value={c.index}>
                       {colLabel(c)}
                     </option>
                   ))}
-                </select>
+                </Select>
               </td>
             </tr>
           </tbody>
@@ -177,19 +175,12 @@ export function ColumnMapper({ parseResult, initialMapping, onPreview, onBack }:
       {apiError && <p className="text-sm text-[var(--color-error)]">{apiError}</p>}
 
       <div className="flex justify-between">
-        <button
-          onClick={onBack}
-          className="px-4 py-2 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
-        >
-          ← Back
-        </button>
-        <button
-          onClick={handlePreview}
-          disabled={preview.isPending}
-          className="px-6 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
-        >
-          {preview.isPending ? 'Loading preview…' : 'Preview →'}
-        </button>
+        <Button variant="secondary" onClick={onBack}>
+          Back
+        </Button>
+        <Button variant="primary" loading={preview.isPending} onClick={handlePreview}>
+          Preview
+        </Button>
       </div>
     </div>
   );

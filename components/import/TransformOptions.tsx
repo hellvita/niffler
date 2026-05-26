@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { Input } from '@/components/shared/Input';
 
 interface Props {
   scaleFactor: number;
@@ -32,13 +33,13 @@ export function TransformOptions({
 
       <div className="flex flex-wrap items-center gap-3">
         <label className="text-sm text-[var(--color-text-primary)]">Scale factor</label>
-        <input
+        <Input
           type="number"
           step="any"
           min="0"
           value={scaleStr}
           onChange={handleScaleInput}
-          className="w-24 px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm"
+          className="w-24 py-1.5"
         />
         {showExample && (
           <span className="text-xs text-[var(--color-text-secondary)]">

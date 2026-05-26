@@ -2,6 +2,8 @@
 import { useRef, useState } from 'react';
 import { useCreateCategory } from '@/lib/hooks/useCategories';
 import { categoryNameSchema } from '@/lib/validation/schemas';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
 
 export function AddCategoryInline() {
   const [active, setActive] = useState(false);
@@ -58,7 +60,7 @@ export function AddCategoryInline() {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex gap-2">
-        <input
+        <Input
           ref={inputRef}
           value={value}
           onChange={(e) => {
@@ -71,21 +73,13 @@ export function AddCategoryInline() {
           }}
           placeholder="Category name"
           disabled={isPending}
-          className="flex-1 rounded border border-[var(--color-btn-secondary-border)] px-3 py-2 text-sm text-[var(--color-text-primary)] bg-[var(--color-surface)] placeholder:text-[var(--color-text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)] disabled:opacity-50"
         />
-        <button
-          onClick={submit}
-          disabled={isPending || !value.trim()}
-          className="px-4 py-2 text-sm rounded bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] disabled:opacity-40 transition-opacity hover:bg-[var(--color-btn-primary-hover)]"
-        >
-          {isPending ? '…' : 'Add'}
-        </button>
-        <button
-          onClick={close}
-          className="px-3 py-2 text-sm rounded border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
-        >
+        <Button variant="primary" loading={isPending} disabled={!value.trim()} onClick={submit}>
+          Add
+        </Button>
+        <Button variant="secondary" onClick={close}>
           Cancel
-        </button>
+        </Button>
       </div>
       {error && <p className="text-sm text-[var(--color-error)] px-1">{error}</p>}
     </div>

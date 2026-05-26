@@ -3,13 +3,16 @@ import { ComposedChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } 
 import { useRouter } from 'next/navigation';
 import { parseISO } from 'date-fns';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
+import { useRechartsTheme } from '@/lib/hooks/useRechartsTheme';
+import { Skeleton } from '@/components/shared/Skeleton';
 
 export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
   const { data, isLoading } = useMonthSummary(yearMonth);
   const router = useRouter();
+  const theme = useRechartsTheme();
 
   if (isLoading) {
-    return <div className="h-48 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />;
+    return <Skeleton className="h-48" />;
   }
   if (!data) return null;
 
@@ -25,17 +28,18 @@ export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
   return (
     <ResponsiveContainer width="100%" height={200}>
       <ComposedChart data={chartData} margin={{ top: 4, right: 4, left: 0, bottom: 4 }}>
-        <XAxis dataKey="day" tick={{ fontSize: 10, fill: '#52525b' }} interval={2} />
-        <YAxis tick={{ fontSize: 10, fill: '#52525b' }} width={40} />
+        <XAxis dataKey="day" tick={{ fontSize: 10, fill: theme.axis }} interval={2} />
+        <YAxis tick={{ fontSize: 10, fill: theme.axis }} width={40} />
         <Tooltip
           formatter={(v, name) => [typeof v === 'number' ? v.toFixed(2) : String(v), name]}
           labelFormatter={(label) => `Day ${label}`}
-          labelStyle={{ color: '#18181b', fontWeight: 500 }}
+          contentStyle={{ backgroundColor: theme.surface, borderColor: theme.border }}
+          labelStyle={{ color: theme.text, fontWeight: 500 }}
         />
         <Bar
           dataKey="expenses"
           name="Expenses"
-          fill="#3b82f6"
+          fill={theme.bar}
           radius={[2, 2, 0, 0]}
           cursor="pointer"
           onClick={(entry) => {
@@ -48,7 +52,7 @@ export function MonthBarChart({ yearMonth }: { yearMonth: string }) {
             type="stepAfter"
             dataKey="limit"
             name="Limit"
-            stroke="#f59e0b"
+            stroke={theme.limit}
             dot={false}
             strokeDasharray="4 4"
             strokeWidth={1.5}

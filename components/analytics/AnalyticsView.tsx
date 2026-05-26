@@ -13,6 +13,7 @@ import { getMonthSummary } from '@/lib/api/summary';
 import { useAllTimeSummary, useAllTimeMonthlySummary } from '@/lib/hooks/useSummary';
 import type { MonthSummary } from '@/lib/types/api';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
+import { Skeleton } from '@/components/shared/Skeleton';
 import { DateRangePicker } from './DateRangePicker';
 import { ChartTypeSelector } from './ChartTypeSelector';
 import { ExpensePieChart } from './charts/ExpensePieChart';
@@ -142,7 +143,7 @@ export function AnalyticsView() {
       <DateRangePicker from={fromStr} to={toStr} preset={preset} />
 
       {summaryLoading ? (
-        <div className="h-20 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />
+        <Skeleton className="h-20" />
       ) : summaryItems.length > 0 ? (
         <div className="flex flex-wrap gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-6 py-4">
           {summaryItems.map(({ label, value }) => (
@@ -182,7 +183,7 @@ export function AnalyticsView() {
         </div>
 
         {chartLoading ? (
-          <div className="h-72 rounded-lg bg-[var(--color-bg-secondary)] animate-pulse" />
+          <Skeleton className="h-72 w-full" />
         ) : (
           <div>
             {chartType === 'pie' && totals && (

@@ -11,6 +11,9 @@ import {
 import { useCategoryColors } from '@/lib/hooks/useCategoryColors';
 import { categoryNameSchema } from '@/lib/validation/schemas';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
+import { Skeleton } from '@/components/shared/Skeleton';
 import type { Category } from '@/lib/types/api';
 
 function CategoryColorSwatch({
@@ -136,7 +139,7 @@ export function CategoryManager() {
     return (
       <div className="flex flex-col gap-2">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-10 rounded bg-[var(--color-bg-secondary)] animate-pulse" />
+          <Skeleton key={i} className="h-10" />
         ))}
       </div>
     );
@@ -149,69 +152,66 @@ export function CategoryManager() {
       {list.length === 0 && (
         <p className="text-sm text-[var(--color-text-muted)]">No categories yet.</p>
       )}
-      {list.map((cat, index) => (
-        <div
-          key={cat.id}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--color-border)] ${
-            cat.isArchived
-              ? 'opacity-60 bg-[var(--color-surface-raised)]'
-              : 'bg-[var(--color-surface)]'
-          }`}
-        >
-          <CategoryColorSwatch
-            id={cat.id}
-            color={getColor(cat.id, index)}
-            onColorChange={setColor}
-          />
-          {editingId === cat.id ? (
-            <input
-              autoFocus
-              value={editValue}
-              onChange={(e) => setEditValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') e.currentTarget.blur();
-                if (e.key === 'Escape') {
-                  escPressedRef.current = true;
-                  e.currentTarget.blur();
-                }
-              }}
-              onBlur={() => handleRenameBlur(cat)}
-              className="flex-1 px-2 py-0.5 text-sm rounded border border-[var(--color-focus-ring)] bg-[var(--color-surface)] text-[var(--color-text-primary)] focus:outline-none"
+      <ul className="flex flex-col gap-3 list-none">
+        {list.map((cat, index) => (
+          <li
+            key={cat.id}
+            className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--color-border)] ${
+              cat.isArchived
+                ? 'opacity-60 bg-[var(--color-surface-raised)]'
+                : 'bg-[var(--color-surface)]'
+            }`}
+          >
+            <CategoryColorSwatch
+              id={cat.id}
+              color={getColor(cat.id, index)}
+              onColorChange={setColor}
             />
-          ) : (
-            <span className="flex-1 text-sm text-[var(--color-text-primary)]">{cat.name}</span>
-          )}
+            {editingId === cat.id ? (
+              <Input
+                autoFocus
+                value={editValue}
+                onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') e.currentTarget.blur();
+                  if (e.key === 'Escape') {
+                    escPressedRef.current = true;
+                    e.currentTarget.blur();
+                  }
+                }}
+                onBlur={() => handleRenameBlur(cat)}
+                className="flex-1 px-2 py-0.5 focus:ring-1"
+              />
+            ) : (
+              <span className="flex-1 text-sm text-[var(--color-text-primary)]">{cat.name}</span>
+            )}
 
-          {cat.isArchived ? (
-            <button
-              onClick={() => handleUnarchive(cat)}
-              className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-            >
-              Unarchive
-            </button>
-          ) : (
-            <>
-              <button
-                onClick={() => startRename(cat)}
-                className="text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
-              >
-                Rename
-              </button>
-              <button
-                onClick={() => setArchiveTarget(cat)}
-                className="text-xs text-[var(--color-error)] hover:opacity-70 transition-opacity"
-              >
-                Archive
-              </button>
-            </>
-          )}
-        </div>
-      ))}
+            {cat.isArchived ? (
+              <Button variant="text" onClick={() => handleUnarchive(cat)}>
+                Unarchive
+              </Button>
+            ) : (
+              <>
+                <Button variant="text" onClick={() => startRename(cat)}>
+                  Rename
+                </Button>
+                <Button
+                  variant="text"
+                  className="text-[var(--color-error)] hover:opacity-70"
+                  onClick={() => setArchiveTarget(cat)}
+                >
+                  Archive
+                </Button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
 
       {unarchiveError && <p className="text-xs text-[var(--color-error)]">{unarchiveError}</p>}
 
       <div className="flex gap-2 mt-1">
-        <input
+        <Input
           value={addValue}
           onChange={(e) => {
             setAddValue(e.target.value);
@@ -219,15 +219,11 @@ export function CategoryManager() {
           }}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="New category name"
-          className="flex-1 px-3 py-2 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-muted)]"
+          className="flex-1"
         />
-        <button
-          onClick={handleAdd}
-          disabled={createCategory.isPending}
-          className="px-4 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium disabled:opacity-40 transition-colors hover:bg-[var(--color-btn-primary-hover)]"
-        >
+        <Button loading={createCategory.isPending} onClick={handleAdd}>
           Add
-        </button>
+        </Button>
       </div>
       {addError && <p className="text-xs text-[var(--color-error)]">{addError}</p>}
 

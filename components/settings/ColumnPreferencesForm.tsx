@@ -2,6 +2,8 @@
 import { useRef, useState } from 'react';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { COLUMN_ORDER, DEFAULT_COLUMN_PREFERENCES, type ColumnKey } from '@/lib/types/ui';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
 
 const FIELD_DESCRIPTIONS: Record<ColumnKey, string> = {
   totalExpenses: 'Total Expenses',
@@ -70,7 +72,7 @@ export function ColumnPreferencesForm() {
                 </td>
                 <td className="px-4 py-2.5">
                   {editingKey === key ? (
-                    <input
+                    <Input
                       autoFocus
                       value={editValue}
                       onChange={(e) => setEditValue(e.target.value)}
@@ -80,7 +82,7 @@ export function ColumnPreferencesForm() {
                       }}
                       onBlur={() => commitEdit(key)}
                       placeholder={DEFAULT_COLUMN_PREFERENCES[key].label}
-                      className="w-36 px-2 py-0.5 text-sm rounded border border-[var(--color-focus-ring)] bg-[var(--color-surface)] text-[var(--color-text-primary)] focus:outline-none"
+                      className="w-36 px-2 py-0.5 focus:ring-1"
                     />
                   ) : (
                     <button
@@ -125,12 +127,9 @@ export function ColumnPreferencesForm() {
         </table>
       </div>
 
-      <button
-        onClick={resetAll}
-        className="self-start text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] underline transition-colors"
-      >
+      <Button variant="text" onClick={resetAll} className="self-start">
         Reset all to defaults
-      </button>
+      </Button>
     </div>
   );
 }

@@ -8,6 +8,8 @@ import {
   useArchiveCategory,
 } from '@/lib/hooks/useCategories';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { Button } from '@/components/shared/Button';
+import { Input } from '@/components/shared/Input';
 import { amountSchema } from '@/lib/validation/schemas';
 import type { Category } from '@/lib/types/api';
 
@@ -103,7 +105,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
       >
         <div className="flex-1 min-w-0">
           {mode === 'edit-name' ? (
-            <input
+            <Input
               ref={nameRef}
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
@@ -121,7 +123,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
                 }
                 submitName();
               }}
-              className="w-full rounded border border-[var(--color-btn-secondary-border)] px-2 py-1 text-sm text-[var(--color-text-primary)] bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]"
+              className="flex-1 py-0.5 px-2 focus:ring-1"
             />
           ) : (
             <span
@@ -136,7 +138,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
 
         {mode === 'edit-amount' ? (
           <div className="flex flex-col items-end gap-0.5">
-            <input
+            <Input
               ref={amountRef}
               type="number"
               min="0"
@@ -162,11 +164,8 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
                 }
                 submitAmount();
               }}
-              className={`w-28 rounded border px-2 py-1 text-sm text-right text-[var(--color-text-primary)] bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)] disabled:opacity-50 ${
-                amountError
-                  ? 'border-[var(--color-error)]'
-                  : 'border-[var(--color-btn-secondary-border)]'
-              }`}
+              error={!!amountError}
+              className="w-28 text-right py-1 px-2"
             />
             {amountError && (
               <span className="text-xs text-[var(--color-error)]">{amountError}</span>
@@ -190,32 +189,34 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
 
         {mode !== 'edit-name' && mode !== 'edit-amount' && (
           <div className="relative">
-            <button
+            <Button
+              variant="text"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Category actions"
-              className="px-1.5 py-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-secondary)] transition-colors text-xs leading-none"
             >
               •••
-            </button>
+            </Button>
             {menuOpen && (
               <>
                 <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
                 <div className="absolute right-0 top-full z-20 mt-1 w-32 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-md overflow-hidden">
-                  <button
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm"
                     onClick={startEditName}
-                    className="w-full text-left px-3 py-2 text-sm text-[var(--color-text-primary)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
                   >
                     Rename
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm text-[var(--color-error)]"
                     onClick={() => {
                       setMenuOpen(false);
                       setMode('confirm-archive');
                     }}
-                    className="w-full text-left px-3 py-2 text-sm text-[var(--color-error)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
                   >
                     Archive
-                  </button>
+                  </Button>
                 </div>
               </>
             )}

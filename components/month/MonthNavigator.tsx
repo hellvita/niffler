@@ -1,6 +1,7 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { format, addMonths, subMonths, parseISO } from 'date-fns';
+import { Button } from '@/components/shared/Button';
 
 export function MonthNavigator({ yearMonth }: { yearMonth: string }) {
   const router = useRouter();
@@ -10,32 +11,31 @@ export function MonthNavigator({ yearMonth }: { yearMonth: string }) {
 
   return (
     <div className="flex items-center gap-3">
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => navigate(subMonths(parsed, 1))}
         aria-label="Previous month"
-        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         ←
-      </button>
+      </Button>
 
       <h1 className="flex-1 text-center text-base font-semibold text-[var(--color-text-primary)]">
         {format(parsed, 'MMMM yyyy')}
       </h1>
 
-      <button
+      <Button
+        variant="ghost"
+        size="icon"
         onClick={() => navigate(addMonths(parsed, 1))}
         aria-label="Next month"
-        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-secondary)] transition-colors"
       >
         →
-      </button>
+      </Button>
 
-      <button
-        onClick={() => navigate(new Date())}
-        className="px-3 py-1 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
-      >
+      <Button variant="secondary" size="sm" onClick={() => navigate(new Date())}>
         This month
-      </button>
+      </Button>
     </div>
   );
 }

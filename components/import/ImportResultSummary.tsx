@@ -2,6 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 import type { ImportResult } from '@/lib/types/api';
+import { Button } from '@/components/shared/Button';
 
 export function ImportResultSummary({
   result,
@@ -55,18 +56,10 @@ export function ImportResultSummary({
       </div>
 
       <div className="flex gap-3">
-        <button
-          onClick={() => router.push(`/day/${today}`)}
-          className="px-5 py-2 text-sm rounded-lg bg-[var(--color-btn-primary-bg)] text-[var(--color-btn-primary-text)] font-medium transition-colors hover:bg-[var(--color-btn-primary-hover)]"
-        >
-          Go to today
-        </button>
-        <button
-          onClick={onReset}
-          className="px-5 py-2 text-sm rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
-        >
+        <Button onClick={() => router.push(`/day/${today}`)}>Go to today</Button>
+        <Button variant="secondary" onClick={onReset}>
           Import another file
-        </button>
+        </Button>
       </div>
     </div>
   );

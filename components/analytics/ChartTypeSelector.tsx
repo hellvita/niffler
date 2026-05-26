@@ -1,5 +1,6 @@
 'use client';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { Button } from '@/components/shared/Button';
 
 type ChartType = 'pie' | 'bar' | 'line';
 
@@ -23,17 +24,14 @@ export function ChartTypeSelector({ value }: { value: ChartType }) {
   return (
     <div className="flex gap-1 p-1 rounded-lg bg-[var(--color-bg-secondary)]">
       {OPTIONS.map((o) => (
-        <button
+        <Button
           key={o.type}
+          variant={value === o.type ? 'primary' : 'ghost'}
+          size="sm"
           onClick={() => set(o.type)}
-          className={`px-4 py-1.5 text-sm font-medium rounded-md transition-colors ${
-            value === o.type
-              ? 'bg-[var(--color-surface)] text-[var(--color-text-primary)] shadow-sm'
-              : 'text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]'
-          }`}
         >
           {o.label}
-        </button>
+        </Button>
       ))}
     </div>
   );

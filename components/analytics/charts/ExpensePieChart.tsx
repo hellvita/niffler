@@ -1,6 +1,8 @@
 'use client';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { useCategoryColors } from '@/lib/hooks/useCategoryColors';
+import { useRechartsTheme } from '@/lib/hooks/useRechartsTheme';
+import { EmptyState } from '@/components/shared/EmptyState';
 
 interface CategoryTotal {
   categoryId: string;
@@ -10,12 +12,10 @@ interface CategoryTotal {
 
 export function ExpensePieChart({ categories }: { categories: CategoryTotal[] }) {
   const { getColor } = useCategoryColors();
+  const theme = useRechartsTheme();
+
   if (categories.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64 text-sm text-[var(--color-text-muted)]">
-        No expense data for this period.
-      </div>
-    );
+    return <EmptyState message="No expense data for this period." className="h-64" />;
   }
 
   const total = categories.reduce((s, c) => s + c.amount, 0);
@@ -49,7 +49,7 @@ export function ExpensePieChart({ categories }: { categories: CategoryTotal[] })
           {data.map((entry, i) => (
             <Cell
               key={i}
-              fill={entry.categoryId === '_other' ? '#71717a' : getColor(entry.categoryId, i)}
+              fill={entry.categoryId === '_other' ? theme.muted : getColor(entry.categoryId, i)}
             />
           ))}
         </Pie>

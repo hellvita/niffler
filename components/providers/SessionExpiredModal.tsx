@@ -1,24 +1,17 @@
 'use client';
 import { useState } from 'react';
 import { useSessionExpired } from './SessionExpiredContext';
+import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
-
-function getEmailFromCookie(): string {
-  if (typeof document === 'undefined') return '';
-  const match = document.cookie.split('; ').find((r) => r.startsWith('user_email='));
-  return match ? decodeURIComponent(match.split('=')[1]) : '';
-}
+import { Modal } from '@/components/shared/Modal';
 
 export function SessionExpiredModal() {
   const { isExpired, clearExpired } = useSessionExpired();
+  const { email } = useCurrentUser();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
-
-  if (!isExpired) return null;
-
-  const email = getEmailFromCookie();
 
   async function handleContinue(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +21,7 @@ export function SessionExpiredModal() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email ?? '', password }),
       });
       if (!res.ok) {
         setError('Incorrect password. Please try again.');
@@ -49,11 +42,8 @@ export function SessionExpiredModal() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-backdrop)]">
-      <div className="bg-[var(--color-surface)] rounded-lg shadow-xl p-8 w-full max-w-sm">
-        <h2 className="text-lg font-semibold mb-1 text-[var(--color-text-primary)]">
-          Session expired
-        </h2>
+    <Modal open={isExpired} onClose={() => {}} title="Session expired" maxWidth="sm" preventClose>
+      <div className="px-6 pb-6 pt-4">
         <p className="text-sm text-[var(--color-text-secondary)] mb-4">
           Re-enter your password to continue as <strong>{email}</strong>.
         </p>
@@ -79,13 +69,10 @@ export function SessionExpiredModal() {
             {isPending ? 'Signing in…' : 'Continue'}
           </Button>
         </form>
-        <button
-          onClick={handleSignInDifferent}
-          className="mt-4 w-full text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] text-center transition-colors"
-        >
+        <Button variant="text" className="w-full text-center mt-4" onClick={handleSignInDifferent}>
           Sign in as a different account
-        </button>
+        </Button>
       </div>
-    </div>
+    </Modal>
   );
 }

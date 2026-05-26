@@ -7,6 +7,7 @@ import { loginSchema, type LoginInput } from '@/lib/validation/schemas';
 import { useLogin } from '@/lib/hooks/useAuth';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
+import { FormField } from '@/components/shared/FormField';
 
 export function LoginForm() {
   const router = useRouter();
@@ -31,10 +32,7 @@ export function LoginForm() {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <label htmlFor="email" className="text-sm font-medium text-[var(--color-text-primary)]">
-          Email
-        </label>
+      <FormField label="Email" htmlFor="email" error={errors.email?.message}>
         <Input
           id="email"
           type="email"
@@ -42,15 +40,9 @@ export function LoginForm() {
           error={!!errors.email}
           {...register('email')}
         />
-        {errors.email && (
-          <p className="text-sm text-[var(--color-error)]">{errors.email.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <div className="flex flex-col gap-1">
-        <label htmlFor="password" className="text-sm font-medium text-[var(--color-text-primary)]">
-          Password
-        </label>
+      <FormField label="Password" htmlFor="password" error={errors.password?.message}>
         <Input
           id="password"
           type="password"
@@ -58,10 +50,7 @@ export function LoginForm() {
           error={!!errors.password}
           {...register('password')}
         />
-        {errors.password && (
-          <p className="text-sm text-[var(--color-error)]">{errors.password.message}</p>
-        )}
-      </div>
+      </FormField>
 
       {errors.root && (
         <p className="rounded bg-[var(--color-error-bg)] px-3 py-2 text-sm text-[var(--color-error)]">
@@ -69,8 +58,8 @@ export function LoginForm() {
         </p>
       )}
 
-      <Button type="submit" disabled={isPending} className="w-full py-2">
-        {isPending ? 'Signing in…' : 'Sign in'}
+      <Button type="submit" loading={isPending} className="w-full py-2">
+        Sign in
       </Button>
 
       <p className="text-center text-sm text-[var(--color-text-secondary)]">

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { downloadAllExportZip, downloadAllExportCombined } from '@/lib/api/export';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
+import { Button } from '@/components/shared/Button';
 
 export function ExportAllSection() {
   const [exportingZip, setExportingZip] = useState(false);
@@ -37,20 +38,24 @@ export function ExportAllSection() {
         <p className="text-xs text-[var(--color-text-muted)]">No data to export yet.</p>
       )}
       <div className="flex flex-wrap gap-2">
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
+          loading={exportingZip}
+          disabled={!hasData || exportingCombined}
           onClick={handleZip}
-          disabled={!hasData || exportingZip || exportingCombined}
-          className="px-3 py-1.5 text-xs rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors"
         >
-          {exportingZip ? 'Exporting…' : 'Download ZIP (one file per month)'}
-        </button>
-        <button
+          Download ZIP (one file per month)
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          loading={exportingCombined}
+          disabled={!hasData || exportingZip}
           onClick={handleCombined}
-          disabled={!hasData || exportingZip || exportingCombined}
-          className="px-3 py-1.5 text-xs rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors"
         >
-          {exportingCombined ? 'Exporting…' : 'Download combined XLSX'}
-        </button>
+          Download combined XLSX
+        </Button>
       </div>
     </div>
   );

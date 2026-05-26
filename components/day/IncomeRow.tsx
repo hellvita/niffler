@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUpsertIncome, useDeleteIncome } from '@/lib/hooks/useIncomes';
 import { amountSchema } from '@/lib/validation/schemas';
+import { Input } from '@/components/shared/Input';
 
 export function IncomeRow({ date, income }: { date: string; income: number }) {
   const [editing, setEditing] = useState(false);
@@ -51,7 +52,7 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
 
       {editing ? (
         <div className="flex flex-col items-end gap-0.5">
-          <input
+          <Input
             ref={inputRef}
             type="number"
             min="0"
@@ -77,11 +78,8 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
               }
               submit();
             }}
-            className={`w-28 rounded border px-2 py-1 text-sm text-right text-[var(--color-text-primary)] bg-[var(--color-surface)] focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)] disabled:opacity-50 ${
-              inputError
-                ? 'border-[var(--color-error)]'
-                : 'border-[var(--color-btn-secondary-border)]'
-            }`}
+            error={!!inputError}
+            className="w-28 text-right py-1 px-2"
           />
           {inputError && <span className="text-xs text-[var(--color-error)]">{inputError}</span>}
         </div>

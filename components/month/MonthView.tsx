@@ -6,6 +6,9 @@ import { DayBreakdownTable } from '@/components/month/DayBreakdownTable';
 import { downloadMonthExport } from '@/lib/api/export';
 import { useState } from 'react';
 import { useMonthSummary } from '@/lib/hooks/useSummary';
+import { Button } from '@/components/shared/Button';
+import { Skeleton } from '@/components/shared/Skeleton';
+import { EmptyState } from '@/components/shared/EmptyState';
 
 function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
   const { data, isLoading } = useMonthSummary(yearMonth);
@@ -14,7 +17,7 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
     return (
       <div className="flex flex-col gap-2">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-8 rounded bg-[var(--color-bg-secondary)] animate-pulse" />
+          <Skeleton key={i} className="h-8" />
         ))}
       </div>
     );
@@ -26,13 +29,13 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
   const total = categories.reduce((sum, c) => sum + c.amount, 0);
 
   return (
-    <div className="flex flex-col gap-1">
+    <ul className="flex flex-col gap-1 list-none">
       {[...categories]
         .sort((a, b) => b.amount - a.amount)
         .map((c) => {
           const pct = total > 0 ? (c.amount / total) * 100 : 0;
           return (
-            <div key={c.categoryId} className="flex items-center gap-3">
+            <li key={c.categoryId} className="flex items-center gap-3">
               <span className="flex-1 text-sm text-[var(--color-text-primary)] truncate">
                 {c.categoryName}
               </span>
@@ -45,10 +48,10 @@ function CategoryBreakdown({ yearMonth }: { yearMonth: string }) {
               <span className="w-20 text-right text-sm font-mono tabular-nums text-[var(--color-text-primary)]">
                 {c.amount.toFixed(2)}
               </span>
-            </div>
+            </li>
           );
         })}
-    </div>
+    </ul>
   );
 }
 
@@ -69,15 +72,10 @@ export function MonthView({ yearMonth }: { yearMonth: string }) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col gap-6">
         <MonthNavigator yearMonth={yearMonth} />
-        <div className="flex flex-col items-center gap-3 py-12 text-[var(--color-text-secondary)]">
-          <p className="text-sm">Failed to load month data.</p>
-          <button
-            onClick={() => refetch()}
-            className="px-4 py-2 text-sm rounded border border-[var(--color-btn-secondary-border)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors text-[var(--color-btn-secondary-text)]"
-          >
-            Retry
-          </button>
-        </div>
+        <EmptyState
+          message="Failed to load month data."
+          action={{ label: 'Retry', onClick: refetch }}
+        />
       </div>
     );
   }
@@ -88,13 +86,15 @@ export function MonthView({ yearMonth }: { yearMonth: string }) {
         <div className="flex-1 min-w-0">
           <MonthNavigator yearMonth={yearMonth} />
         </div>
-        <button
+        <Button
+          variant="secondary"
+          size="sm"
+          loading={exporting}
           onClick={handleExport}
-          disabled={exporting}
-          className="shrink-0 px-3 py-1.5 text-xs rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] disabled:opacity-40 transition-colors"
+          className="shrink-0"
         >
-          {exporting ? 'Exporting…' : 'Export xlsx'}
-        </button>
+          Export xlsx
+        </Button>
       </div>
       <MonthSummaryBar yearMonth={yearMonth} />
 
