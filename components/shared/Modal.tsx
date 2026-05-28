@@ -1,6 +1,7 @@
 'use client';
 import { useEffect } from 'react';
 import { Button } from './Button';
+import { CloseIcon } from './icons';
 
 interface Props {
   open: boolean;
@@ -54,20 +55,7 @@ export function Modal({
             <h2 className="text-base font-semibold text-[var(--color-text-primary)]">{title}</h2>
             {!preventClose && (
               <Button variant="ghost" size="icon-sm" onClick={onClose} aria-label="Close">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
-                </svg>
+                <CloseIcon />
               </Button>
             )}
           </div>

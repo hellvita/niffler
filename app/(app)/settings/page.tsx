@@ -5,6 +5,7 @@ import { LimitManager } from '@/components/settings/LimitManager';
 import { ColumnPreferencesForm } from '@/components/settings/ColumnPreferencesForm';
 import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
 import { ExportAllSection } from '@/components/settings/ExportAllSection';
+import { ThemeToggle } from '@/components/settings/ThemeToggle';
 
 function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
@@ -25,6 +26,10 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-10">
       <h1 className="text-xl font-semibold text-[var(--color-text-primary)]">Settings</h1>
+
+      <Section heading="Appearance">
+        <ThemeToggle />
+      </Section>
 
       <Section heading="Account">
         <p className="text-sm text-[var(--color-text-primary)]">

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLogout } from '@/lib/hooks/useAuth';
 import { Button } from '@/components/shared/Button';
+import { HelpIcon } from '@/components/shared/icons';
 import { AboutModal } from './AboutModal';
 
 function NavLink({
@@ -113,21 +114,7 @@ export function NavBar({
             aria-label="About Niffler"
             className="shrink-0"
           >
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-              <line x1="12" y1="17" x2="12.01" y2="17" />
-            </svg>
+            <HelpIcon />
           </Button>
 
           <div className="flex-1" />
