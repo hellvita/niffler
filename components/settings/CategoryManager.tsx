@@ -180,7 +180,7 @@ export function CategoryManager() {
                   }
                 }}
                 onBlur={() => handleRenameBlur(cat)}
-                className="flex-1 px-2 py-0.5 focus:ring-1"
+                className="flex-1 px-2 py-0.5 focus:outline-none focus-visible:ring-1"
               />
             ) : (
               <span className="flex-1 text-sm text-[var(--color-text-primary)]">{cat.name}</span>

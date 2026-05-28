@@ -133,7 +133,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
                 }
                 submitName();
               }}
-              className="flex-1 py-0.5 px-2 focus:ring-1"
+              className="flex-1 py-0.5 px-2 focus:outline-none focus-visible:ring-1"
             />
           ) : (
             <span
