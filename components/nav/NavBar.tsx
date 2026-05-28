@@ -1,11 +1,9 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { format } from 'date-fns';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLogout } from '@/lib/hooks/useAuth';
-import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
 import { Button } from '@/components/shared/Button';
 import { AboutModal } from './AboutModal';
 
@@ -46,20 +44,19 @@ function BalanceDisplay() {
   );
 }
 
-export function NavBar() {
+export function NavBar({
+  email,
+  today,
+  currentMonth,
+}: {
+  email: string | null;
+  today: string;
+  currentMonth: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const logout = useLogout();
-  const { email } = useCurrentUser();
   const [showAbout, setShowAbout] = useState(false);
-
-  const [today, setToday] = useState('');
-  const [currentMonth, setCurrentMonth] = useState('');
-  useEffect(() => {
-    const now = new Date();
-    setToday(format(now, 'yyyy-MM-dd'));
-    setCurrentMonth(format(now, 'yyyy-MM'));
-  }, []);
 
   const handleLogout = () => {
     logout.mutate(undefined, {
@@ -83,15 +80,12 @@ export function NavBar() {
 
           <ul className="flex items-center gap-1 list-none">
             <li>
-              <NavLink href={today ? `/day/${today}` : '/'} active={pathname.startsWith('/day/')}>
+              <NavLink href={`/day/${today}`} active={pathname.startsWith('/day/')}>
                 Today
               </NavLink>
             </li>
             <li>
-              <NavLink
-                href={currentMonth ? `/month/${currentMonth}` : '/'}
-                active={pathname.startsWith('/month/')}
-              >
+              <NavLink href={`/month/${currentMonth}`} active={pathname.startsWith('/month/')}>
                 Month
               </NavLink>
             </li>

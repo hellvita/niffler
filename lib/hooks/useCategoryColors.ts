@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useSyncExternalStore, useCallback } from 'react';
 
 const STORAGE_KEY = 'niffler_category_colors';
 const FALLBACK_PALETTE = [
@@ -15,30 +15,41 @@ const FALLBACK_PALETTE = [
   '#84cc16',
 ];
 
-export function useCategoryColors() {
-  const [colors, setColors] = useState<Record<string, string>>({});
+// Module-level store: stable empty reference doubles as the server snapshot.
+const EMPTY: Record<string, string> = {};
+let snapshot: Record<string, string> = EMPTY;
+const listeners = new Set<() => void>();
 
-  useEffect(() => {
+function subscribe(callback: () => void): () => void {
+  // Load from localStorage on first subscriber (client-only).
+  if (snapshot === EMPTY) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) setColors(JSON.parse(raw) as Record<string, string>);
+      if (raw) snapshot = JSON.parse(raw) as Record<string, string>;
     } catch {
-      // corrupted storage — leave defaults
+      // corrupted storage — keep empty
     }
-  }, []);
+  }
+  listeners.add(callback);
+  return () => listeners.delete(callback);
+}
+
+function getSnapshot(): Record<string, string> {
+  return snapshot;
+}
+
+export function useCategoryColors() {
+  const colors = useSyncExternalStore(subscribe, getSnapshot, () => EMPTY);
 
   const setColor = useCallback((id: string, color: string) => {
-    setColors((prev) => {
-      const next = { ...prev, [id]: color };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-      return next;
-    });
+    snapshot = { ...snapshot, [id]: color };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
+    listeners.forEach((cb) => cb());
   }, []);
 
   const getColor = useCallback(
-    (id: string, index: number): string => {
-      return colors[id] ?? FALLBACK_PALETTE[index % FALLBACK_PALETTE.length];
-    },
+    (id: string, index: number): string =>
+      colors[id] ?? FALLBACK_PALETTE[index % FALLBACK_PALETTE.length],
     [colors]
   );
 

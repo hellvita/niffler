@@ -1,14 +1,12 @@
 'use client';
 import { useState } from 'react';
 import { useSessionExpired } from './SessionExpiredContext';
-import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { Modal } from '@/components/shared/Modal';
 
-export function SessionExpiredModal() {
+export function SessionExpiredModal({ email }: { email: string | null }) {
   const { isExpired, clearExpired } = useSessionExpired();
-  const { email } = useCurrentUser();
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
