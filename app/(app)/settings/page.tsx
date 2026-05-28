@@ -1,5 +1,4 @@
-'use client';
-import { useState } from 'react';
+import { cookies } from 'next/headers';
 import { InitialBudgetForm } from '@/components/settings/InitialBudgetForm';
 import { CategoryManager } from '@/components/settings/CategoryManager';
 import { LimitManager } from '@/components/settings/LimitManager';
@@ -18,12 +17,10 @@ function Section({ heading, children }: { heading: string; children: React.React
   );
 }
 
-export default function SettingsPage() {
-  const [email] = useState(() => {
-    if (typeof document === 'undefined') return '';
-    const match = document.cookie.match(/(?:^|;\s*)user_email=([^;]*)/);
-    return match ? decodeURIComponent(match[1]) : '';
-  });
+export default async function SettingsPage() {
+  const cookieStore = await cookies();
+  const emailCookie = cookieStore.get('user_email');
+  const email = emailCookie ? decodeURIComponent(emailCookie.value) : '';
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-10">
@@ -35,7 +32,7 @@ export default function SettingsPage() {
         </p>
       </Section>
 
-      <Section heading="Initial budget">
+      <Section heading="Opening balance">
         <InitialBudgetForm />
       </Section>
 
@@ -43,19 +40,19 @@ export default function SettingsPage() {
         <CategoryManager />
       </Section>
 
-      <Section heading="Daily limit">
+      <Section heading="Daily spending limit">
         <LimitManager />
       </Section>
 
-      <Section heading="Column display">
+      <Section heading="Analytics columns">
         <ColumnPreferencesForm />
       </Section>
 
-      <Section heading="Export data">
+      <Section heading="Data">
         <ExportAllSection />
       </Section>
 
-      <Section heading="Advanced">
+      <Section heading="Danger zone">
         <DeleteAccountSection />
       </Section>
     </div>

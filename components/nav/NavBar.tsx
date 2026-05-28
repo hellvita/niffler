@@ -2,10 +2,8 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { format } from 'date-fns';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { useLogout } from '@/lib/hooks/useAuth';
-import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
 import { Button } from '@/components/shared/Button';
 import { AboutModal } from './AboutModal';
 
@@ -46,15 +44,19 @@ function BalanceDisplay() {
   );
 }
 
-export function NavBar() {
+export function NavBar({
+  email,
+  today,
+  currentMonth,
+}: {
+  email: string | null;
+  today: string;
+  currentMonth: string;
+}) {
   const router = useRouter();
   const pathname = usePathname();
   const logout = useLogout();
-  const { email } = useCurrentUser();
   const [showAbout, setShowAbout] = useState(false);
-
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const currentMonth = format(new Date(), 'yyyy-MM');
 
   const handleLogout = () => {
     logout.mutate(undefined, {
