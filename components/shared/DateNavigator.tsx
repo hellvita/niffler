@@ -9,6 +9,7 @@ export function DateNavigator({ date }: { date: string }) {
   const router = useRouter();
   const [showPicker, setShowPicker] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isTypingRef = useRef(false);
   const parsed = parseISO(date);
 
   const navigate = (d: Date) => router.push(`/day/${format(d, 'yyyy-MM-dd')}`);
@@ -18,7 +19,7 @@ export function DateNavigator({ date }: { date: string }) {
     const el = inputRef.current;
     if (!el) return;
     const handleChange = () => {
-      if (el.value) {
+      if (el.value && !isTypingRef.current) {
         router.push(`/day/${el.value}`);
         setShowPicker(false);
       }
@@ -50,16 +51,22 @@ export function DateNavigator({ date }: { date: string }) {
             <DateInput
               ref={inputRef}
               key={date}
-              defaultValue={date}
               autoFocus
               onKeyDown={(e) => {
+                if (e.key !== 'Enter' && e.key !== 'Escape') isTypingRef.current = true;
                 if (e.key === 'Enter' && e.currentTarget.value) {
                   router.push(`/day/${e.currentTarget.value}`);
                   setShowPicker(false);
                 }
                 if (e.key === 'Escape') setShowPicker(false);
               }}
-              onBlur={() => setShowPicker(false)}
+              onBlur={(e) => {
+                if (e.currentTarget.value && isTypingRef.current) {
+                  router.push(`/day/${e.currentTarget.value}`);
+                }
+                isTypingRef.current = false;
+                setShowPicker(false);
+              }}
             />
           </div>
         )}
