@@ -1,5 +1,5 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 const STORAGE_KEY = 'niffler_category_colors';
 const FALLBACK_PALETTE = [
@@ -16,15 +16,16 @@ const FALLBACK_PALETTE = [
 ];
 
 export function useCategoryColors() {
-  const [colors, setColors] = useState<Record<string, string>>(() => {
-    if (typeof window === 'undefined') return {};
+  const [colors, setColors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw ? (JSON.parse(raw) as Record<string, string>) : {};
+      if (raw) setColors(JSON.parse(raw) as Record<string, string>);
     } catch {
-      return {};
+      // corrupted storage — leave defaults
     }
-  });
+  }, []);
 
   const setColor = useCallback((id: string, color: string) => {
     setColors((prev) => {

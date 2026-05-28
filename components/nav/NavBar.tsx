@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { format } from 'date-fns';
@@ -53,8 +53,13 @@ export function NavBar() {
   const { email } = useCurrentUser();
   const [showAbout, setShowAbout] = useState(false);
 
-  const today = format(new Date(), 'yyyy-MM-dd');
-  const currentMonth = format(new Date(), 'yyyy-MM');
+  const [today, setToday] = useState('');
+  const [currentMonth, setCurrentMonth] = useState('');
+  useEffect(() => {
+    const now = new Date();
+    setToday(format(now, 'yyyy-MM-dd'));
+    setCurrentMonth(format(now, 'yyyy-MM'));
+  }, []);
 
   const handleLogout = () => {
     logout.mutate(undefined, {
@@ -78,12 +83,15 @@ export function NavBar() {
 
           <ul className="flex items-center gap-1 list-none">
             <li>
-              <NavLink href={`/day/${today}`} active={pathname.startsWith('/day/')}>
+              <NavLink href={today ? `/day/${today}` : '/'} active={pathname.startsWith('/day/')}>
                 Today
               </NavLink>
             </li>
             <li>
-              <NavLink href={`/month/${currentMonth}`} active={pathname.startsWith('/month/')}>
+              <NavLink
+                href={currentMonth ? `/month/${currentMonth}` : '/'}
+                active={pathname.startsWith('/month/')}
+              >
                 Month
               </NavLink>
             </li>

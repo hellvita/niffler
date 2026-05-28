@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { InitialBudgetForm } from '@/components/settings/InitialBudgetForm';
 import { CategoryManager } from '@/components/settings/CategoryManager';
 import { LimitManager } from '@/components/settings/LimitManager';
@@ -19,11 +19,11 @@ function Section({ heading, children }: { heading: string; children: React.React
 }
 
 export default function SettingsPage() {
-  const [email] = useState(() => {
-    if (typeof document === 'undefined') return '';
+  const [email, setEmail] = useState('');
+  useEffect(() => {
     const match = document.cookie.match(/(?:^|;\s*)user_email=([^;]*)/);
-    return match ? decodeURIComponent(match[1]) : '';
-  });
+    setEmail(match ? decodeURIComponent(match[1]) : '');
+  }, []);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8 flex flex-col gap-10">

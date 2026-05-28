@@ -1,21 +1,20 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { type ColumnKey, type ColumnPreferences, DEFAULT_COLUMN_PREFERENCES } from '@/lib/types/ui';
 
 const STORAGE_KEY = 'niffler_column_prefs';
 
 export function useColumnPreferences() {
-  const [preferences, setPreferences] = useState<ColumnPreferences>(() => {
-    if (typeof window === 'undefined') return DEFAULT_COLUMN_PREFERENCES;
+  const [preferences, setPreferences] = useState<ColumnPreferences>(DEFAULT_COLUMN_PREFERENCES);
+
+  useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      return raw
-        ? { ...DEFAULT_COLUMN_PREFERENCES, ...JSON.parse(raw) }
-        : DEFAULT_COLUMN_PREFERENCES;
+      if (raw) setPreferences({ ...DEFAULT_COLUMN_PREFERENCES, ...JSON.parse(raw) });
     } catch {
-      return DEFAULT_COLUMN_PREFERENCES;
+      // corrupted storage — leave defaults
     }
-  });
+  }, []);
 
   const persist = (next: ColumnPreferences) => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
