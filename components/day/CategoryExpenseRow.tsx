@@ -188,7 +188,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
               if (!isMutating && mode === 'view') startEditAmount();
             }}
             disabled={isMutating}
-            className={`text-sm font-mono tabular-nums min-w-[6rem] text-right px-2 py-1 rounded hover:bg-[var(--color-bg-secondary)] transition-colors ${
+            className={`text-sm font-mono tabular-nums min-w-[6rem] text-right px-2 py-1 rounded hover:bg-[var(--color-bg-secondary)] disabled:pointer-events-none transition-colors ${
               amount > 0
                 ? 'text-[var(--color-text-primary)] font-semibold'
                 : 'text-[var(--color-text-muted)]'

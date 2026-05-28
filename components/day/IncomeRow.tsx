@@ -87,7 +87,7 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
         <button
           onClick={startEdit}
           disabled={isMutating}
-          className={`text-sm font-mono tabular-nums min-w-[6rem] text-right px-2 py-1 rounded hover:bg-[var(--color-bg-secondary)] transition-colors ${
+          className={`text-sm font-mono tabular-nums min-w-[6rem] text-right px-2 py-1 rounded hover:bg-[var(--color-bg-secondary)] disabled:pointer-events-none transition-colors ${
             income > 0 ? 'text-[var(--color-text-primary)]' : 'text-[var(--color-text-muted)]'
           }`}
         >
