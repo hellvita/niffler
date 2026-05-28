@@ -26,10 +26,10 @@ describe('CategoryExpenseRow', () => {
     expect(screen.getByText('—')).toBeInTheDocument();
   });
 
-  it('shows a focused number input pre-filled with the current value when amount is clicked', async () => {
+  it('shows a focused text input pre-filled with the current value when amount is clicked', async () => {
     renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={42.5} />);
     await userEvent.click(screen.getByText('42.50'));
-    const input = screen.getByRole('spinbutton');
+    const input = screen.getByRole('textbox');
     expect(input).toBeInTheDocument();
     expect((input as HTMLInputElement).value).toBe('42.5');
   });
@@ -45,13 +45,49 @@ describe('CategoryExpenseRow', () => {
 
     renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={0} />);
     await userEvent.click(screen.getByText('—'));
-    await userEvent.clear(screen.getByRole('spinbutton'));
-    await userEvent.type(screen.getByRole('spinbutton'), '99.99');
+    await userEvent.clear(screen.getByRole('textbox'));
+    await userEvent.type(screen.getByRole('textbox'), '99.99');
     await userEvent.keyboard('{Enter}');
 
     await waitFor(() => {
       expect(capturedBody).toEqual({ amount: 99.99 });
     });
+  });
+
+  it('evaluates a math expression and sends the computed value to the API', async () => {
+    let capturedBody: unknown;
+    server.use(
+      http.put('/api/proxy/expenses/:date/:categoryId', async ({ request }) => {
+        capturedBody = await request.json();
+        return new HttpResponse(null, { status: 204 });
+      })
+    );
+
+    renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={0} />);
+    await userEvent.click(screen.getByText('—'));
+    await userEvent.type(screen.getByRole('textbox'), '17+20');
+    await userEvent.keyboard('{Enter}');
+
+    await waitFor(() => {
+      expect(capturedBody).toEqual({ amount: 37 });
+    });
+  });
+
+  it('shows an error for an incomplete expression', async () => {
+    renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={0} />);
+    await userEvent.click(screen.getByText('—'));
+    await userEvent.type(screen.getByRole('textbox'), '17+');
+    await userEvent.keyboard('{Enter}');
+
+    expect(screen.getByText('Invalid expression')).toBeInTheDocument();
+  });
+
+  it('ignores operators typed as the first character', async () => {
+    renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={0} />);
+    await userEvent.click(screen.getByText('—'));
+    const input = screen.getByRole('textbox');
+    await userEvent.type(input, '+');
+    expect((input as HTMLInputElement).value).toBe('');
   });
 
   it('sends DELETE to /api/proxy/expenses/:date/:categoryId when the field is cleared and Enter is pressed', async () => {
@@ -65,7 +101,7 @@ describe('CategoryExpenseRow', () => {
 
     renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={42.5} />);
     await userEvent.click(screen.getByText('42.50'));
-    await userEvent.clear(screen.getByRole('spinbutton'));
+    await userEvent.clear(screen.getByRole('textbox'));
     await userEvent.keyboard('{Enter}');
 
     await waitFor(() => expect(deleteWasCalled).toBe(true));
@@ -82,11 +118,11 @@ describe('CategoryExpenseRow', () => {
 
     renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={10} />);
     await userEvent.click(screen.getByText('10.00'));
-    await userEvent.clear(screen.getByRole('spinbutton'));
-    await userEvent.type(screen.getByRole('spinbutton'), '99');
+    await userEvent.clear(screen.getByRole('textbox'));
+    await userEvent.type(screen.getByRole('textbox'), '99');
     await userEvent.keyboard('{Escape}');
 
-    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+    expect(screen.queryByRole('textbox')).not.toBeInTheDocument();
     expect(requestMade).toBe(false);
   });
 
@@ -100,14 +136,14 @@ describe('CategoryExpenseRow', () => {
 
     renderWithProviders(<CategoryExpenseRow {...DEFAULT_PROPS} amount={0} />);
     await userEvent.click(screen.getByText('—'));
-    await userEvent.type(screen.getByRole('spinbutton'), '25');
+    await userEvent.type(screen.getByRole('textbox'), '25');
 
-    const input = screen.getByRole('spinbutton');
+    const input = screen.getByRole('textbox');
     // trigger blur to start mutation
     input.blur();
 
     await waitFor(() => {
-      expect(screen.getByRole('spinbutton')).toBeDisabled();
+      expect(screen.getByRole('textbox')).toBeDisabled();
     });
   });
 });

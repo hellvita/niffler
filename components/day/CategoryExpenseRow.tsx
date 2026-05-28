@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { amountSchema } from '@/lib/validation/schemas';
+import { evaluateExpression } from '@/lib/utils/expression';
 import type { Category } from '@/lib/types/api';
 
 interface Props {
@@ -54,8 +55,17 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
   };
 
   const submitAmount = () => {
-    const val = parseFloat(amountInput);
-    if (isNaN(val) || val === 0) {
+    if (!amountInput.trim()) {
+      setAmountError(null);
+      deleteExpense({ date, categoryId }, { onSettled: () => setMode('view') });
+      return;
+    }
+    const val = evaluateExpression(amountInput);
+    if (val === null) {
+      setAmountError('Invalid expression');
+      return;
+    }
+    if (val === 0) {
       setAmountError(null);
       deleteExpense({ date, categoryId }, { onSettled: () => setMode('view') });
       return;
@@ -140,12 +150,13 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
           <div className="flex flex-col items-end gap-0.5">
             <Input
               ref={amountRef}
-              type="number"
-              min="0"
-              step="0.01"
+              type="text"
+              inputMode="decimal"
               value={amountInput}
               onChange={(e) => {
-                setAmountInput(e.target.value);
+                const val = e.target.value;
+                if (val && !/^[0-9][0-9.+\-*/]*$/.test(val)) return;
+                setAmountInput(val);
                 setAmountError(null);
               }}
               disabled={isMutating}
