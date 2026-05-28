@@ -67,7 +67,7 @@ export default function ImportPage() {
           <a
             href="/import-template.xlsx"
             download
-            className="self-start text-sm px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
+            className="self-start text-sm px-3 py-1.5 rounded-lg border border-[var(--color-btn-secondary-border)] bg-[var(--color-surface)] text-[var(--color-btn-secondary-text)] hover:bg-[var(--color-btn-secondary-hover)] transition-colors"
           >
             Download template
           </a>

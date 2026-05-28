@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { downloadAllExportZip, downloadAllExportCombined } from '@/lib/api/export';
 import { useAllTimeSummary } from '@/lib/hooks/useSummary';
 import { Button } from '@/components/shared/Button';
@@ -7,25 +7,33 @@ import { Button } from '@/components/shared/Button';
 export function ExportAllSection() {
   const [exportingZip, setExportingZip] = useState(false);
   const [exportingCombined, setExportingCombined] = useState(false);
+  const exportingZipRef = useRef(false);
+  const exportingCombinedRef = useRef(false);
   const { data: summary } = useAllTimeSummary();
 
   const hasData = !!summary && (summary.totalExpenses > 0 || summary.totalIncome > 0);
 
   const handleZip = async () => {
+    if (exportingZipRef.current) return;
+    exportingZipRef.current = true;
     setExportingZip(true);
     try {
       await downloadAllExportZip();
     } finally {
       setExportingZip(false);
+      exportingZipRef.current = false;
     }
   };
 
   const handleCombined = async () => {
+    if (exportingCombinedRef.current) return;
+    exportingCombinedRef.current = true;
     setExportingCombined(true);
     try {
       await downloadAllExportCombined();
     } finally {
       setExportingCombined(false);
+      exportingCombinedRef.current = false;
     }
   };
 

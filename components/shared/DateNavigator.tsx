@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { format, addDays, subDays, parseISO } from 'date-fns';
 import { Button } from './Button';
-import { Input } from './Input';
+import { CommittedDateInput } from './CommittedDateInput';
 
 export function DateNavigator({ date }: { date: string }) {
   const router = useRouter();
@@ -31,17 +31,20 @@ export function DateNavigator({ date }: { date: string }) {
           {format(parsed, 'EEEE, MMMM d, yyyy')}
         </button>
         {showPicker && (
-          <Input
-            type="date"
-            value={date}
-            onChange={(e) => {
-              if (e.target.value) {
-                navigate(parseISO(e.target.value));
+          <div className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-10 w-fit shadow-md">
+            <CommittedDateInput
+              key={date}
+              autoFocus
+              onCommit={(d) => {
+                router.push(`/day/${d}`);
                 setShowPicker(false);
-              }
-            }}
-            className="absolute left-1/2 -translate-x-1/2 top-full mt-1 z-10 w-auto shadow-md"
-          />
+              }}
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') setShowPicker(false);
+              }}
+              onBlur={() => setShowPicker(false)}
+            />
+          </div>
         )}
       </div>
 

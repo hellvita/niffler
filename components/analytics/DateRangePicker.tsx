@@ -11,7 +11,7 @@ import {
   endOfYear,
 } from 'date-fns';
 import { Button } from '@/components/shared/Button';
-import { Input } from '@/components/shared/Input';
+import { CommittedDateInput } from '@/components/shared/CommittedDateInput';
 
 type Preset = 'this-week' | 'this-month' | 'last-3-months' | 'this-year' | 'all-time';
 
@@ -100,17 +100,17 @@ export function DateRangePicker({
       </div>
       {!isAllTime && (
         <div className="flex items-center gap-2">
-          <Input
-            type="date"
-            value={from}
-            onChange={(e) => updateParams({ from: e.target.value, preset: null })}
+          <CommittedDateInput
+            key={from}
+            defaultValue={from}
+            onCommit={(date) => updateParams({ from: date, preset: null })}
           />
           <span className="text-[var(--color-text-muted)]">–</span>
-          <Input
-            type="date"
-            value={to}
+          <CommittedDateInput
+            key={to}
+            defaultValue={to}
             min={from}
-            onChange={(e) => updateParams({ to: e.target.value, preset: null })}
+            onCommit={(date) => updateParams({ to: date, preset: null })}
           />
         </div>
       )}

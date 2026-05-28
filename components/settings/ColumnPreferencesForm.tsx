@@ -82,7 +82,7 @@ export function ColumnPreferencesForm() {
                       }}
                       onBlur={() => commitEdit(key)}
                       placeholder={DEFAULT_COLUMN_PREFERENCES[key].label}
-                      className="w-36 px-2 py-0.5 focus:ring-1"
+                      className="w-36 px-2 py-0.5 focus:outline-none focus-visible:ring-1"
                     />
                   ) : (
                     <button

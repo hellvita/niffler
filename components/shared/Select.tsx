@@ -8,7 +8,7 @@ export const Select = forwardRef<HTMLSelectElement, Props>(({ className = '', ..
     className={[
       'w-full rounded-lg border border-[var(--color-btn-secondary-border)]',
       'bg-[var(--color-surface)] text-[var(--color-text-primary)] text-sm',
-      'px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-[var(--color-focus-ring)]',
+      'px-3 py-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-focus-ring)]',
       className,
     ]
       .filter(Boolean)
