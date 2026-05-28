@@ -1,12 +1,12 @@
 'use client';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useLayoutEffect, useCallback } from 'react';
 
 type Theme = 'light' | 'dark';
 
 export function useTheme() {
   const [theme, setTheme] = useState<Theme>('light');
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
   }, []);
 
