@@ -5,7 +5,12 @@ import { LimitManager } from '@/components/settings/LimitManager';
 import { ColumnPreferencesForm } from '@/components/settings/ColumnPreferencesForm';
 import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
 import { ExportAllSection } from '@/components/settings/ExportAllSection';
-import { ThemeToggle } from '@/components/settings/ThemeToggle';
+import dynamic from 'next/dynamic';
+
+const ThemeToggle = dynamic(
+  () => import('@/components/settings/ThemeToggle').then((m) => m.ThemeToggle),
+  { ssr: false }
+);
 
 function Section({ heading, children }: { heading: string; children: React.ReactNode }) {
   return (
