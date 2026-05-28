@@ -9,6 +9,7 @@ import { limitSchema } from '@/lib/validation/schemas';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
+import { DateInput } from '@/components/shared/DateInput';
 import { FormField } from '@/components/shared/FormField';
 import { Skeleton } from '@/components/shared/Skeleton';
 
@@ -92,7 +93,7 @@ export function LimitManager() {
             htmlFor="limit-date"
             error={errors.effectiveFromDate?.message}
           >
-            <Input id="limit-date" {...register('effectiveFromDate')} type="date" />
+            <DateInput id="limit-date" {...register('effectiveFromDate')} />
           </FormField>
           <div className="flex flex-col justify-end gap-1 pt-5">
             {apiError && <span className="text-xs text-[var(--color-error)]">{apiError}</span>}
