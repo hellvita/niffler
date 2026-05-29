@@ -1,6 +1,3 @@
-#!/usr/bin/env sh
-. "$(dirname "$0")/_/husky.sh"
-
 run_check() {
   local label="$1"; shift
   local pad_width=60
