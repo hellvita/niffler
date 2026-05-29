@@ -29,12 +29,18 @@ npm run dev
 
 ## Development setup
 
-The pre-commit hook runs Prettier on staged files before every commit. If it reformats any files it aborts the commit so you can review the diff, stage the changes, and commit again:
+The pre-commit hook runs automatically on every `git commit`:
 
-```bash
-git add -u
-git commit
 ```
+Merge conflict markers...............................................Passed
+Formatting & linting.................................................Passed
+TypeScript type check................................................Passed
+```
+
+- **Formatting & linting**: `prettier --write` runs on staged files and re-stages any fixes automatically. ESLint runs with `--max-warnings=0`.
+- **TypeScript type check**: `tsc --noEmit` across the whole project.
+
+A failed check prints the error output and blocks the commit.
 
 To auto-format all files at any time:
 
