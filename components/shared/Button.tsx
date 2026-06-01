@@ -1,7 +1,14 @@
 'use client';
 import { type ButtonHTMLAttributes, forwardRef } from 'react';
 
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'destructive-outline' | 'text';
+type Variant =
+  | 'primary'
+  | 'secondary'
+  | 'ghost'
+  | 'danger'
+  | 'destructive-outline'
+  | 'text'
+  | 'text-destructive';
 type Size = 'sm' | 'md' | 'icon' | 'icon-sm';
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,6 +31,7 @@ const variants: Record<Variant, string> = {
   'destructive-outline':
     'border border-[var(--color-error)] text-[var(--color-error)] hover:bg-[var(--color-error-bg)]',
   text: 'text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]',
+  'text-destructive': 'text-xs text-[var(--color-error)] hover:opacity-70',
 };
 
 const sizes: Record<Size, string> = {
@@ -38,7 +46,7 @@ export const Button = forwardRef<HTMLButtonElement, Props>(
     { variant = 'primary', size = 'md', loading = false, className = '', children, ...props },
     ref
   ) => {
-    const sizeClass = variant === 'text' ? '' : sizes[size];
+    const sizeClass = variant === 'text' || variant === 'text-destructive' ? '' : sizes[size];
     const label = loading && typeof children === 'string' ? `${children}…` : children;
     return (
       <button
