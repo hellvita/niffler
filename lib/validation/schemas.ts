@@ -39,7 +39,10 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
-export const amountSchema = z.number().min(0).multipleOf(0.01);
+export const amountSchema = z
+  .number({ message: 'Amount must be a number' })
+  .min(0)
+  .multipleOf(0.01);
 
 export const categoryNameSchema = z
   .string()

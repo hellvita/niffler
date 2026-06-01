@@ -26,25 +26,23 @@ export function LimitManager() {
   const {
     register,
     handleSubmit,
-    reset,
+    resetField,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(limitSchema),
     defaultValues: {
-      amount: 0,
       effectiveFromDate: format(new Date(), 'yyyy-MM-dd'),
     },
   });
 
   const onSubmit = (data: FormData) => {
     setApiError(null);
-    setLimit.mutate(
-      { effectiveFromDate: data.effectiveFromDate, amount: data.amount },
-      {
-        onSuccess: () => reset({ amount: 0, effectiveFromDate: format(new Date(), 'yyyy-MM-dd') }),
-        onError: () => setApiError('Failed to save limit. Please try again.'),
-      }
-    );
+    const payload = { effectiveFromDate: data.effectiveFromDate, amount: data.amount };
+    resetField('amount');
+    resetField('effectiveFromDate', { defaultValue: format(new Date(), 'yyyy-MM-dd') });
+    setLimit.mutate(payload, {
+      onError: () => setApiError('Failed to save limit. Please try again.'),
+    });
   };
 
   const sorted = [...(limits ?? [])].sort((a, b) =>
@@ -86,6 +84,7 @@ export function LimitManager() {
               step="0.01"
               min="0"
               className="w-32"
+              disabled={setLimit.isPending}
             />
           </FormField>
           <FormField
@@ -93,7 +92,11 @@ export function LimitManager() {
             htmlFor="limit-date"
             error={errors.effectiveFromDate?.message}
           >
-            <DateInput id="limit-date" {...register('effectiveFromDate')} />
+            <DateInput
+              id="limit-date"
+              {...register('effectiveFromDate')}
+              disabled={setLimit.isPending}
+            />
           </FormField>
           <div className="flex flex-col justify-end gap-1 pt-5">
             {apiError && <span className="text-xs text-[var(--color-error)]">{apiError}</span>}
@@ -122,8 +125,7 @@ export function LimitManager() {
                   {entry.amount.toFixed(2)}
                 </span>
                 <Button
-                  variant="text"
-                  className="text-[var(--color-error)] hover:opacity-70"
+                  variant="text-destructive"
                   onClick={() => setDeleteTarget(entry.effectiveFromDate)}
                 >
                   Delete
