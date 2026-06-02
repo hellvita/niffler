@@ -1,10 +1,12 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/lib/env';
+import { AUTH_COOKIE_MAX_AGE_MS } from '@/lib/constants';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const res = await fetch(`${process.env.INTERNAL_API_URL}/api/auth/login`, {
+  const res = await fetch(`${env.INTERNAL_API_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -14,7 +16,7 @@ export async function POST(req: NextRequest) {
 
   const { token, expiresAt } = await res.json();
   const cookieStore = await cookies();
-  const longLived = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const longLived = new Date(Date.now() + AUTH_COOKIE_MAX_AGE_MS);
 
   cookieStore.set('auth_token', token, {
     httpOnly: true,

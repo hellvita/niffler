@@ -1,7 +1,8 @@
 'use client';
 import { useSyncExternalStore, useCallback } from 'react';
+import { STORAGE_KEYS } from '@/lib/constants';
 
-const STORAGE_KEY = 'niffler_category_colors';
+const STORAGE_KEY = STORAGE_KEYS.CATEGORY_COLORS;
 const FALLBACK_PALETTE = [
   '#3b82f6',
   '#8b5cf6',

@@ -1,8 +1,9 @@
 'use client';
 import { useSyncExternalStore, useCallback } from 'react';
 import { type ColumnKey, type ColumnPreferences, DEFAULT_COLUMN_PREFERENCES } from '@/lib/types/ui';
+import { STORAGE_KEYS } from '@/lib/constants';
 
-const STORAGE_KEY = 'niffler_column_prefs';
+const STORAGE_KEY = STORAGE_KEYS.COLUMN_PREFERENCES;
 
 // Module-level store: DEFAULT_COLUMN_PREFERENCES doubles as the server snapshot.
 let snapshot: ColumnPreferences = DEFAULT_COLUMN_PREFERENCES;

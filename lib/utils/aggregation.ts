@@ -1,5 +1,6 @@
 import { differenceInDays, format, parseISO, startOfWeek, addDays, startOfMonth } from 'date-fns';
 import type { MonthSummary } from '@/lib/types/api';
+import { ANALYTICS_DAY_BUCKET_MAX_DAYS, ANALYTICS_WEEK_BUCKET_MAX_DAYS } from '@/lib/constants';
 
 export interface ChartDataPoint {
   label: string;
@@ -40,8 +41,8 @@ export function getMonthsInRange(from: Date, to: Date): [number, number][] {
 // ≤ 31 days → day  |  ≤ 180 days → week  |  > 180 days → month
 export function chooseBucket(from: Date, to: Date): 'day' | 'week' | 'month' {
   const days = differenceInDays(to, from) + 1;
-  if (days <= 31) return 'day';
-  if (days <= 180) return 'week';
+  if (days <= ANALYTICS_DAY_BUCKET_MAX_DAYS) return 'day';
+  if (days <= ANALYTICS_WEEK_BUCKET_MAX_DAYS) return 'week';
   return 'month';
 }
 
