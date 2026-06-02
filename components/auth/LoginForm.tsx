@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { loginSchema, type LoginInput } from '@/lib/validation/schemas';
 import { useLogin } from '@/lib/hooks/useAuth';
+import { ApiError } from '@/lib/api/errors';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { FormField } from '@/components/shared/FormField';
@@ -23,8 +24,11 @@ export function LoginForm() {
     login(data, {
       onSuccess: () => router.push('/'),
       onError: (err: unknown) => {
-        const apiErr = err as { data?: { detail?: string; title?: string } };
-        const message = apiErr.data?.detail ?? apiErr.data?.title ?? 'Invalid credentials';
+        const body =
+          err instanceof ApiError
+            ? (err.data as { detail?: string; title?: string } | undefined)
+            : undefined;
+        const message = body?.detail ?? body?.title ?? 'Invalid credentials';
         setError('root', { message });
       },
     });

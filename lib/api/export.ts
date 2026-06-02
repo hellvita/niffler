@@ -1,6 +1,8 @@
+import { ApiError } from './errors';
+
 async function triggerDownload(proxyPath: string, filename: string): Promise<void> {
   const res = await fetch(`/api/proxy/${proxyPath}`);
-  if (!res.ok) throw new Error(`${res.status}`);
+  if (!res.ok) throw new ApiError(res.status);
   const blob = await res.blob();
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

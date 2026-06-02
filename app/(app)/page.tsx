@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
+import { format } from 'date-fns';
 
 export default function AppRootPage() {
-  const d = new Date();
-  const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  redirect(`/day/${today}`);
+  redirect(`/day/${format(new Date(), 'yyyy-MM-dd')}`);
 }

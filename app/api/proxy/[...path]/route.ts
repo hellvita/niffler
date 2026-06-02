@@ -1,7 +1,8 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/lib/env';
 
-const BACKEND = process.env.INTERNAL_API_URL!;
+const BACKEND = env.INTERNAL_API_URL;
 
 async function handler(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
   const { path } = await params;

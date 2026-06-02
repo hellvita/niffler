@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MIN_PASSWORD_LENGTH, MAX_CATEGORY_NAME_LENGTH, MIN_AMOUNT_STEP } from '@/lib/constants';
 
 const emailField = z.string().superRefine((val, ctx) => {
   if (val.length === 0) {
@@ -13,7 +14,7 @@ export const loginSchema = z.object({
   password: z.string().superRefine((val, ctx) => {
     if (val.length === 0) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Password is required' });
-    } else if (val.length < 8) {
+    } else if (val.length < MIN_PASSWORD_LENGTH) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Invalid credentials' });
     }
   }),
@@ -25,7 +26,7 @@ export const registerSchema = z
     password: z.string().superRefine((val, ctx) => {
       if (val.length === 0) {
         ctx.addIssue({ code: z.ZodIssueCode.custom, message: 'Password is required' });
-      } else if (val.length < 8) {
+      } else if (val.length < MIN_PASSWORD_LENGTH) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: 'Password must be at least 8 characters',
@@ -42,12 +43,12 @@ export const registerSchema = z
 export const amountSchema = z
   .number({ message: 'Amount must be a number' })
   .min(0)
-  .multipleOf(0.01);
+  .multipleOf(MIN_AMOUNT_STEP);
 
 export const categoryNameSchema = z
   .string()
   .min(1, 'Name is required')
-  .max(100, 'Name must be 100 characters or fewer');
+  .max(MAX_CATEGORY_NAME_LENGTH, `Name must be ${MAX_CATEGORY_NAME_LENGTH} characters or fewer`);
 
 export const limitSchema = z.object({
   amount: amountSchema,

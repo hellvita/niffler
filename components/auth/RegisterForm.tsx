@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { registerSchema, type RegisterInput } from '@/lib/validation/schemas';
 import { useRegister } from '@/lib/hooks/useAuth';
+import { ApiError } from '@/lib/api/errors';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
 import { FormField } from '@/components/shared/FormField';
@@ -25,11 +26,14 @@ export function RegisterForm() {
       {
         onSuccess: () => router.push('/'),
         onError: (err: unknown) => {
-          const apiErr = err as { status?: number; data?: { detail?: string; title?: string } };
-          if (apiErr.status === 409) {
+          if (err instanceof ApiError && err.status === 409) {
             setError('root', { message: 'An account with this email already exists.' });
           } else {
-            const message = apiErr.data?.detail ?? apiErr.data?.title ?? 'Registration failed';
+            const body =
+              err instanceof ApiError
+                ? (err.data as { detail?: string; title?: string } | undefined)
+                : undefined;
+            const message = body?.detail ?? body?.title ?? 'Registration failed';
             setError('root', { message });
           }
         },

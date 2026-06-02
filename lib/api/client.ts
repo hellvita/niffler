@@ -1,8 +1,10 @@
+import { ApiError } from './errors';
+
 const BASE = '/api/proxy';
 
 export async function apiGet<T>(path: string): Promise<T> {
   const res = await fetch(`${BASE}/${path}`);
-  if (!res.ok) throw Object.assign(new Error(`${res.status}`), { status: res.status });
+  if (!res.ok) throw new ApiError(res.status);
   return res.json();
 }
 
@@ -16,7 +18,7 @@ export async function apiMutate<T>(
     headers: { 'Content-Type': 'application/json' },
     body: body != null ? JSON.stringify(body) : undefined,
   });
-  if (!res.ok) throw Object.assign(new Error(`${res.status}`), { status: res.status });
+  if (!res.ok) throw new ApiError(res.status);
   if (res.status === 204) return null;
   const ct = res.headers.get('Content-Type') ?? '';
   if (!ct.includes('application/json')) return null;

@@ -56,11 +56,17 @@ npm run format:check
 
 Open [http://localhost:3000](http://localhost:3000).
 
-Copy `.env.local.example` to `.env.local` if you need to override the backend URL:
+Copy `.env.local.example` to `.env.local` and adjust values as needed:
 
-```env
-BACKEND_URL=http://localhost:5048
+```bash
+cp .env.local.example .env.local
 ```
+
+| Variable                 | Default                 | Description                                      |
+| ------------------------ | ----------------------- | ------------------------------------------------ |
+| `INTERNAL_API_URL`       | `http://localhost:5048` | .NET backend URL used by the Next.js proxy route |
+| `PLAYWRIGHT_BASE_URL`    | `http://localhost:3000` | Next.js base URL for Playwright tests            |
+| `PLAYWRIGHT_BACKEND_URL` | `http://localhost:5048` | Backend URL for Playwright tests                 |
 
 ## Scripts
 

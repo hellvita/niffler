@@ -1,20 +1,21 @@
 'use client';
 import { useRef, useState } from 'react';
 import { useParseImportFile } from '@/lib/hooks/useImport';
+import { ApiError } from '@/lib/api/errors';
 import type { ParseResult } from '@/lib/types/api';
 
 function getErrorMessage(err: unknown): string {
-  if (err instanceof Error) {
-    const e = err as { status?: number; detail?: { detail?: string } };
-    if (e.status === 413) return 'File is too large. Maximum allowed size is 10 MB.';
-    if (e.status === 400) {
-      const detail = e.detail?.detail ?? '';
+  if (err instanceof ApiError) {
+    const body = err.data as { detail?: string } | undefined;
+    if (err.status === 413) return 'File is too large. Maximum allowed size is 10 MB.';
+    if (err.status === 400) {
+      const detail = body?.detail ?? '';
       if (detail.includes('exactly one sheet')) {
         return 'This file has multiple sheets. Please export or save only the sheet you want to import, then try again.';
       }
       return detail || 'Invalid file format.';
     }
-    return e.detail?.detail ?? 'Failed to process file. Please try again.';
+    return body?.detail ?? 'Failed to process file. Please try again.';
   }
   return 'Failed to process file. Please try again.';
 }
