@@ -1,18 +1,8 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { useUpsertExpense, useDeleteExpense } from '@/lib/hooks/useExpenses';
-import {
-  useCategories,
-  useRenameCategory,
-  useMergeCategory,
-  useArchiveCategory,
-} from '@/lib/hooks/useCategories';
+import { useCategoryExpenseRow } from './useCategoryExpenseRow';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { Button } from '@/components/shared/Button';
 import { Input } from '@/components/shared/Input';
-import { amountSchema } from '@/lib/validation/schemas';
-import { evaluateExpression } from '@/lib/utils/expression';
-import type { Category } from '@/lib/types/api';
 
 interface Props {
   date: string;
@@ -21,88 +11,35 @@ interface Props {
   amount: number;
 }
 
-type Mode = 'view' | 'edit-amount' | 'edit-name' | 'confirm-merge' | 'confirm-archive';
+export function CategoryExpenseRow(props: Props) {
+  const {
+    mode,
+    menuOpen,
+    amountInput,
+    amountError,
+    nameInput,
+    mergeTarget,
+    isMutating,
+    amountRef,
+    nameRef,
+    setMode,
+    setNameInput,
+    startEditAmount,
+    startEditName,
+    handleAmountChange,
+    handleAmountKeyDown,
+    handleAmountBlur,
+    handleNameKeyDown,
+    handleNameBlur,
+    confirmMerge,
+    cancelMerge,
+    confirmArchive,
+    cancelArchive,
+    toggleMenu,
+    closeMenu,
+  } = useCategoryExpenseRow(props);
 
-export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: Props) {
-  const [mode, setMode] = useState<Mode>('view');
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [amountInput, setAmountInput] = useState('');
-  const [amountError, setAmountError] = useState<string | null>(null);
-  const [nameInput, setNameInput] = useState('');
-  const [mergeTarget, setMergeTarget] = useState<Category | null>(null);
-
-  const amountRef = useRef<HTMLInputElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const escPressed = useRef(false);
-
-  const { data: categories = [] } = useCategories(false);
-  const { mutate: upsertExpense, isPending: upserting } = useUpsertExpense();
-  const { mutate: deleteExpense, isPending: deleting } = useDeleteExpense();
-  const { mutate: renameCategory } = useRenameCategory();
-  const { mutate: mergeCategory } = useMergeCategory();
-  const { mutate: archiveCategory } = useArchiveCategory();
-
-  const isMutating = upserting || deleting;
-
-  useEffect(() => {
-    if (mode === 'edit-amount') amountRef.current?.focus();
-    if (mode === 'edit-name') nameRef.current?.focus();
-  }, [mode]);
-
-  const startEditAmount = () => {
-    setAmountInput(amount > 0 ? String(amount) : '');
-    setMode('edit-amount');
-  };
-
-  const submitAmount = () => {
-    if (!amountInput.trim()) {
-      setAmountError(null);
-      deleteExpense({ date, categoryId }, { onSettled: () => setMode('view') });
-      return;
-    }
-    const val = evaluateExpression(amountInput);
-    if (val === null) {
-      setAmountError('Invalid expression');
-      return;
-    }
-    if (val === 0) {
-      setAmountError(null);
-      deleteExpense({ date, categoryId }, { onSettled: () => setMode('view') });
-      return;
-    }
-    const result = amountSchema.safeParse(val);
-    if (!result.success) {
-      setAmountError(result.error.issues[0]?.message ?? 'Invalid amount');
-      return;
-    }
-    setAmountError(null);
-    upsertExpense({ date, categoryId, amount: val }, { onSettled: () => setMode('view') });
-  };
-
-  const startEditName = () => {
-    setNameInput(categoryName);
-    setMenuOpen(false);
-    setMode('edit-name');
-  };
-
-  const submitName = () => {
-    const trimmed = nameInput.trim();
-    if (!trimmed || trimmed === categoryName) {
-      setMode('view');
-      return;
-    }
-
-    const existing = categories.find(
-      (c) => c.name.toLowerCase() === trimmed.toLowerCase() && c.id !== categoryId
-    );
-    if (existing) {
-      setMergeTarget(existing);
-      setMode('confirm-merge');
-      return;
-    }
-
-    renameCategory({ id: categoryId, name: trimmed }, { onSettled: () => setMode('view') });
-  };
+  const { categoryName, amount } = props;
 
   return (
     <>
@@ -119,20 +56,8 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
               ref={nameRef}
               value={nameInput}
               onChange={(e) => setNameInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') e.currentTarget.blur();
-                if (e.key === 'Escape') {
-                  escPressed.current = true;
-                  setMode('view');
-                }
-              }}
-              onBlur={() => {
-                if (escPressed.current) {
-                  escPressed.current = false;
-                  return;
-                }
-                submitName();
-              }}
+              onKeyDown={handleNameKeyDown}
+              onBlur={handleNameBlur}
               className="flex-1 py-0.5 px-2 focus:outline-none focus-visible:ring-1"
             />
           ) : (
@@ -153,28 +78,10 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
               type="text"
               inputMode="decimal"
               value={amountInput}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val && !/^[0-9][0-9.+\-*/]*$/.test(val)) return;
-                setAmountInput(val);
-                setAmountError(null);
-              }}
+              onChange={(e) => handleAmountChange(e.target.value)}
               disabled={isMutating}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') e.currentTarget.blur();
-                if (e.key === 'Escape') {
-                  escPressed.current = true;
-                  setAmountError(null);
-                  setMode('view');
-                }
-              }}
-              onBlur={() => {
-                if (escPressed.current) {
-                  escPressed.current = false;
-                  return;
-                }
-                submitAmount();
-              }}
+              onKeyDown={handleAmountKeyDown}
+              onBlur={handleAmountBlur}
               error={!!amountError}
               className="w-28 text-right py-1 px-2"
             />
@@ -200,16 +107,12 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
 
         {mode !== 'edit-name' && mode !== 'edit-amount' && (
           <div className="relative">
-            <Button
-              variant="text"
-              onClick={() => setMenuOpen((v) => !v)}
-              aria-label="Category actions"
-            >
+            <Button variant="text" onClick={toggleMenu} aria-label="Category actions">
               •••
             </Button>
             {menuOpen && (
               <>
-                <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+                <div className="fixed inset-0 z-10" onClick={closeMenu} />
                 <div className="absolute right-0 top-full z-20 mt-1 w-32 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-md overflow-hidden">
                   <Button
                     variant="ghost"
@@ -222,7 +125,7 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
                     variant="ghost"
                     className="w-full justify-start text-sm text-[var(--color-error)]"
                     onClick={() => {
-                      setMenuOpen(false);
+                      closeMenu();
                       setMode('confirm-archive');
                     }}
                   >
@@ -238,29 +141,16 @@ export function CategoryExpenseRow({ date, categoryId, categoryName, amount }: P
       {mode === 'confirm-merge' && mergeTarget && (
         <ConfirmDialog
           message={`A category named "${mergeTarget.name}" already exists. Merge "${categoryName}" into "${mergeTarget.name}"? All expenses recorded under "${categoryName}" will be moved to "${mergeTarget.name}" and "${categoryName}" will be removed.`}
-          onConfirm={() =>
-            mergeCategory(
-              { id: categoryId, targetId: mergeTarget.id },
-              {
-                onSettled: () => {
-                  setMode('view');
-                  setMergeTarget(null);
-                },
-              }
-            )
-          }
-          onCancel={() => {
-            setMode('edit-name');
-            setMergeTarget(null);
-          }}
+          onConfirm={confirmMerge}
+          onCancel={cancelMerge}
         />
       )}
 
       {mode === 'confirm-archive' && (
         <ConfirmDialog
           message="Archiving this category removes it from future day views. Expenses already entered for past dates are preserved."
-          onConfirm={() => archiveCategory(categoryId, { onSettled: () => setMode('view') })}
-          onCancel={() => setMode('view')}
+          onConfirm={confirmArchive}
+          onCancel={cancelArchive}
         />
       )}
     </>
