@@ -2,67 +2,41 @@
 import { useSyncExternalStore, useCallback } from 'react';
 import { type ColumnKey, type ColumnPreferences, DEFAULT_COLUMN_PREFERENCES } from '@/lib/types/ui';
 import { STORAGE_KEYS } from '@/lib/constants';
+import { createLocalStorageStore } from '@/lib/utils/createLocalStorageStore';
 
-const STORAGE_KEY = STORAGE_KEYS.COLUMN_PREFERENCES;
-
-// Module-level store: DEFAULT_COLUMN_PREFERENCES doubles as the server snapshot.
-let snapshot: ColumnPreferences = DEFAULT_COLUMN_PREFERENCES;
-const listeners = new Set<() => void>();
-
-function subscribe(callback: () => void): () => void {
-  // Load from localStorage on first subscriber (client-only).
-  if (snapshot === DEFAULT_COLUMN_PREFERENCES) {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) snapshot = { ...DEFAULT_COLUMN_PREFERENCES, ...JSON.parse(raw) };
-    } catch {
-      // corrupted storage — keep defaults
-    }
-  }
-  listeners.add(callback);
-  return () => listeners.delete(callback);
-}
-
-function getSnapshot(): ColumnPreferences {
-  return snapshot;
-}
-
-function notify() {
-  listeners.forEach((cb) => cb());
-}
+const store = createLocalStorageStore<ColumnPreferences>(
+  STORAGE_KEYS.COLUMN_PREFERENCES,
+  DEFAULT_COLUMN_PREFERENCES,
+  (raw) => ({ ...DEFAULT_COLUMN_PREFERENCES, ...(JSON.parse(raw) as ColumnPreferences) })
+);
 
 export function useColumnPreferences() {
   const preferences = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
+    store.subscribe,
+    store.getSnapshot,
     () => DEFAULT_COLUMN_PREFERENCES
   );
 
   const updateLabel = useCallback((key: ColumnKey, label: string) => {
-    snapshot = {
-      ...snapshot,
-      [key]: { ...snapshot[key], label: label.trim() || DEFAULT_COLUMN_PREFERENCES[key].label },
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-    notify();
+    const cur = store.getSnapshot();
+    store.set({
+      ...cur,
+      [key]: { ...cur[key], label: label.trim() || DEFAULT_COLUMN_PREFERENCES[key].label },
+    });
   }, []);
 
   const toggleVisible = useCallback((key: ColumnKey) => {
-    snapshot = { ...snapshot, [key]: { ...snapshot[key], visible: !snapshot[key].visible } };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-    notify();
+    const cur = store.getSnapshot();
+    store.set({ ...cur, [key]: { ...cur[key], visible: !cur[key].visible } });
   }, []);
 
   const updateColor = useCallback((key: ColumnKey, color: string) => {
-    snapshot = { ...snapshot, [key]: { ...snapshot[key], color } };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(snapshot));
-    notify();
+    const cur = store.getSnapshot();
+    store.set({ ...cur, [key]: { ...cur[key], color } });
   }, []);
 
   const resetAll = useCallback(() => {
-    snapshot = DEFAULT_COLUMN_PREFERENCES;
-    localStorage.removeItem(STORAGE_KEY);
-    notify();
+    store.reset();
   }, []);
 
   return { preferences, updateLabel, updateColor, toggleVisible, resetAll };
