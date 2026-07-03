@@ -1,10 +1,11 @@
 import { cookies } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { env } from '@/lib/env';
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const res = await fetch(`${process.env.INTERNAL_API_URL}/api/auth/register`, {
+  const res = await fetch(`${env.INTERNAL_API_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
