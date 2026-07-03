@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { env } from '@/lib/env';
 
 export async function POST() {
   const cookieStore = await cookies();
@@ -9,7 +10,7 @@ export async function POST() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const res = await fetch(`${process.env.INTERNAL_API_URL}/api/users/me`, {
+  const res = await fetch(`${env.INTERNAL_API_URL}/api/users/me`, {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   });

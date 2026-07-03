@@ -62,7 +62,9 @@ export const test = base.extend<{ authenticated: AuthFixture }>({
       ]);
       await apiCtx.dispose();
       await use({ page, email, password });
-      await page.request.delete('/api/proxy/users/me').catch(() => {});
+      await page.request.delete('/api/proxy/users/me').catch((err) => {
+        console.error('[E2E teardown] Failed to delete test user:', err);
+      });
       return;
     }
 
@@ -113,7 +115,9 @@ export const test = base.extend<{ authenticated: AuthFixture }>({
     await use({ page, email, password });
 
     // Teardown: delete the test account and all its data
-    await page.request.delete('/api/proxy/users/me').catch(() => {});
+    await page.request.delete('/api/proxy/users/me').catch((err) => {
+      console.error('[E2E teardown] Failed to delete test user:', err);
+    });
   },
 });
 

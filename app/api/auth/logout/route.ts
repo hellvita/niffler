@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { env } from '@/lib/env';
 
 export async function POST() {
   const cookieStore = await cookies();
@@ -7,7 +8,7 @@ export async function POST() {
 
   if (token) {
     // Revoke the token server-side; ignore errors (already expired/revoked)
-    await fetch(`${process.env.INTERNAL_API_URL}/api/auth/logout`, {
+    await fetch(`${env.INTERNAL_API_URL}/api/auth/logout`, {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     }).catch(() => {});
