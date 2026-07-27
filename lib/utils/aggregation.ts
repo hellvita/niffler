@@ -59,7 +59,7 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
   const catMap = new Map<string, { categoryName: string; amount: number }>();
 
   for (const summary of summaries) {
-    // Day-level: filter by exact date range for accurate expense/income/limit totals
+    // Day-level: filter by exact date range for accurate expense/income/limit/category totals
     for (const day of summary.days) {
       if (day.date < fromStr || day.date > toStr) continue;
       totalExpenses += day.totalExpenses;
@@ -71,16 +71,14 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
       if (day.totalExpenses > 0) dailyExpenses.push(day.totalExpenses);
       const monthKey = day.date.slice(0, 7);
       monthlyExpenses.set(monthKey, (monthlyExpenses.get(monthKey) ?? 0) + day.totalExpenses);
-    }
 
-    // Category-level: monthTotals is whole-month only; used as-is (may include days outside
-    // the range for partial months, but per-category day data isn't available from the API).
-    for (const cat of summary.monthTotals.expensesByCategory) {
-      const prev = catMap.get(cat.categoryId);
-      if (prev) {
-        prev.amount += cat.amount;
-      } else {
-        catMap.set(cat.categoryId, { categoryName: cat.categoryName, amount: cat.amount });
+      for (const cat of day.expensesByCategory) {
+        const prev = catMap.get(cat.categoryId);
+        if (prev) {
+          prev.amount += cat.amount;
+        } else {
+          catMap.set(cat.categoryId, { categoryName: cat.categoryName, amount: cat.amount });
+        }
       }
     }
   }

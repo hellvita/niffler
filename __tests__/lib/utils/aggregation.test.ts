@@ -24,7 +24,8 @@ function buildDaySummary(
   date: string,
   totalExpenses: number,
   totalIncome: number,
-  effectiveLimit: number | null = 50
+  effectiveLimit: number | null = 50,
+  expensesByCategory: { categoryId: string; categoryName: string; amount: number }[] = []
 ) {
   return {
     date,
@@ -33,6 +34,7 @@ function buildDaySummary(
     effectiveLimit,
     limitDiff: effectiveLimit !== null ? effectiveLimit - totalExpenses : null,
     net: totalIncome - totalExpenses,
+    expensesByCategory,
   };
 }
 
@@ -41,10 +43,18 @@ const MAY_SUMMARY: MonthSummary = {
   month: 5,
   openingBalance: 1000,
   days: [
-    buildDaySummary('2026-05-01', 10, 0, 50),
-    buildDaySummary('2026-05-02', 20, 100, 50),
-    buildDaySummary('2026-05-10', 15, 0, 50),
-    buildDaySummary('2026-05-14', 5, 0, 50),
+    buildDaySummary('2026-05-01', 10, 0, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 10 },
+    ]),
+    buildDaySummary('2026-05-02', 20, 100, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 20 },
+    ]),
+    buildDaySummary('2026-05-10', 15, 0, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 15 },
+    ]),
+    buildDaySummary('2026-05-14', 5, 0, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 5 },
+    ]),
     buildDaySummary('2026-05-31', 0, 0, 50),
   ],
   monthTotals: {
@@ -61,7 +71,15 @@ const APRIL_SUMMARY: MonthSummary = {
   year: 2026,
   month: 4,
   openingBalance: 900,
-  days: [buildDaySummary('2026-04-15', 30, 200, 50), buildDaySummary('2026-04-30', 10, 0, 50)],
+  days: [
+    buildDaySummary('2026-04-15', 30, 200, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 20 },
+      { categoryId: 'cat-3', categoryName: 'Dining', amount: 10 },
+    ]),
+    buildDaySummary('2026-04-30', 10, 0, 50, [
+      { categoryId: 'cat-3', categoryName: 'Dining', amount: 10 },
+    ]),
+  ],
   monthTotals: {
     totalExpenses: 40,
     totalIncome: 200,
@@ -203,6 +221,18 @@ describe('aggregateTotals', () => {
     // May days: 10+20+15+5+0=50, April days: 30+10=40
     expect(result.totalExpenses).toBe(90);
     expect(result.totalIncome).toBe(300); // 100+200
+  });
+
+  it('scopes expensesByCategory to the exact selected range, not the whole month', () => {
+    // May 1-2 only: day-level categories are 10 (May 1) + 20 (May 2) = 30,
+    // vs. the whole month's total of 50 — proves the pie chart no longer leaks in
+    // category spend from days outside the selected range.
+    const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-02'));
+    expect(result.expensesByCategory).toEqual([
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 30 },
+    ]);
+    const categorySum = result.expensesByCategory.reduce((s, c) => s + c.amount, 0);
+    expect(categorySum).toBe(result.totalExpenses);
   });
 
   it('merges expensesByCategory across months — same category amounts are summed', () => {
