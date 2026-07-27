@@ -6,7 +6,7 @@ import {
   startOfMonth,
   endOfMonth,
 } from 'date-fns';
-import type { MonthSummary } from '@/lib/types/api';
+import type { MonthSummary, MonthSummaryDay } from '@/lib/types/api';
 import { ANALYTICS_DAY_BUCKET_MAX_DAYS, ANALYTICS_WEEK_BUCKET_MAX_DAYS } from '@/lib/constants';
 
 export interface ChartDataPoint {
@@ -168,14 +168,7 @@ export function buildChartSeries(
   const fromStr = format(from, 'yyyy-MM-dd');
   const toStr = format(to, 'yyyy-MM-dd');
 
-  type DaySlice = {
-    date: string;
-    totalExpenses: number;
-    totalIncome: number;
-    effectiveLimit: number | null;
-  };
-
-  const days: DaySlice[] = summaries
+  const days: MonthSummaryDay[] = summaries
     .flatMap((s) => s.days)
     .filter((d) => d.date >= fromStr && d.date <= toStr)
     .sort((a, b) => a.date.localeCompare(b.date));
@@ -194,14 +187,14 @@ export function buildChartSeries(
     }));
   }
 
-  function sumLimit(slice: DaySlice[]): number | null {
+  function sumLimit(slice: MonthSummaryDay[]): number | null {
     const limited = slice.filter((d) => d.effectiveLimit !== null);
     if (limited.length === 0) return null;
     return limited.reduce((s, d) => s + (d.effectiveLimit ?? 0), 0);
   }
 
   if (bucket === 'week') {
-    const buckets = new Map<string, DaySlice[]>();
+    const buckets = new Map<string, MonthSummaryDay[]>();
     for (const day of days) {
       const key = format(startOfWeek(parseISO(day.date), { weekStartsOn: 1 }), 'yyyy-MM-dd');
       if (!buckets.has(key)) buckets.set(key, []);
@@ -226,7 +219,7 @@ export function buildChartSeries(
   }
 
   // month bucket
-  const mbuckets = new Map<string, { days: DaySlice[]; start: Date }>();
+  const mbuckets = new Map<string, { days: MonthSummaryDay[]; start: Date }>();
   for (const day of days) {
     const d = parseISO(day.date);
     const ms = startOfMonth(d);
