@@ -59,11 +59,14 @@ function warnOnDuplicateDates(dates: string[], source: string): void {
 // `5.551115123125783e-17` instead of an exact `0`, which would wrongly satisfy a `< 0`/`> 0`
 // check (see the `value < 0` color check in AnalyticsView.tsx). Rounding at the output boundary
 // closes that gap cheaply, without a stack-wide rewrite to integer cents or a decimal library.
-function roundCurrency(n: number): number {
+// Exported so callers that compute their own client-side medians from raw day/month values
+// (e.g. AnalyticsView.tsx's "All time" median calculations, which don't go through
+// aggregateTotals) can apply the same rounding instead of silently skipping it.
+export function roundCurrency(n: number): number {
   return Math.round((n + Number.EPSILON) * 100) / 100;
 }
 
-function roundCurrencyOrNull(n: number | null): number | null {
+export function roundCurrencyOrNull(n: number | null): number | null {
   return n === null ? null : roundCurrency(n);
 }
 

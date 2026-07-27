@@ -5,6 +5,8 @@ import {
   aggregateTotals,
   buildChartSeries,
   computeMedian,
+  roundCurrency,
+  roundCurrencyOrNull,
   InvalidDateRangeError,
 } from '@/lib/utils/aggregation';
 import type { MonthSummary } from '@/lib/types/api';
@@ -228,6 +230,35 @@ describe('computeMedian', () => {
     const input = [30, 10, 20];
     computeMedian(input);
     expect(input).toEqual([30, 10, 20]);
+  });
+});
+
+// ── roundCurrency / roundCurrencyOrNull ────────────────────────────────────────
+// Exported so callers outside aggregation.ts (e.g. AnalyticsView.tsx's "All time" medians,
+// which compute their own client-side arrays rather than going through aggregateTotals) can
+// apply the same currency rounding instead of silently skipping it.
+
+describe('roundCurrency', () => {
+  it('rounds classic float drift back to 2 decimals', () => {
+    expect(roundCurrency(10.1 + 20.2)).toBe(30.3);
+  });
+
+  it('leaves an already-clean value unchanged', () => {
+    expect(roundCurrency(50)).toBe(50);
+  });
+
+  it('rounds cancellation dust from a near-zero subtraction down to exactly 0', () => {
+    expect(roundCurrency(0.1 + 0.2 - 0.3)).toBe(0);
+  });
+});
+
+describe('roundCurrencyOrNull', () => {
+  it('returns null unchanged', () => {
+    expect(roundCurrencyOrNull(null)).toBeNull();
+  });
+
+  it('rounds a non-null value', () => {
+    expect(roundCurrencyOrNull(10.1 + 20.2)).toBe(30.3);
   });
 });
 

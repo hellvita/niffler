@@ -8,6 +8,7 @@ import {
   buildChartSeries,
   chooseBucket,
   computeMedian,
+  roundCurrencyOrNull,
   InvalidDateRangeError,
 } from '@/lib/utils/aggregation';
 import { getMonthSummary } from '@/lib/api/summary';
@@ -103,18 +104,26 @@ export function AnalyticsView() {
       : null;
   const chartData = totals ? buildChartSeries(displaySummaries, chartFrom, chartTo) : [];
 
+  // These two medians are computed directly from allTimeMonthlySummaries rather than via
+  // aggregateTotals (which only ever receives a single from/to range, not "all time"), so they
+  // need their own roundCurrency pass — otherwise they'd be the one place in this component that
+  // skips the rounding applied everywhere else in aggregation.ts.
   const allTimeMedianDaily = isAllTime
-    ? computeMedian(
-        allTimeMonthlySummaries
-          .flatMap((s) => s.days)
-          .map((d) => d.totalExpenses)
-          .filter((v) => v > 0)
+    ? roundCurrencyOrNull(
+        computeMedian(
+          allTimeMonthlySummaries
+            .flatMap((s) => s.days)
+            .map((d) => d.totalExpenses)
+            .filter((v) => v > 0)
+        )
       )
     : null;
 
   const allTimeMedianMonthly = isAllTime
-    ? computeMedian(
-        allTimeMonthlySummaries.map((s) => s.monthTotals.totalExpenses).filter((v) => v > 0)
+    ? roundCurrencyOrNull(
+        computeMedian(
+          allTimeMonthlySummaries.map((s) => s.monthTotals.totalExpenses).filter((v) => v > 0)
+        )
       )
     : null;
 
