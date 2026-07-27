@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   getMonthsInRange,
   chooseBucket,
@@ -310,6 +310,28 @@ describe('aggregateTotals', () => {
       expect(result.medianMonthlyExpenses).toBe(50);
     });
   });
+
+  describe('duplicate-date dev warning', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('warns when the same date appears in more than one summary (overlapping months)', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const overlappingSummary: MonthSummary = {
+        ...MAY_SUMMARY,
+        days: [buildDaySummary('2026-05-01', 99, 0, 50)],
+      };
+      aggregateTotals([MAY_SUMMARY, overlappingSummary], d('2026-05-01'), d('2026-05-31'));
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('2026-05-01'));
+    });
+
+    it('does not warn when summaries have no overlapping dates', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      aggregateTotals([APRIL_SUMMARY, MAY_SUMMARY], d('2026-04-01'), d('2026-05-31'));
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
 });
 
 // ── buildChartSeries ─────────────────────────────────────────────────────────
@@ -553,6 +575,26 @@ describe('buildChartSeries', () => {
     expect(result[0].expenses).toBe(50);
 
     void days10; // suppress lint
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('warns when the same date appears in more than one summary (overlapping months)', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const overlappingSummary: MonthSummary = {
+      ...sevenDaySummary,
+      days: [buildDaySummary('2026-05-08', 99, 0, 50)],
+    };
+    buildChartSeries([sevenDaySummary, overlappingSummary], d('2026-05-08'), d('2026-05-14'));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('2026-05-08'));
+  });
+
+  it('does not warn when summaries have no overlapping dates', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    buildChartSeries([sevenDaySummary], d('2026-05-08'), d('2026-05-14'));
+    expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('handles a range ending mid-week: last bucket label ends on the actual last day, not the following Sunday', () => {

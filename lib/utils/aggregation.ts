@@ -33,6 +33,25 @@ export interface AggregatedTotals {
   expensesByCategory: { categoryId: string; categoryName: string; amount: number }[];
 }
 
+// Dev-only trip wire: warns (never throws, never changes output) if the same date shows up
+// twice across the summaries passed in — which would silently double-count that day's totals.
+// Not reachable through any call site that exists today (see aggregation-hardening plan, point 5),
+// but aggregateTotals/buildChartSeries are exported, reusable utilities with no other guarantee
+// about their inputs, so this is cheap insurance against a future caller introducing overlap.
+function warnOnDuplicateDates(dates: string[], source: string): void {
+  if (process.env.NODE_ENV === 'production') return;
+  const seen = new Set<string>();
+  for (const date of dates) {
+    if (seen.has(date)) {
+      console.warn(
+        `[aggregation] ${source}: duplicate day "${date}" found across summaries — ` +
+          'this date will be double-counted. Check for overlapping month queries.'
+      );
+    }
+    seen.add(date);
+  }
+}
+
 export function computeMedian(values: number[]): number | null {
   if (values.length === 0) return null;
   const sorted = [...values].sort((a, b) => a - b);
@@ -71,6 +90,14 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
   const dailyExpenses: number[] = [];
   const monthlyExpenses = new Map<string, number>();
   const catMap = new Map<string, { categoryName: string; amount: number }>();
+
+  warnOnDuplicateDates(
+    summaries
+      .flatMap((s) => s.days)
+      .filter((d) => d.date >= fromStr && d.date <= toStr)
+      .map((d) => d.date),
+    'aggregateTotals'
+  );
 
   for (const summary of summaries) {
     // Day-level: filter by exact date range for accurate expense/income/limit/category totals
@@ -152,6 +179,11 @@ export function buildChartSeries(
     .flatMap((s) => s.days)
     .filter((d) => d.date >= fromStr && d.date <= toStr)
     .sort((a, b) => a.date.localeCompare(b.date));
+
+  warnOnDuplicateDates(
+    days.map((d) => d.date),
+    'buildChartSeries'
+  );
 
   if (bucket === 'day') {
     return days.map((d) => ({
