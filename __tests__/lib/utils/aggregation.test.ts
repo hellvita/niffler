@@ -93,6 +93,21 @@ const APRIL_SUMMARY: MonthSummary = {
   },
 };
 
+const JUNE_SUMMARY: MonthSummary = {
+  year: 2026,
+  month: 6,
+  openingBalance: 500,
+  days: [buildDaySummary('2026-06-01', 8, 0, 50), buildDaySummary('2026-06-15', 2, 0, 50)],
+  monthTotals: {
+    totalExpenses: 10,
+    totalIncome: 0,
+    expensesByCategory: [],
+    allowedMonthlyBudget: 100,
+    totalLimitDiff: 90,
+    net: -10,
+  },
+};
+
 // ── getMonthsInRange ──────────────────────────────────────────────────────────
 
 describe('getMonthsInRange', () => {
@@ -261,6 +276,39 @@ describe('aggregateTotals', () => {
     };
     const result = aggregateTotals([zeroDaySummary], d('2026-05-01'), d('2026-05-31'));
     expect(result.medianDailyExpenses).toBeNull();
+  });
+
+  // medianMonthlyExpenses had zero prior test coverage — these are all net-new cases.
+  describe('medianMonthlyExpenses (complete calendar months only)', () => {
+    it("uses that month's total for a single full month in range", () => {
+      const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-31'));
+      expect(result.medianMonthlyExpenses).toBe(50);
+    });
+
+    it('medians across two full months in range', () => {
+      const result = aggregateTotals(
+        [APRIL_SUMMARY, MAY_SUMMARY],
+        d('2026-04-01'),
+        d('2026-05-31')
+      );
+      // April total = 40, May total = 50 → median = 45
+      expect(result.medianMonthlyExpenses).toBe(45);
+    });
+
+    it('returns null for a partial-only range with no complete month', () => {
+      const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-02'));
+      expect(result.medianMonthlyExpenses).toBeNull();
+    });
+
+    it('excludes partial edge months, using only the complete month in between', () => {
+      // Apr 15 – Jun 15: April and June are partial, May is the only complete month.
+      const result = aggregateTotals(
+        [APRIL_SUMMARY, MAY_SUMMARY, JUNE_SUMMARY],
+        d('2026-04-15'),
+        d('2026-06-15')
+      );
+      expect(result.medianMonthlyExpenses).toBe(50);
+    });
   });
 });
 

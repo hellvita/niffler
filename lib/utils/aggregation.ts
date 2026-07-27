@@ -1,4 +1,11 @@
-import { differenceInDays, format, parseISO, startOfWeek, startOfMonth } from 'date-fns';
+import {
+  differenceInDays,
+  format,
+  parseISO,
+  startOfWeek,
+  startOfMonth,
+  endOfMonth,
+} from 'date-fns';
 import type { MonthSummary } from '@/lib/types/api';
 import { ANALYTICS_DAY_BUCKET_MAX_DAYS, ANALYTICS_WEEK_BUCKET_MAX_DAYS } from '@/lib/constants';
 
@@ -14,8 +21,15 @@ export interface AggregatedTotals {
   totalIncome: number;
   allowedBudget: number | null; // null when no limits set for the range
   net: number;
-  medianDailyExpenses: number | null; // null when no days had expenses
-  medianMonthlyExpenses: number | null; // null when no months had expenses
+  /** Median of per-day expense totals, counting only days with expenses > 0
+   *  ("typical spend on days you spent something" — see AboutModal.tsx Metrics Reference).
+   *  Null when no day in range had any expense. */
+  medianDailyExpenses: number | null;
+  /** Median of per-month expense totals, counting only complete calendar months in range
+   *  with expenses > 0 (partial months at the edges of the range are excluded — see
+   *  AboutModal.tsx Metrics Reference). Null when the range has no complete month or none
+   *  had expenses. */
+  medianMonthlyExpenses: number | null;
   expensesByCategory: { categoryId: string; categoryName: string; amount: number }[];
 }
 
@@ -68,6 +82,9 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
         hasAnyLimit = true;
         allowedBudget += day.effectiveLimit;
       }
+      // Intentionally excludes zero-expense days — "median" here means typical spend on days
+      // you actually spent something, matching the Metrics Reference in components/nav/AboutModal.tsx.
+      // Do not "fix" this without updating that copy too.
       if (day.totalExpenses > 0) dailyExpenses.push(day.totalExpenses);
       const monthKey = day.date.slice(0, 7);
       monthlyExpenses.set(monthKey, (monthlyExpenses.get(monthKey) ?? 0) + day.totalExpenses);
@@ -83,13 +100,32 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
     }
   }
 
+  // Only count calendar months fully contained in [from, to] — a range like Jan 15–Mar 15
+  // would otherwise mix partial Jan/Mar totals with a full Feb total in the same median.
+  // Compared as yyyy-MM-dd strings (not Date objects) because parseISO() gives midnight while
+  // endOfMonth() gives 23:59:59.999 — a Date comparison would wrongly reject an exact
+  // full-month range due to that time-of-day mismatch.
+  //
+  // Intentionally excludes zero-expense months (same rationale as medianDailyExpenses above —
+  // see the Metrics Reference in components/nav/AboutModal.tsx). Do not "fix" this without
+  // updating that copy too.
+  const completeMonthTotals = Array.from(monthlyExpenses.entries())
+    .filter(([monthKey]) => {
+      const monthDate = parseISO(`${monthKey}-01`);
+      const monthStartStr = format(startOfMonth(monthDate), 'yyyy-MM-dd');
+      const monthEndStr = format(endOfMonth(monthDate), 'yyyy-MM-dd');
+      return fromStr <= monthStartStr && toStr >= monthEndStr;
+    })
+    .map(([, total]) => total)
+    .filter((v) => v > 0);
+
   return {
     totalExpenses,
     totalIncome,
     allowedBudget: hasAnyLimit ? allowedBudget : null,
     net: totalIncome - totalExpenses,
     medianDailyExpenses: computeMedian(dailyExpenses),
-    medianMonthlyExpenses: computeMedian(Array.from(monthlyExpenses.values()).filter((v) => v > 0)),
+    medianMonthlyExpenses: computeMedian(completeMonthTotals),
     expensesByCategory: Array.from(catMap.entries())
       .map(([categoryId, { categoryName, amount }]) => ({ categoryId, categoryName, amount }))
       .filter((c) => c.amount > 0),
