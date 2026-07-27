@@ -5,6 +5,7 @@ import {
   aggregateTotals,
   buildChartSeries,
   computeMedian,
+  InvalidDateRangeError,
 } from '@/lib/utils/aggregation';
 import type { MonthSummary } from '@/lib/types/api';
 
@@ -140,6 +141,18 @@ describe('getMonthsInRange', () => {
       [2026, 5],
     ]);
   });
+
+  it('throws InvalidDateRangeError when to is before from', () => {
+    expect(() => getMonthsInRange(d('2026-05-14'), d('2026-05-01'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when from is an invalid date', () => {
+    expect(() => getMonthsInRange(d('garbage'), d('2026-05-14'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when to is an invalid date', () => {
+    expect(() => getMonthsInRange(d('2026-05-14'), d('garbage'))).toThrow(InvalidDateRangeError);
+  });
 });
 
 // ── chooseBucket ─────────────────────────────────────────────────────────────
@@ -173,6 +186,18 @@ describe('chooseBucket', () => {
   it('returns "month" for 365 days', () => {
     const from = d('2026-01-01');
     expect(chooseBucket(from, addDays(from, 364))).toBe('month');
+  });
+
+  it('throws InvalidDateRangeError when to is before from', () => {
+    expect(() => chooseBucket(d('2026-05-14'), d('2026-05-01'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when from is an invalid date', () => {
+    expect(() => chooseBucket(d('garbage'), d('2026-05-14'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when to is an invalid date', () => {
+    expect(() => chooseBucket(d('2026-05-14'), d('garbage'))).toThrow(InvalidDateRangeError);
   });
 });
 

@@ -74,8 +74,23 @@ export function computeMedian(values: number[]): number | null {
   return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
 }
 
+// Thrown by getMonthsInRange/chooseBucket when given a range that can't be reasoned about:
+// an unparseable date, or an end date before the start date. Callers (see AnalyticsView.tsx)
+// catch this and render an inline error instead of letting these functions guess or crash.
+export class InvalidDateRangeError extends Error {}
+
+function assertValidDate(d: Date, label: string): void {
+  if (isNaN(d.getTime())) {
+    throw new InvalidDateRangeError(`${label} is not a valid date.`);
+  }
+}
+
 // Returns [year, month] tuples for every calendar month overlapping the range.
 export function getMonthsInRange(from: Date, to: Date): [number, number][] {
+  assertValidDate(from, 'Start date');
+  assertValidDate(to, 'End date');
+  if (to < from) throw new InvalidDateRangeError('End date must not be before start date.');
+
   const months: [number, number][] = [];
   const cur = new Date(from.getFullYear(), from.getMonth(), 1);
   const end = new Date(to.getFullYear(), to.getMonth(), 1);
@@ -88,6 +103,10 @@ export function getMonthsInRange(from: Date, to: Date): [number, number][] {
 
 // ≤ 31 days → day  |  ≤ 180 days → week  |  > 180 days → month
 export function chooseBucket(from: Date, to: Date): 'day' | 'week' | 'month' {
+  assertValidDate(from, 'Start date');
+  assertValidDate(to, 'End date');
+  if (to < from) throw new InvalidDateRangeError('End date must not be before start date.');
+
   const days = differenceInDays(to, from) + 1;
   if (days <= ANALYTICS_DAY_BUCKET_MAX_DAYS) return 'day';
   if (days <= ANALYTICS_WEEK_BUCKET_MAX_DAYS) return 'week';
