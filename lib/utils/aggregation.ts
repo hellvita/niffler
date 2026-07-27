@@ -120,6 +120,17 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
   const fromStr = format(from, 'yyyy-MM-dd');
   const toStr = format(to, 'yyyy-MM-dd');
 
+  // Filter once, up front (matches the pattern buildChartSeries already uses below) — avoids
+  // walking the day list twice with two independently-spelled copies of the same range check.
+  const days: MonthSummaryDay[] = summaries
+    .flatMap((s) => s.days)
+    .filter((d) => d.date >= fromStr && d.date <= toStr);
+
+  warnOnDuplicateDates(
+    days.map((d) => d.date),
+    'aggregateTotals'
+  );
+
   let totalExpenses = 0;
   let totalIncome = 0;
   let allowedBudget = 0;
@@ -128,39 +139,28 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
   const monthlyExpenses = new Map<string, number>();
   const catMap = new Map<string, { categoryName: string; amount: number }>();
 
-  warnOnDuplicateDates(
-    summaries
-      .flatMap((s) => s.days)
-      .filter((d) => d.date >= fromStr && d.date <= toStr)
-      .map((d) => d.date),
-    'aggregateTotals'
-  );
+  // Day-level: totals/limit/category accumulation over the already range-filtered day list
+  for (const day of days) {
+    totalExpenses += day.totalExpenses;
+    totalIncome += day.totalIncome;
+    if (day.effectiveLimit !== null) {
+      hasAnyLimit = true;
+      allowedBudget += day.effectiveLimit;
+    }
+    // Intentionally excludes zero-expense days — "median" here means typical spend on days
+    // you actually spent something, matching the Metrics Reference in components/nav/AboutModal.tsx.
+    // Do not "fix" this without updating that copy too.
+    const dayExpenses = roundCurrency(day.totalExpenses);
+    if (dayExpenses > 0) dailyExpenses.push(dayExpenses);
+    const monthKey = day.date.slice(0, 7);
+    monthlyExpenses.set(monthKey, (monthlyExpenses.get(monthKey) ?? 0) + day.totalExpenses);
 
-  for (const summary of summaries) {
-    // Day-level: filter by exact date range for accurate expense/income/limit/category totals
-    for (const day of summary.days) {
-      if (day.date < fromStr || day.date > toStr) continue;
-      totalExpenses += day.totalExpenses;
-      totalIncome += day.totalIncome;
-      if (day.effectiveLimit !== null) {
-        hasAnyLimit = true;
-        allowedBudget += day.effectiveLimit;
-      }
-      // Intentionally excludes zero-expense days — "median" here means typical spend on days
-      // you actually spent something, matching the Metrics Reference in components/nav/AboutModal.tsx.
-      // Do not "fix" this without updating that copy too.
-      const dayExpenses = roundCurrency(day.totalExpenses);
-      if (dayExpenses > 0) dailyExpenses.push(dayExpenses);
-      const monthKey = day.date.slice(0, 7);
-      monthlyExpenses.set(monthKey, (monthlyExpenses.get(monthKey) ?? 0) + day.totalExpenses);
-
-      for (const cat of day.expensesByCategory) {
-        const prev = catMap.get(cat.categoryId);
-        if (prev) {
-          prev.amount += cat.amount;
-        } else {
-          catMap.set(cat.categoryId, { categoryName: cat.categoryName, amount: cat.amount });
-        }
+    for (const cat of day.expensesByCategory) {
+      const prev = catMap.get(cat.categoryId);
+      if (prev) {
+        prev.amount += cat.amount;
+      } else {
+        catMap.set(cat.categoryId, { categoryName: cat.categoryName, amount: cat.amount });
       }
     }
   }

@@ -47,6 +47,7 @@ export function AboutModal({ open, onClose }: Props) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-border)]">
+                {/* Keep this table's median/limit wording in sync with lib/utils/aggregation.ts */}
                 {[
                   {
                     metric: 'Expenses',
