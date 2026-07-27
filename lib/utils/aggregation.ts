@@ -52,6 +52,21 @@ function warnOnDuplicateDates(dates: string[], source: string): void {
   }
 }
 
+// Money crosses the wire as a JSON number (backend `decimal` → JS `double`), and this file
+// accumulates those doubles with plain `+=`/`.reduce()`. For realistic amounts that's invisible
+// at display precision, except where two independently-accumulated sums are *subtracted*
+// (e.g. `net = totalIncome - totalExpenses`) — cancellation there can leave float dust like
+// `5.551115123125783e-17` instead of an exact `0`, which would wrongly satisfy a `< 0`/`> 0`
+// check (see the `value < 0` color check in AnalyticsView.tsx). Rounding at the output boundary
+// closes that gap cheaply, without a stack-wide rewrite to integer cents or a decimal library.
+function roundCurrency(n: number): number {
+  return Math.round((n + Number.EPSILON) * 100) / 100;
+}
+
+function roundCurrencyOrNull(n: number | null): number | null {
+  return n === null ? null : roundCurrency(n);
+}
+
 export function computeMedian(values: number[]): number | null {
   if (values.length === 0) return null;
   const sorted = [...values].sort((a, b) => a - b);
@@ -112,7 +127,8 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
       // Intentionally excludes zero-expense days — "median" here means typical spend on days
       // you actually spent something, matching the Metrics Reference in components/nav/AboutModal.tsx.
       // Do not "fix" this without updating that copy too.
-      if (day.totalExpenses > 0) dailyExpenses.push(day.totalExpenses);
+      const dayExpenses = roundCurrency(day.totalExpenses);
+      if (dayExpenses > 0) dailyExpenses.push(dayExpenses);
       const monthKey = day.date.slice(0, 7);
       monthlyExpenses.set(monthKey, (monthlyExpenses.get(monthKey) ?? 0) + day.totalExpenses);
 
@@ -143,18 +159,22 @@ export function aggregateTotals(summaries: MonthSummary[], from: Date, to: Date)
       const monthEndStr = format(endOfMonth(monthDate), 'yyyy-MM-dd');
       return fromStr <= monthStartStr && toStr >= monthEndStr;
     })
-    .map(([, total]) => total)
+    .map(([, total]) => roundCurrency(total))
     .filter((v) => v > 0);
 
   return {
-    totalExpenses,
-    totalIncome,
-    allowedBudget: hasAnyLimit ? allowedBudget : null,
-    net: totalIncome - totalExpenses,
-    medianDailyExpenses: computeMedian(dailyExpenses),
-    medianMonthlyExpenses: computeMedian(completeMonthTotals),
+    totalExpenses: roundCurrency(totalExpenses),
+    totalIncome: roundCurrency(totalIncome),
+    allowedBudget: hasAnyLimit ? roundCurrency(allowedBudget) : null,
+    net: roundCurrency(totalIncome - totalExpenses),
+    medianDailyExpenses: roundCurrencyOrNull(computeMedian(dailyExpenses)),
+    medianMonthlyExpenses: roundCurrencyOrNull(computeMedian(completeMonthTotals)),
     expensesByCategory: Array.from(catMap.entries())
-      .map(([categoryId, { categoryName, amount }]) => ({ categoryId, categoryName, amount }))
+      .map(([categoryId, { categoryName, amount }]) => ({
+        categoryId,
+        categoryName,
+        amount: roundCurrency(amount),
+      }))
       .filter((c) => c.amount > 0),
   };
 }
@@ -181,16 +201,16 @@ export function buildChartSeries(
   if (bucket === 'day') {
     return days.map((d) => ({
       label: format(parseISO(d.date), 'MMM d'),
-      expenses: d.totalExpenses,
-      income: d.totalIncome,
-      limit: d.effectiveLimit,
+      expenses: roundCurrency(d.totalExpenses),
+      income: roundCurrency(d.totalIncome),
+      limit: roundCurrencyOrNull(d.effectiveLimit),
     }));
   }
 
   function sumLimit(slice: MonthSummaryDay[]): number | null {
     const limited = slice.filter((d) => d.effectiveLimit !== null);
     if (limited.length === 0) return null;
-    return limited.reduce((s, d) => s + (d.effectiveLimit ?? 0), 0);
+    return roundCurrency(limited.reduce((s, d) => s + (d.effectiveLimit ?? 0), 0));
   }
 
   if (bucket === 'week') {
@@ -211,8 +231,8 @@ export function buildChartSeries(
           : `${format(rangeStart, 'MMM d')}–${crossesMonth ? format(rangeEnd, 'MMM d') : format(rangeEnd, 'd')}`;
       return {
         label,
-        expenses: bd.reduce((s, d) => s + d.totalExpenses, 0),
-        income: bd.reduce((s, d) => s + d.totalIncome, 0),
+        expenses: roundCurrency(bd.reduce((s, d) => s + d.totalExpenses, 0)),
+        income: roundCurrency(bd.reduce((s, d) => s + d.totalIncome, 0)),
         limit: sumLimit(bd),
       };
     });
@@ -230,8 +250,8 @@ export function buildChartSeries(
 
   return Array.from(mbuckets.values()).map(({ days: bd, start }) => ({
     label: format(start, 'MMM yyyy'),
-    expenses: bd.reduce((s, d) => s + d.totalExpenses, 0),
-    income: bd.reduce((s, d) => s + d.totalIncome, 0),
+    expenses: roundCurrency(bd.reduce((s, d) => s + d.totalExpenses, 0)),
+    income: roundCurrency(bd.reduce((s, d) => s + d.totalIncome, 0)),
     limit: sumLimit(bd),
   }));
 }

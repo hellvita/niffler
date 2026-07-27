@@ -311,6 +311,69 @@ describe('aggregateTotals', () => {
     });
   });
 
+  describe('currency rounding (floating-point dust)', () => {
+    it('rounds classic float-drift sums to 2 decimals in totals and categories', () => {
+      // 10.10 + 20.20 = 30.299999999999997 in raw float arithmetic.
+      const driftSummary: MonthSummary = {
+        year: 2026,
+        month: 5,
+        openingBalance: 0,
+        days: [
+          buildDaySummary('2026-05-01', 10.1, 0, 50, [
+            { categoryId: 'cat-1', categoryName: 'Groceries', amount: 10.1 },
+          ]),
+          buildDaySummary('2026-05-02', 20.2, 0, 50, [
+            { categoryId: 'cat-1', categoryName: 'Groceries', amount: 20.2 },
+          ]),
+        ],
+        monthTotals: {
+          totalExpenses: 30.3,
+          totalIncome: 0,
+          expensesByCategory: [{ categoryId: 'cat-1', categoryName: 'Groceries', amount: 30.3 }],
+          allowedMonthlyBudget: 100,
+          totalLimitDiff: 70,
+          net: -30.3,
+        },
+      };
+      const result = aggregateTotals([driftSummary], d('2026-05-01'), d('2026-05-02'));
+      expect(result.totalExpenses).toBe(30.3);
+      expect(result.expensesByCategory[0].amount).toBe(30.3);
+    });
+
+    it('rounds net to exactly 0 instead of leaving float cancellation dust', () => {
+      // Ten days of $0.10 income and $0.10 expense: raw float subtraction of the two
+      // independently-accumulated sums does not land on exactly 0 (classic cancellation dust),
+      // which would otherwise wrongly trigger the `value < 0` red-text check in AnalyticsView.
+      const days = Array.from({ length: 10 }, (_, i) =>
+        buildDaySummary(`2026-05-${String(i + 1).padStart(2, '0')}`, 0.1, 0.1)
+      );
+      const balancedSummary: MonthSummary = {
+        year: 2026,
+        month: 5,
+        openingBalance: 0,
+        days,
+        monthTotals: {
+          totalExpenses: 1,
+          totalIncome: 1,
+          expensesByCategory: [],
+          allowedMonthlyBudget: 500,
+          totalLimitDiff: 499,
+          net: 0,
+        },
+      };
+      const result = aggregateTotals([balancedSummary], d('2026-05-01'), d('2026-05-10'));
+      expect(result.net).toBe(0);
+    });
+
+    it('leaves already-clean values unchanged', () => {
+      const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-31'));
+      expect(result.totalExpenses).toBe(50);
+      expect(result.totalIncome).toBe(100);
+      expect(result.net).toBe(50);
+      expect(result.allowedBudget).toBe(250);
+    });
+  });
+
   describe('duplicate-date dev warning', () => {
     afterEach(() => {
       vi.restoreAllMocks();
@@ -608,6 +671,29 @@ describe('buildChartSeries', () => {
     const lastBucket = result[result.length - 1];
     expect(lastBucket.label).toBe('Jun 15–17');
     expect(lastBucket.expenses).toBe(30); // 3 days × 10
+  });
+
+  it('rounds day-bucket expenses to 2 decimals, avoiding float drift', () => {
+    const driftDaySummary: MonthSummary = {
+      year: 2026,
+      month: 5,
+      openingBalance: 0,
+      days: [
+        buildDaySummary('2026-05-08', 10.1, 0, 50),
+        buildDaySummary('2026-05-09', 20.2, 0, 50),
+      ],
+      monthTotals: {
+        totalExpenses: 30.3,
+        totalIncome: 0,
+        expensesByCategory: [],
+        allowedMonthlyBudget: 100,
+        totalLimitDiff: 70,
+        net: -30.3,
+      },
+    };
+    const result = buildChartSeries([driftDaySummary], d('2026-05-08'), d('2026-05-09'));
+    expect(result[0].expenses).toBe(10.1);
+    expect(result[1].expenses).toBe(20.2);
   });
 
   it('collapses a single-day bucket to one date instead of a duplicated range', () => {
