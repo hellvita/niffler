@@ -260,6 +260,44 @@ describe('buildChartSeries', () => {
     },
   };
 
+  const mayFullSummary: MonthSummary = {
+    year: 2026,
+    month: 5,
+    openingBalance: 0,
+    days: Array.from({ length: 31 }, (_, i) => {
+      const dt = new Date('2026-05-01');
+      dt.setDate(dt.getDate() + i);
+      return buildDaySummary(dt.toISOString().slice(0, 10), 10, 0);
+    }),
+    monthTotals: {
+      totalExpenses: 310,
+      totalIncome: 0,
+      expensesByCategory: [],
+      allowedMonthlyBudget: 0,
+      totalLimitDiff: 0,
+      net: 0,
+    },
+  };
+
+  const juneFullSummary: MonthSummary = {
+    year: 2026,
+    month: 6,
+    openingBalance: 0,
+    days: Array.from({ length: 30 }, (_, i) => {
+      const dt = new Date('2026-06-01');
+      dt.setDate(dt.getDate() + i);
+      return buildDaySummary(dt.toISOString().slice(0, 10), 10, 0);
+    }),
+    monthTotals: {
+      totalExpenses: 300,
+      totalIncome: 0,
+      expensesByCategory: [],
+      allowedMonthlyBudget: 0,
+      totalLimitDiff: 0,
+      net: 0,
+    },
+  };
+
   it('returns one data point per day for a 7-day range', () => {
     const result = buildChartSeries([sevenDaySummary], d('2026-05-08'), d('2026-05-14'));
     expect(result).toHaveLength(7);
@@ -430,11 +468,38 @@ describe('buildChartSeries', () => {
     // 35 days → week bucket; start on May 13 (Wednesday)
     const result = buildChartSeries([days35, june35], d('2026-05-13'), d('2026-06-16'));
 
-    // First bucket starts on the Monday of the week containing May 13 (May 11)
+    // First bucket should be labeled by the actual data days (May 13–17), not the full
+    // calendar week (which would start Monday May 11, a day with no data in range).
+    expect(result[0].label).toBe('May 13–17');
     // Days in first bucket from our range: May 13 (Wed), 14 (Thu), 15 (Fri), 16 (Sat), 17 (Sun) = 5 days × 10
-    const firstBucketExpenses = result[0].expenses;
-    expect(firstBucketExpenses).toBeGreaterThan(0);
+    expect(result[0].expenses).toBe(50);
 
     void days10; // suppress lint
+  });
+
+  it('handles a range ending mid-week: last bucket label ends on the actual last day, not the following Sunday', () => {
+    // Range ends June 17 (Wednesday); the calendar week would run Jun 15 (Mon)–21 (Sun),
+    // but data past June 17 is out of range, so the bucket must only reflect Jun 15–17.
+    const result = buildChartSeries(
+      [mayFullSummary, juneFullSummary],
+      d('2026-05-01'),
+      d('2026-06-17')
+    );
+    const lastBucket = result[result.length - 1];
+    expect(lastBucket.label).toBe('Jun 15–17');
+    expect(lastBucket.expenses).toBe(30); // 3 days × 10
+  });
+
+  it('collapses a single-day bucket to one date instead of a duplicated range', () => {
+    // Range ends June 15 (Monday) — the last week bucket (Jun 15–21) contains only that
+    // single day of in-range data, so the label should be "Jun 15", not "Jun 15–15".
+    const result = buildChartSeries(
+      [mayFullSummary, juneFullSummary],
+      d('2026-05-01'),
+      d('2026-06-15')
+    );
+    const lastBucket = result[result.length - 1];
+    expect(lastBucket.label).toBe('Jun 15');
+    expect(lastBucket.expenses).toBe(10);
   });
 });

@@ -1,4 +1,4 @@
-import { differenceInDays, format, parseISO, startOfWeek, addDays, startOfMonth } from 'date-fns';
+import { differenceInDays, format, parseISO, startOfWeek, startOfMonth } from 'date-fns';
 import type { MonthSummary } from '@/lib/types/api';
 import { ANALYTICS_DAY_BUCKET_MAX_DAYS, ANALYTICS_WEEK_BUCKET_MAX_DAYS } from '@/lib/constants';
 
@@ -135,20 +135,23 @@ export function buildChartSeries(
   }
 
   if (bucket === 'week') {
-    const buckets = new Map<string, { days: DaySlice[]; start: Date }>();
+    const buckets = new Map<string, DaySlice[]>();
     for (const day of days) {
-      const d = parseISO(day.date);
-      const ws = startOfWeek(d, { weekStartsOn: 1 });
-      const key = format(ws, 'yyyy-MM-dd');
-      if (!buckets.has(key)) buckets.set(key, { days: [], start: ws });
-      buckets.get(key)!.days.push(day);
+      const key = format(startOfWeek(parseISO(day.date), { weekStartsOn: 1 }), 'yyyy-MM-dd');
+      if (!buckets.has(key)) buckets.set(key, []);
+      buckets.get(key)!.push(day);
     }
 
-    return Array.from(buckets.values()).map(({ days: bd, start }) => {
-      const end = addDays(start, 6);
-      const crossesMonth = format(start, 'MMM') !== format(end, 'MMM');
+    return Array.from(buckets.values()).map((bd) => {
+      const rangeStart = parseISO(bd[0].date);
+      const rangeEnd = parseISO(bd[bd.length - 1].date);
+      const crossesMonth = format(rangeStart, 'MMM') !== format(rangeEnd, 'MMM');
+      const label =
+        bd.length === 1
+          ? format(rangeStart, 'MMM d')
+          : `${format(rangeStart, 'MMM d')}–${crossesMonth ? format(rangeEnd, 'MMM d') : format(rangeEnd, 'd')}`;
       return {
-        label: `${format(start, 'MMM d')}–${crossesMonth ? format(end, 'MMM d') : format(end, 'd')}`,
+        label,
         expenses: bd.reduce((s, d) => s + d.totalExpenses, 0),
         income: bd.reduce((s, d) => s + d.totalIncome, 0),
         limit: sumLimit(bd),
