@@ -8,12 +8,15 @@ import {
   buildChartSeries,
   chooseBucket,
   computeMedian,
+  roundCurrencyOrNull,
+  InvalidDateRangeError,
 } from '@/lib/utils/aggregation';
 import { getMonthSummary } from '@/lib/api/summary';
 import { useAllTimeSummary, useAllTimeMonthlySummary } from '@/lib/hooks/useSummary';
 import type { MonthSummary } from '@/lib/types/api';
 import { useColumnPreferences } from '@/lib/hooks/useColumnPreferences';
 import { Skeleton } from '@/components/shared/Skeleton';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { DateRangePicker } from './DateRangePicker';
 import { ChartTypeSelector } from './ChartTypeSelector';
 import { ExpensePieChart } from './charts/ExpensePieChart';
@@ -42,7 +45,16 @@ export function AnalyticsView() {
 
   const from = parseISO(fromStr);
   const to = parseISO(toStr);
-  const months = isAllTime ? [] : getMonthsInRange(from, to);
+
+  let months: [number, number][] = [];
+  let dateRangeError: string | null = null;
+  if (!isAllTime) {
+    try {
+      months = getMonthsInRange(from, to);
+    } catch (err) {
+      dateRangeError = err instanceof InvalidDateRangeError ? err.message : 'Invalid date range.';
+    }
+  }
 
   const monthResults = useQueries({
     queries: months.map(([year, month]) => {
@@ -92,18 +104,26 @@ export function AnalyticsView() {
       : null;
   const chartData = totals ? buildChartSeries(displaySummaries, chartFrom, chartTo) : [];
 
+  // These two medians are computed directly from allTimeMonthlySummaries rather than via
+  // aggregateTotals (which only ever receives a single from/to range, not "all time"), so they
+  // need their own roundCurrency pass — otherwise they'd be the one place in this component that
+  // skips the rounding applied everywhere else in aggregation.ts.
   const allTimeMedianDaily = isAllTime
-    ? computeMedian(
-        allTimeMonthlySummaries
-          .flatMap((s) => s.days)
-          .map((d) => d.totalExpenses)
-          .filter((v) => v > 0)
+    ? roundCurrencyOrNull(
+        computeMedian(
+          allTimeMonthlySummaries
+            .flatMap((s) => s.days)
+            .map((d) => d.totalExpenses)
+            .filter((v) => v > 0)
+        )
       )
     : null;
 
   const allTimeMedianMonthly = isAllTime
-    ? computeMedian(
-        allTimeMonthlySummaries.map((s) => s.monthTotals.totalExpenses).filter((v) => v > 0)
+    ? roundCurrencyOrNull(
+        computeMedian(
+          allTimeMonthlySummaries.map((s) => s.monthTotals.totalExpenses).filter((v) => v > 0)
+        )
       )
     : null;
 
@@ -142,58 +162,62 @@ export function AnalyticsView() {
 
       <DateRangePicker from={fromStr} to={toStr} preset={preset} />
 
-      {summaryLoading ? (
-        <Skeleton className="h-20" />
-      ) : summaryItems.length > 0 ? (
-        <div className="flex flex-wrap gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-6 py-4">
-          {summaryItems.map(({ label, value }) => (
-            <div key={label} className="flex flex-col gap-0.5">
-              <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
-                {label}
-              </span>
-              <span
-                className={`text-xl font-semibold tabular-nums ${
-                  value === null
-                    ? 'text-[var(--color-text-muted)]'
-                    : value < 0
-                      ? 'text-[var(--color-error)]'
-                      : 'text-[var(--color-text-primary)]'
-                }`}
-              >
-                {value === null ? '—' : value.toFixed(2)}
-              </span>
+      {dateRangeError ? (
+        <EmptyState message={dateRangeError} className="h-40" />
+      ) : (
+        <>
+          {summaryLoading ? (
+            <Skeleton className="h-20" />
+          ) : summaryItems.length > 0 ? (
+            <div className="flex flex-wrap gap-6 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-raised)] px-6 py-4">
+              {summaryItems.map(({ label, value }) => (
+                <div key={label} className="flex flex-col gap-0.5">
+                  <span className="text-xs font-medium text-[var(--color-text-secondary)] uppercase tracking-wide">
+                    {label}
+                  </span>
+                  <span
+                    className={`text-xl font-semibold tabular-nums ${
+                      value === null
+                        ? 'text-[var(--color-text-muted)]'
+                        : value < 0
+                          ? 'text-[var(--color-error)]'
+                          : 'text-[var(--color-text-primary)]'
+                    }`}
+                  >
+                    {value === null ? '—' : value.toFixed(2)}
+                  </span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      ) : null}
+          ) : null}
 
-      <>
-        <div className="flex items-center justify-between flex-wrap gap-3">
-          <span className="text-sm text-[var(--color-text-secondary)]">
-            {chartLoading
-              ? 'Loading…'
-              : (() => {
-                  const bucket = chooseBucket(chartFrom, chartTo);
-                  const n = chartData.length;
-                  const unit = bucket === 'day' ? 'day' : bucket === 'week' ? 'week' : 'month';
-                  return `${n} ${unit}${n !== 1 ? 's' : ''} of data`;
-                })()}
-          </span>
-          <ChartTypeSelector value={chartType} />
-        </div>
-
-        {chartLoading ? (
-          <Skeleton className="h-72 w-full" />
-        ) : (
-          <div>
-            {chartType === 'pie' && totals && (
-              <ExpensePieChart categories={totals.expensesByCategory} />
-            )}
-            {chartType === 'bar' && <ExpenseBarChart data={chartData} />}
-            {chartType === 'line' && <ExpenseLineChart data={chartData} />}
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <span className="text-sm text-[var(--color-text-secondary)]">
+              {chartLoading
+                ? 'Loading…'
+                : (() => {
+                    const bucket = chooseBucket(chartFrom, chartTo);
+                    const n = chartData.length;
+                    const unit = bucket === 'day' ? 'day' : bucket === 'week' ? 'week' : 'month';
+                    return `${n} ${unit}${n !== 1 ? 's' : ''} of data`;
+                  })()}
+            </span>
+            <ChartTypeSelector value={chartType} />
           </div>
-        )}
-      </>
+
+          {chartLoading ? (
+            <Skeleton className="h-72 w-full" />
+          ) : (
+            <div>
+              {chartType === 'pie' && totals && (
+                <ExpensePieChart categories={totals.expensesByCategory} />
+              )}
+              {chartType === 'bar' && <ExpenseBarChart data={chartData} />}
+              {chartType === 'line' && <ExpenseLineChart data={chartData} />}
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }

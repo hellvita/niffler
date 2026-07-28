@@ -47,6 +47,7 @@ export function AboutModal({ open, onClose }: Props) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-border)]">
+                {/* Keep this table's median/limit wording in sync with lib/utils/aggregation.ts */}
                 {[
                   {
                     metric: 'Expenses',
@@ -66,7 +67,7 @@ export function AboutModal({ open, onClose }: Props) {
                   },
                   {
                     metric: 'Median/Month',
-                    desc: 'Median of monthly expense totals across months that had at least one expense. Shows your typical monthly spend regardless of seasonal outliers.',
+                    desc: 'Median of monthly expense totals across months that had at least one expense. Shows your typical monthly spend regardless of seasonal outliers. Only counts full calendar months within the selected range.',
                   },
                   {
                     metric: 'Limit',

@@ -1,10 +1,13 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import {
   getMonthsInRange,
   chooseBucket,
   aggregateTotals,
   buildChartSeries,
   computeMedian,
+  roundCurrency,
+  roundCurrencyOrNull,
+  InvalidDateRangeError,
 } from '@/lib/utils/aggregation';
 import type { MonthSummary } from '@/lib/types/api';
 
@@ -24,7 +27,8 @@ function buildDaySummary(
   date: string,
   totalExpenses: number,
   totalIncome: number,
-  effectiveLimit: number | null = 50
+  effectiveLimit: number | null = 50,
+  expensesByCategory: { categoryId: string; categoryName: string; amount: number }[] = []
 ) {
   return {
     date,
@@ -33,6 +37,7 @@ function buildDaySummary(
     effectiveLimit,
     limitDiff: effectiveLimit !== null ? effectiveLimit - totalExpenses : null,
     net: totalIncome - totalExpenses,
+    expensesByCategory,
   };
 }
 
@@ -41,10 +46,18 @@ const MAY_SUMMARY: MonthSummary = {
   month: 5,
   openingBalance: 1000,
   days: [
-    buildDaySummary('2026-05-01', 10, 0, 50),
-    buildDaySummary('2026-05-02', 20, 100, 50),
-    buildDaySummary('2026-05-10', 15, 0, 50),
-    buildDaySummary('2026-05-14', 5, 0, 50),
+    buildDaySummary('2026-05-01', 10, 0, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 10 },
+    ]),
+    buildDaySummary('2026-05-02', 20, 100, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 20 },
+    ]),
+    buildDaySummary('2026-05-10', 15, 0, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 15 },
+    ]),
+    buildDaySummary('2026-05-14', 5, 0, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 5 },
+    ]),
     buildDaySummary('2026-05-31', 0, 0, 50),
   ],
   monthTotals: {
@@ -61,7 +74,15 @@ const APRIL_SUMMARY: MonthSummary = {
   year: 2026,
   month: 4,
   openingBalance: 900,
-  days: [buildDaySummary('2026-04-15', 30, 200, 50), buildDaySummary('2026-04-30', 10, 0, 50)],
+  days: [
+    buildDaySummary('2026-04-15', 30, 200, 50, [
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 20 },
+      { categoryId: 'cat-3', categoryName: 'Dining', amount: 10 },
+    ]),
+    buildDaySummary('2026-04-30', 10, 0, 50, [
+      { categoryId: 'cat-3', categoryName: 'Dining', amount: 10 },
+    ]),
+  ],
   monthTotals: {
     totalExpenses: 40,
     totalIncome: 200,
@@ -72,6 +93,21 @@ const APRIL_SUMMARY: MonthSummary = {
     allowedMonthlyBudget: 100,
     totalLimitDiff: 60,
     net: 160,
+  },
+};
+
+const JUNE_SUMMARY: MonthSummary = {
+  year: 2026,
+  month: 6,
+  openingBalance: 500,
+  days: [buildDaySummary('2026-06-01', 8, 0, 50), buildDaySummary('2026-06-15', 2, 0, 50)],
+  monthTotals: {
+    totalExpenses: 10,
+    totalIncome: 0,
+    expensesByCategory: [],
+    allowedMonthlyBudget: 100,
+    totalLimitDiff: 90,
+    net: -10,
   },
 };
 
@@ -107,6 +143,18 @@ describe('getMonthsInRange', () => {
       [2026, 5],
     ]);
   });
+
+  it('throws InvalidDateRangeError when to is before from', () => {
+    expect(() => getMonthsInRange(d('2026-05-14'), d('2026-05-01'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when from is an invalid date', () => {
+    expect(() => getMonthsInRange(d('garbage'), d('2026-05-14'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when to is an invalid date', () => {
+    expect(() => getMonthsInRange(d('2026-05-14'), d('garbage'))).toThrow(InvalidDateRangeError);
+  });
 });
 
 // ── chooseBucket ─────────────────────────────────────────────────────────────
@@ -141,6 +189,18 @@ describe('chooseBucket', () => {
     const from = d('2026-01-01');
     expect(chooseBucket(from, addDays(from, 364))).toBe('month');
   });
+
+  it('throws InvalidDateRangeError when to is before from', () => {
+    expect(() => chooseBucket(d('2026-05-14'), d('2026-05-01'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when from is an invalid date', () => {
+    expect(() => chooseBucket(d('garbage'), d('2026-05-14'))).toThrow(InvalidDateRangeError);
+  });
+
+  it('throws InvalidDateRangeError when to is an invalid date', () => {
+    expect(() => chooseBucket(d('2026-05-14'), d('garbage'))).toThrow(InvalidDateRangeError);
+  });
 });
 
 // ── computeMedian ─────────────────────────────────────────────────────────────
@@ -170,6 +230,35 @@ describe('computeMedian', () => {
     const input = [30, 10, 20];
     computeMedian(input);
     expect(input).toEqual([30, 10, 20]);
+  });
+});
+
+// ── roundCurrency / roundCurrencyOrNull ────────────────────────────────────────
+// Exported so callers outside aggregation.ts (e.g. AnalyticsView.tsx's "All time" medians,
+// which compute their own client-side arrays rather than going through aggregateTotals) can
+// apply the same currency rounding instead of silently skipping it.
+
+describe('roundCurrency', () => {
+  it('rounds classic float drift back to 2 decimals', () => {
+    expect(roundCurrency(10.1 + 20.2)).toBe(30.3);
+  });
+
+  it('leaves an already-clean value unchanged', () => {
+    expect(roundCurrency(50)).toBe(50);
+  });
+
+  it('rounds cancellation dust from a near-zero subtraction down to exactly 0', () => {
+    expect(roundCurrency(0.1 + 0.2 - 0.3)).toBe(0);
+  });
+});
+
+describe('roundCurrencyOrNull', () => {
+  it('returns null unchanged', () => {
+    expect(roundCurrencyOrNull(null)).toBeNull();
+  });
+
+  it('rounds a non-null value', () => {
+    expect(roundCurrencyOrNull(10.1 + 20.2)).toBe(30.3);
   });
 });
 
@@ -205,6 +294,18 @@ describe('aggregateTotals', () => {
     expect(result.totalIncome).toBe(300); // 100+200
   });
 
+  it('scopes expensesByCategory to the exact selected range, not the whole month', () => {
+    // May 1-2 only: day-level categories are 10 (May 1) + 20 (May 2) = 30,
+    // vs. the whole month's total of 50 — proves the pie chart no longer leaks in
+    // category spend from days outside the selected range.
+    const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-02'));
+    expect(result.expensesByCategory).toEqual([
+      { categoryId: 'cat-1', categoryName: 'Groceries', amount: 30 },
+    ]);
+    const categorySum = result.expensesByCategory.reduce((s, c) => s + c.amount, 0);
+    expect(categorySum).toBe(result.totalExpenses);
+  });
+
   it('merges expensesByCategory across months — same category amounts are summed', () => {
     const result = aggregateTotals([APRIL_SUMMARY, MAY_SUMMARY], d('2026-04-01'), d('2026-05-31'));
     const groceries = result.expensesByCategory.find((c) => c.categoryId === 'cat-1');
@@ -232,6 +333,124 @@ describe('aggregateTotals', () => {
     const result = aggregateTotals([zeroDaySummary], d('2026-05-01'), d('2026-05-31'));
     expect(result.medianDailyExpenses).toBeNull();
   });
+
+  // medianMonthlyExpenses had zero prior test coverage — these are all net-new cases.
+  describe('medianMonthlyExpenses (complete calendar months only)', () => {
+    it("uses that month's total for a single full month in range", () => {
+      const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-31'));
+      expect(result.medianMonthlyExpenses).toBe(50);
+    });
+
+    it('medians across two full months in range', () => {
+      const result = aggregateTotals(
+        [APRIL_SUMMARY, MAY_SUMMARY],
+        d('2026-04-01'),
+        d('2026-05-31')
+      );
+      // April total = 40, May total = 50 → median = 45
+      expect(result.medianMonthlyExpenses).toBe(45);
+    });
+
+    it('returns null for a partial-only range with no complete month', () => {
+      const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-02'));
+      expect(result.medianMonthlyExpenses).toBeNull();
+    });
+
+    it('excludes partial edge months, using only the complete month in between', () => {
+      // Apr 15 – Jun 15: April and June are partial, May is the only complete month.
+      const result = aggregateTotals(
+        [APRIL_SUMMARY, MAY_SUMMARY, JUNE_SUMMARY],
+        d('2026-04-15'),
+        d('2026-06-15')
+      );
+      expect(result.medianMonthlyExpenses).toBe(50);
+    });
+  });
+
+  describe('currency rounding (floating-point dust)', () => {
+    it('rounds classic float-drift sums to 2 decimals in totals and categories', () => {
+      // 10.10 + 20.20 = 30.299999999999997 in raw float arithmetic.
+      const driftSummary: MonthSummary = {
+        year: 2026,
+        month: 5,
+        openingBalance: 0,
+        days: [
+          buildDaySummary('2026-05-01', 10.1, 0, 50, [
+            { categoryId: 'cat-1', categoryName: 'Groceries', amount: 10.1 },
+          ]),
+          buildDaySummary('2026-05-02', 20.2, 0, 50, [
+            { categoryId: 'cat-1', categoryName: 'Groceries', amount: 20.2 },
+          ]),
+        ],
+        monthTotals: {
+          totalExpenses: 30.3,
+          totalIncome: 0,
+          expensesByCategory: [{ categoryId: 'cat-1', categoryName: 'Groceries', amount: 30.3 }],
+          allowedMonthlyBudget: 100,
+          totalLimitDiff: 70,
+          net: -30.3,
+        },
+      };
+      const result = aggregateTotals([driftSummary], d('2026-05-01'), d('2026-05-02'));
+      expect(result.totalExpenses).toBe(30.3);
+      expect(result.expensesByCategory[0].amount).toBe(30.3);
+    });
+
+    it('rounds net to exactly 0 instead of leaving float cancellation dust', () => {
+      // Ten days of $0.10 income and $0.10 expense: raw float subtraction of the two
+      // independently-accumulated sums does not land on exactly 0 (classic cancellation dust),
+      // which would otherwise wrongly trigger the `value < 0` red-text check in AnalyticsView.
+      const days = Array.from({ length: 10 }, (_, i) =>
+        buildDaySummary(`2026-05-${String(i + 1).padStart(2, '0')}`, 0.1, 0.1)
+      );
+      const balancedSummary: MonthSummary = {
+        year: 2026,
+        month: 5,
+        openingBalance: 0,
+        days,
+        monthTotals: {
+          totalExpenses: 1,
+          totalIncome: 1,
+          expensesByCategory: [],
+          allowedMonthlyBudget: 500,
+          totalLimitDiff: 499,
+          net: 0,
+        },
+      };
+      const result = aggregateTotals([balancedSummary], d('2026-05-01'), d('2026-05-10'));
+      expect(result.net).toBe(0);
+    });
+
+    it('leaves already-clean values unchanged', () => {
+      const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-31'));
+      expect(result.totalExpenses).toBe(50);
+      expect(result.totalIncome).toBe(100);
+      expect(result.net).toBe(50);
+      expect(result.allowedBudget).toBe(250);
+    });
+  });
+
+  describe('duplicate-date dev warning', () => {
+    afterEach(() => {
+      vi.restoreAllMocks();
+    });
+
+    it('warns when the same date appears in more than one summary (overlapping months)', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const overlappingSummary: MonthSummary = {
+        ...MAY_SUMMARY,
+        days: [buildDaySummary('2026-05-01', 99, 0, 50)],
+      };
+      aggregateTotals([MAY_SUMMARY, overlappingSummary], d('2026-05-01'), d('2026-05-31'));
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('2026-05-01'));
+    });
+
+    it('does not warn when summaries have no overlapping dates', () => {
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      aggregateTotals([APRIL_SUMMARY, MAY_SUMMARY], d('2026-04-01'), d('2026-05-31'));
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+  });
 });
 
 // ── buildChartSeries ─────────────────────────────────────────────────────────
@@ -257,6 +476,44 @@ describe('buildChartSeries', () => {
       allowedMonthlyBudget: 350,
       totalLimitDiff: 277,
       net: -23,
+    },
+  };
+
+  const mayFullSummary: MonthSummary = {
+    year: 2026,
+    month: 5,
+    openingBalance: 0,
+    days: Array.from({ length: 31 }, (_, i) => {
+      const dt = new Date('2026-05-01');
+      dt.setDate(dt.getDate() + i);
+      return buildDaySummary(dt.toISOString().slice(0, 10), 10, 0);
+    }),
+    monthTotals: {
+      totalExpenses: 310,
+      totalIncome: 0,
+      expensesByCategory: [],
+      allowedMonthlyBudget: 0,
+      totalLimitDiff: 0,
+      net: 0,
+    },
+  };
+
+  const juneFullSummary: MonthSummary = {
+    year: 2026,
+    month: 6,
+    openingBalance: 0,
+    days: Array.from({ length: 30 }, (_, i) => {
+      const dt = new Date('2026-06-01');
+      dt.setDate(dt.getDate() + i);
+      return buildDaySummary(dt.toISOString().slice(0, 10), 10, 0);
+    }),
+    monthTotals: {
+      totalExpenses: 300,
+      totalIncome: 0,
+      expensesByCategory: [],
+      allowedMonthlyBudget: 0,
+      totalLimitDiff: 0,
+      net: 0,
     },
   };
 
@@ -430,11 +687,81 @@ describe('buildChartSeries', () => {
     // 35 days → week bucket; start on May 13 (Wednesday)
     const result = buildChartSeries([days35, june35], d('2026-05-13'), d('2026-06-16'));
 
-    // First bucket starts on the Monday of the week containing May 13 (May 11)
+    // First bucket should be labeled by the actual data days (May 13–17), not the full
+    // calendar week (which would start Monday May 11, a day with no data in range).
+    expect(result[0].label).toBe('May 13–17');
     // Days in first bucket from our range: May 13 (Wed), 14 (Thu), 15 (Fri), 16 (Sat), 17 (Sun) = 5 days × 10
-    const firstBucketExpenses = result[0].expenses;
-    expect(firstBucketExpenses).toBeGreaterThan(0);
+    expect(result[0].expenses).toBe(50);
 
     void days10; // suppress lint
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('warns when the same date appears in more than one summary (overlapping months)', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const overlappingSummary: MonthSummary = {
+      ...sevenDaySummary,
+      days: [buildDaySummary('2026-05-08', 99, 0, 50)],
+    };
+    buildChartSeries([sevenDaySummary, overlappingSummary], d('2026-05-08'), d('2026-05-14'));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('2026-05-08'));
+  });
+
+  it('does not warn when summaries have no overlapping dates', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    buildChartSeries([sevenDaySummary], d('2026-05-08'), d('2026-05-14'));
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('handles a range ending mid-week: last bucket label ends on the actual last day, not the following Sunday', () => {
+    // Range ends June 17 (Wednesday); the calendar week would run Jun 15 (Mon)–21 (Sun),
+    // but data past June 17 is out of range, so the bucket must only reflect Jun 15–17.
+    const result = buildChartSeries(
+      [mayFullSummary, juneFullSummary],
+      d('2026-05-01'),
+      d('2026-06-17')
+    );
+    const lastBucket = result[result.length - 1];
+    expect(lastBucket.label).toBe('Jun 15–17');
+    expect(lastBucket.expenses).toBe(30); // 3 days × 10
+  });
+
+  it('rounds day-bucket expenses to 2 decimals, avoiding float drift', () => {
+    const driftDaySummary: MonthSummary = {
+      year: 2026,
+      month: 5,
+      openingBalance: 0,
+      days: [
+        buildDaySummary('2026-05-08', 10.1, 0, 50),
+        buildDaySummary('2026-05-09', 20.2, 0, 50),
+      ],
+      monthTotals: {
+        totalExpenses: 30.3,
+        totalIncome: 0,
+        expensesByCategory: [],
+        allowedMonthlyBudget: 100,
+        totalLimitDiff: 70,
+        net: -30.3,
+      },
+    };
+    const result = buildChartSeries([driftDaySummary], d('2026-05-08'), d('2026-05-09'));
+    expect(result[0].expenses).toBe(10.1);
+    expect(result[1].expenses).toBe(20.2);
+  });
+
+  it('collapses a single-day bucket to one date instead of a duplicated range', () => {
+    // Range ends June 15 (Monday) — the last week bucket (Jun 15–21) contains only that
+    // single day of in-range data, so the label should be "Jun 15", not "Jun 15–15".
+    const result = buildChartSeries(
+      [mayFullSummary, juneFullSummary],
+      d('2026-05-01'),
+      d('2026-06-15')
+    );
+    const lastBucket = result[result.length - 1];
+    expect(lastBucket.label).toBe('Jun 15');
+    expect(lastBucket.expenses).toBe(10);
   });
 });
