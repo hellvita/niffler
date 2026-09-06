@@ -36,6 +36,13 @@ export function SessionExpiredModal({ email }: { email: string | null }) {
 
   async function handleSignInDifferent() {
     await fetch('/api/auth/logout', { method: 'POST' });
+    // Deliberate hard navigation, not a client-side router.push(). The QueryClient is held in
+    // useState by QueryProvider, which sits above the routes and so is NOT unmounted by a
+    // client-side navigation — the outgoing user's cached expense and summary data would
+    // survive into the next session. A full document load is what guarantees the clean slate.
+    // (@next/next/no-location-assign-relative-destination, added in eslint-config-next 16.3.x,
+    // suggests router.push() here; that suggestion is unsafe for logout specifically.)
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
     window.location.href = '/login';
   }
 
