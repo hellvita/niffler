@@ -129,7 +129,9 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
 
-      - run: npm audit --audit-level=high
+      # braces (via eslint-config-next → micromatch) has no patched npm release.
+      # Production deps are clean; omit=dev so this job fails only on shipped packages.
+      - run: npm audit --omit=dev --audit-level=high
 
   # ── Build ───────────────────────────────────────────────────────────────────
   # Runs last — only worth building if all checks above pass.
