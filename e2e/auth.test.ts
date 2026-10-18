@@ -16,7 +16,9 @@ test.describe('Register and login UI', () => {
     await page.waitForURL(`**/day/${today}`, { timeout: 10_000 });
     await expect(page.getByRole('button', { name: /logout/i })).toBeVisible();
 
-    await page.request.delete('/api/proxy/users/me').catch(() => {});
+    await page.request.delete('/api/proxy/users/me').catch((err) => {
+      console.error('[E2E teardown] Failed to delete test user:', err);
+    });
   });
 
   test('redirects to the app when already logged in and visiting /login', async ({
@@ -50,6 +52,8 @@ test.describe('Register and login UI', () => {
     const today = format(new Date(), 'yyyy-MM-dd');
     await page.waitForURL(`**/day/${today}`, { timeout: 10_000 });
 
-    await page.request.delete('/api/proxy/users/me').catch(() => {});
+    await page.request.delete('/api/proxy/users/me').catch((err) => {
+      console.error('[E2E teardown] Failed to delete test user:', err);
+    });
   });
 });
