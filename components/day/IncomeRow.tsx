@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useUpsertIncome, useDeleteIncome } from '@/lib/hooks/useIncomes';
 import { amountSchema } from '@/lib/validation/schemas';
+import { evaluateExpression } from '@/lib/utils/expression';
 import { Input } from '@/components/shared/Input';
 
 export function IncomeRow({ date, income }: { date: string; income: number }) {
@@ -24,9 +25,24 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
     setEditing(true);
   };
 
+  const handleChange = (val: string) => {
+    if (val && !/^[0-9][0-9.+\-*/]*$/.test(val)) return;
+    setInputValue(val);
+    setInputError(null);
+  };
+
   const submit = () => {
-    const val = parseFloat(inputValue);
-    if (isNaN(val) || val === 0) {
+    if (!inputValue.trim()) {
+      setInputError(null);
+      deleteIncome({ date }, { onSettled: () => setEditing(false) });
+      return;
+    }
+    const val = evaluateExpression(inputValue);
+    if (val === null) {
+      setInputError('Invalid expression');
+      return;
+    }
+    if (val === 0) {
       setInputError(null);
       deleteIncome({ date }, { onSettled: () => setEditing(false) });
       return;
@@ -54,14 +70,10 @@ export function IncomeRow({ date, income }: { date: string; income: number }) {
         <div className="flex flex-col items-end gap-0.5">
           <Input
             ref={inputRef}
-            type="number"
-            min="0"
-            step="0.01"
+            type="text"
+            inputMode="decimal"
             value={inputValue}
-            onChange={(e) => {
-              setInputValue(e.target.value);
-              setInputError(null);
-            }}
+            onChange={(e) => handleChange(e.target.value)}
             disabled={isMutating}
             onKeyDown={(e) => {
               if (e.key === 'Enter') e.currentTarget.blur();
