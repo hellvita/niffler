@@ -35,7 +35,7 @@ export interface AggregatedTotals {
 
 // Dev-only trip wire: warns (never throws, never changes output) if the same date shows up
 // twice across the summaries passed in — which would silently double-count that day's totals.
-// Not reachable through any call site that exists today (see aggregation-hardening plan, point 5),
+// Not reachable through any call site that exists today,
 // but aggregateTotals/buildChartSeries are exported, reusable utilities with no other guarantee
 // about their inputs, so this is cheap insurance against a future caller introducing overlap.
 function warnOnDuplicateDates(dates: string[], source: string): void {

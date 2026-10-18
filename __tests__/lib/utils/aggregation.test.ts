@@ -294,10 +294,7 @@ describe('aggregateTotals', () => {
     expect(result.totalIncome).toBe(300); // 100+200
   });
 
-  it('scopes expensesByCategory to the exact selected range, not the whole month', () => {
-    // May 1-2 only: day-level categories are 10 (May 1) + 20 (May 2) = 30,
-    // vs. the whole month's total of 50 — proves the pie chart no longer leaks in
-    // category spend from days outside the selected range.
+  it('scopes expensesByCategory to the selected range, not the whole month', () => {
     const result = aggregateTotals([MAY_SUMMARY], d('2026-05-01'), d('2026-05-02'));
     expect(result.expensesByCategory).toEqual([
       { categoryId: 'cat-1', categoryName: 'Groceries', amount: 30 },

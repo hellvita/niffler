@@ -153,7 +153,7 @@ export function CategoryManager() {
         <p className="text-sm text-[var(--color-text-muted)]">No categories yet.</p>
       )}
       <ul className="flex flex-col gap-3 list-none">
-        {list.map((cat, index) => (
+        {list.map((cat) => (
           <li
             key={cat.id}
             className={`flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--color-border)] ${
@@ -162,11 +162,7 @@ export function CategoryManager() {
                 : 'bg-[var(--color-surface)]'
             }`}
           >
-            <CategoryColorSwatch
-              id={cat.id}
-              color={getColor(cat.id, index)}
-              onColorChange={setColor}
-            />
+            <CategoryColorSwatch id={cat.id} color={getColor(cat.id)} onColorChange={setColor} />
             {editingId === cat.id ? (
               <Input
                 autoFocus
