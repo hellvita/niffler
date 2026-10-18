@@ -48,6 +48,7 @@ export interface MonthSummaryDay {
   effectiveLimit: number | null;
   limitDiff: number | null;
   net: number;
+  expensesByCategory: ExpenseByCategory[];
 }
 
 export interface MonthSummary {
